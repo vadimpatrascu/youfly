@@ -22,7 +22,9 @@ async function switchLocale(code: string) {
         <nav class="flex items-center gap-4">
           <NuxtLink to="/" class="text-sm font-medium text-gray-600 hover:text-brand-600 transition-colors hidden sm:block">{{ t('nav.search') }}</NuxtLink>
           <NuxtLink to="/my-booking" class="text-sm font-medium text-gray-600 hover:text-brand-600 transition-colors hidden sm:block">{{ t('nav.myBooking') }}</NuxtLink>
+          <NuxtLink to="/destinations" class="text-sm font-medium text-gray-600 hover:text-brand-600 transition-colors hidden md:block">Destinații</NuxtLink>
           <NuxtLink to="/deals" class="text-sm font-medium text-red-600 hover:text-red-700 transition-colors hidden md:block font-semibold">🔥 Oferte</NuxtLink>
+          <NuxtLink to="/blog" class="text-sm font-medium text-gray-600 hover:text-brand-600 transition-colors hidden md:block">Blog</NuxtLink>
           <NuxtLink to="/faq" class="text-sm font-medium text-gray-600 hover:text-brand-600 transition-colors hidden md:block">FAQ</NuxtLink>
 
           <!-- MDL toggle -->
@@ -110,6 +112,7 @@ async function switchLocale(code: string) {
               <li><NuxtLink to="/" class="hover:text-brand-600 transition-colors">{{ t('nav.search') }}</NuxtLink></li>
               <li><NuxtLink to="/my-booking" class="hover:text-brand-600 transition-colors">{{ t('footer.myBooking') }}</NuxtLink></li>
               <li><NuxtLink to="/about" class="hover:text-brand-600 transition-colors">Despre YouFly</NuxtLink></li>
+              <li><NuxtLink to="/blog" class="hover:text-brand-600 transition-colors">Blog</NuxtLink></li>
               <li><NuxtLink to="/faq" class="hover:text-brand-600 transition-colors">Întrebări frecvente</NuxtLink></li>
               <li><NuxtLink to="/contact" class="hover:text-brand-600 transition-colors">Contact</NuxtLink></li>
               <li><NuxtLink to="/terms" class="hover:text-brand-600 transition-colors">{{ t('footer.terms') }}</NuxtLink></li>
