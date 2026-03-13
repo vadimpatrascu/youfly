@@ -6,9 +6,27 @@ const tips = [
   'Se verifică disponibilitatea locurilor...',
   'Se compară prețurile de la 500+ companii aeriene...',
   'Se caută cele mai bune conexiuni...',
+  'Se aplică filtrele de calitate...',
   'Se sortează ofertele pentru tine...',
-  'Mai puțin de un minut...',
+  'Aproape gata...',
 ]
+
+const destFacts: Record<string, string> = {
+  'IST': '🕌 Istanbul este singurul oraș din lume pe două continente — Europa și Asia.',
+  'BCN': '🏖️ Barcelona are 4,4 km de plajă urbană și 300 de zile însorite pe an.',
+  'LTN': '🎡 Londra găzduiește cel mai mare sistem de metrou din lume — The Tube.',
+  'CDG': '🗼 Turnul Eiffel a fost inițial destinat să fie demolat după 20 de ani.',
+  'VIE': '🎻 Viena a dat naștere multor genii muzicale: Mozart, Beethoven, Schubert.',
+  'OTP': '🏛️ București are cea mai mare clădire administrativă din lume — Palatul Parlamentului.',
+  'MXP': '🛍️ Milano găzduiește 4 săptămâni de modă internațională pe an.',
+  'TLV': '🌊 Tel Aviv are una dintre cele mai dinamice scene de startup-uri din lume.',
+  'DXB': '🏙️ Dubai Burj Khalifa este cea mai înaltă clădire din lume — 828 de metri.',
+}
+
+const destFact = computed(() => {
+  const dest = searchStore.destination?.airport_iata || ''
+  return destFacts[dest] || null
+})
 const tipIndex = ref(0)
 const progress = ref(0)
 let tipInterval: ReturnType<typeof setInterval>
@@ -64,8 +82,13 @@ onUnmounted(() => {
       </div>
 
       <!-- Dots -->
-      <div class="flex justify-center gap-1.5">
+      <div class="flex justify-center gap-1.5 mb-4">
         <div v-for="i in 3" :key="i" class="w-2 h-2 rounded-full bg-brand-400 animate-pulse" :style="`animation-delay: ${i * 0.25}s`"></div>
+      </div>
+
+      <!-- Destination fun fact -->
+      <div v-if="destFact" class="bg-brand-50 rounded-xl px-4 py-3 text-xs text-brand-700 text-center leading-relaxed">
+        {{ destFact }}
       </div>
     </div>
   </div>
