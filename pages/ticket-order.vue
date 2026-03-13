@@ -72,8 +72,10 @@ function typeLabel(type: string) {
 </script>
 
 <template>
-  <div class="max-w-4xl mx-auto px-4 py-8">
-    <div class="flex items-center gap-3 mb-8">
+  <div>
+    <BookingSteps :current="1" />
+    <div class="max-w-4xl mx-auto px-4 py-6">
+    <div class="flex items-center gap-3 mb-6">
       <button @click="router.back()" class="text-gray-500 hover:text-gray-700 text-sm">{{ t('passengers.back') }}</button>
       <h1 class="text-2xl font-bold text-gray-900">{{ t('passengers.title') }}</h1>
     </div>
@@ -193,5 +195,6 @@ function typeLabel(type: string) {
         </div>
       </div>
     </div>
+  </div>
   </div>
 </template>

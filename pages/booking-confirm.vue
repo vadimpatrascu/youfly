@@ -24,7 +24,9 @@ function copyRef() {
 </script>
 
 <template>
-  <div class="max-w-2xl mx-auto px-4 py-12">
+  <div>
+    <BookingSteps :current="3" />
+    <div class="max-w-2xl mx-auto px-4 py-8">
     <div class="text-center mb-8">
       <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
         <span class="text-4xl">✅</span>
@@ -68,5 +70,6 @@ function copyRef() {
         {{ t('confirm.bookAnother') }}
       </NuxtLink>
     </div>
+  </div>
   </div>
 </template>

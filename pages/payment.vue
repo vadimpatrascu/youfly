@@ -40,7 +40,9 @@ function formatExpiry(e: Event) {
 </script>
 
 <template>
-  <div class="max-w-4xl mx-auto px-4 py-8">
+  <div>
+    <BookingSteps :current="2" />
+    <div class="max-w-4xl mx-auto px-4 py-6">
     <div class="flex items-center gap-3 mb-8">
       <button @click="router.back()" class="text-gray-500 hover:text-gray-700 text-sm">{{ t('payment.back') }}</button>
       <h1 class="text-2xl font-bold text-gray-900">{{ t('payment.title') }}</h1>
@@ -163,5 +165,6 @@ function formatExpiry(e: Event) {
         </div>
       </div>
     </div>
+  </div>
   </div>
 </template>
