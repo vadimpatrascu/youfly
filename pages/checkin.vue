@@ -1,5 +1,5 @@
 <script setup lang="ts">
-useHead({ title: 'Check-in Online — YouFly' })
+useSeo({ title: 'Check-in Online', description: 'Ghid complet pentru check-in online. Ferestre de check-in, taxe și sfaturi pentru Wizz Air, Ryanair, Turkish Airlines și altele.' })
 
 const airlines = [
   { name: 'Wizz Air', code: 'W6', window: '30 de zile înainte — 3 ore înainte', url: 'https://wizzair.com', checkin: '100%', fee: 'Gratuit dacă ai locul inclus' },

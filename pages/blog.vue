@@ -1,5 +1,5 @@
 <script setup lang="ts">
-useHead({ title: 'Blog — Sfaturi de Călătorie | YouFly' })
+useSeo({ title: 'Blog — Sfaturi de Călătorie', description: 'Sfaturi practice pentru călătorii, ghiduri de destinații și strategii pentru a zbura mai ieftin din Moldova.' })
 
 const articles = [
   {

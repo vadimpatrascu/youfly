@@ -1,5 +1,5 @@
 <script setup lang="ts">
-useHead({ title: 'Reguli Bagaj — YouFly' })
+useSeo({ title: 'Reguli Bagaj', description: 'Regulile de bagaj pentru principalele companii aeriene. Dimensiuni, greutăți, taxe și articole interzise în avion.' })
 
 const airlines = [
   {

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-useHead({ title: 'Cerințe Viză — Cetățeni Moldova | YouFly' })
+useSeo({ title: 'Cerințe Viză pentru Moldova', description: 'Verifică dacă ai nevoie de viză pentru destinația ta. Ghid actualizat pentru cetățenii Republicii Moldova.' })
 
 const destinations = [
   // Visa-free

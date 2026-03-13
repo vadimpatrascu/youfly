@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useSearchStore } from '~/stores/search'
 
-useHead({ title: 'Destinații — YouFly' })
+useSeo({ title: 'Destinații Populare', description: 'Descoperă cele mai populare destinații de zbor din Chișinău cu prețuri în timp real. Europa, Asia, Orientul Mijlociu.' })
 
 const searchStore = useSearchStore()
 const router = useRouter()
