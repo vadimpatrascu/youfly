@@ -11,6 +11,7 @@ onMounted(() => {
 })
 
 const { formatPrice, formatTime } = useFormatters()
+const { formatWithMdl, showMdl } = useCurrency()
 const booking = computed(() => bookingStore.confirmedBooking)
 const offer = computed(() => bookingStore.selectedOffer)
 const copied = ref(false)
@@ -132,8 +133,9 @@ function shortDateCompact(iso: string) {
           <div class="text-right">
             <div class="text-xs text-gray-400 uppercase tracking-wider mb-2">{{ t('confirm.totalPaid') }}</div>
             <div class="text-2xl font-black text-brand-600">
-              {{ booking ? formatPrice(booking.totalAmount, booking.currency) : '' }}
+              {{ booking ? formatWithMdl(booking.totalAmount, booking.currency) : '' }}
             </div>
+            <div v-if="showMdl && booking" class="text-xs text-gray-400">≈ {{ formatPrice(booking.totalAmount, booking.currency) }}</div>
             <div class="text-xs text-gray-400 mt-1 font-mono">{{ booking?.duffelOrderId?.substring(0, 20) }}...</div>
           </div>
         </div>

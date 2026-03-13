@@ -19,6 +19,7 @@ const cardName = ref('')
 const isProcessing = ref(false)
 const payErrors = ref<Record<string, string>>({})
 const { formatPrice, formatTime, stopsLabel } = useFormatters()
+const { formatWithMdl, showMdl } = useCurrency()
 
 function cardBrand(num: string): string {
   const n = num.replace(/\s/g, '')
@@ -143,6 +144,15 @@ function formatExpiry(e: Event) {
           </span>
         </button>
         <p class="text-xs text-center text-gray-400 mt-3">{{ t('payment.demo') }}</p>
+
+        <!-- Trust seals -->
+        <div class="mt-4 pt-4 border-t border-gray-100">
+          <div class="flex items-center justify-center gap-4 text-xs text-gray-400">
+            <span class="flex items-center gap-1">🔒 SSL Securizat</span>
+            <span class="flex items-center gap-1">🛡️ PCI DSS</span>
+            <span class="flex items-center gap-1">✓ 3D Secure</span>
+          </div>
+        </div>
       </div>
 
       <!-- Summary -->
@@ -172,7 +182,10 @@ function formatExpiry(e: Event) {
               </div>
               <div class="flex justify-between font-bold text-gray-900 pt-2 border-t">
                 <span>{{ t('payment.total') }}</span>
-                <span class="text-brand-600 text-xl">{{ formatPrice(bookingStore.selectedOffer.total_amount, bookingStore.selectedOffer.total_currency) }}</span>
+                <div class="text-right">
+                  <span class="text-brand-600 text-xl">{{ formatWithMdl(bookingStore.selectedOffer.total_amount, bookingStore.selectedOffer.total_currency) }}</span>
+                  <span v-if="showMdl" class="block text-xs text-gray-400 font-normal">≈ {{ formatPrice(bookingStore.selectedOffer.total_amount, bookingStore.selectedOffer.total_currency) }}</span>
+                </div>
               </div>
             </div>
           </div>
