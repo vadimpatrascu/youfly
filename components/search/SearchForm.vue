@@ -27,6 +27,22 @@ async function onSubmit() {
 
 const today = new Date().toISOString().split('T')[0]
 
+const canSearch = computed(() =>
+  searchStore.origin &&
+  searchStore.destination &&
+  searchStore.departureDate &&
+  (!searchStore.origin || !searchStore.destination ||
+    (searchStore.origin.airport_iata || searchStore.origin.iata_code) !==
+    (searchStore.destination.airport_iata || searchStore.destination.iata_code))
+)
+
+const sameAirportError = computed(() =>
+  searchStore.origin && searchStore.destination &&
+  (searchStore.origin.airport_iata || searchStore.origin.iata_code) ===
+  (searchStore.destination.airport_iata || searchStore.destination.iata_code)
+)
+
+
 const totalPassengers = computed(() => searchStore.adults + searchStore.children + searchStore.infants)
 const passengersLabel = computed(() => {
   const n = totalPassengers.value
@@ -112,10 +128,11 @@ const cabinOptions = computed(() => [
       </div>
     </div>
 
+    <p v-if="sameAirportError" class="text-orange-600 text-sm mb-4 bg-orange-50 p-3 rounded-xl">&#9888; Aeroportul de plecare și destinație nu pot fi identice.</p>
     <p v-if="searchStore.searchError" class="text-red-600 text-sm mb-4 bg-red-50 p-3 rounded-xl">{{ searchStore.searchError }}</p>
 
     <button @click="onSubmit"
-      :disabled="searchStore.isSearching || !searchStore.origin || !searchStore.destination || !searchStore.departureDate"
+      :disabled="searchStore.isSearching || !canSearch"
       class="w-full py-4 bg-brand-600 hover:bg-brand-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-semibold rounded-xl text-lg transition-colors shadow-lg">
       <span v-if="searchStore.isSearching" class="flex items-center justify-center gap-2">
         <div class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
