@@ -25,6 +25,7 @@ export default defineNuxtConfig({
     duffelApiToken: '',
     supabaseUrl: '',
     supabaseServiceRoleKey: '',
+    adminSecret: 'youfly-admin-2026',
     public: {
       siteUrl: 'https://youfly.vercel.app',
     },

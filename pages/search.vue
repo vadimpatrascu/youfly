@@ -109,6 +109,9 @@ watch(() => offersStore.filtered.length, () => { visibleCount.value = PAGE_SIZE 
         </div>
       </div>
 
+      <!-- Price alert banner -->
+      <PriceAlertBanner v-if="!offersStore.isLoading && offersStore.filtered.length > 0" class="mb-4" />
+
       <!-- Quick sort pills -->
       <div class="flex gap-2 mb-4 flex-wrap">
         <button v-for="s in [
