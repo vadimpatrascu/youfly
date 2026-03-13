@@ -82,6 +82,22 @@ const cheapestOfferId = computed(() => {
         </p>
       </div>
 
+      <!-- Quick sort pills -->
+      <div class="flex gap-2 mb-4 flex-wrap">
+        <button v-for="s in [
+          { v: 'price', l: t('filters.cheapest') },
+          { v: 'duration', l: t('filters.fastest') },
+          { v: 'departure', l: t('filters.earliest') }
+        ]" :key="s.v"
+          @click="offersStore.sortBy = s.v as any; offersStore.applyFilters()"
+          class="px-4 py-2 rounded-full text-sm font-medium border transition-all"
+          :class="offersStore.sortBy === s.v
+            ? 'bg-brand-600 text-white border-brand-600 shadow-sm'
+            : 'bg-white text-gray-600 border-gray-300 hover:border-brand-400'">
+          {{ s.l }}
+        </button>
+      </div>
+
       <div class="flex gap-6">
         <div class="hidden md:block w-64 shrink-0 self-start sticky top-24">
           <FilterSidebar />
