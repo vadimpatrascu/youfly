@@ -1,0 +1,147 @@
+<script setup lang="ts">
+useHead({ title: 'Admin — YouFly' })
+
+const secretInput = ref('')
+const stats = ref<any>(null)
+const isLoading = ref(false)
+const error = ref('')
+const { formatPrice } = useFormatters()
+
+async function loadStats() {
+  if (!secretInput.value.trim()) return
+  isLoading.value = true
+  error.value = ''
+  try {
+    stats.value = await $fetch(`/api/admin/stats?secret=${encodeURIComponent(secretInput.value.trim())}`)
+  } catch (e: any) {
+    error.value = e?.data?.message || 'Eroare la încărcare'
+    stats.value = null
+  } finally {
+    isLoading.value = false
+  }
+}
+
+function formatDate(iso: string) {
+  if (!iso) return ''
+  return new Date(iso).toLocaleDateString('ro-MD', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+}
+</script>
+
+<template>
+  <div class="max-w-5xl mx-auto px-4 py-8">
+    <div class="flex items-center gap-3 mb-8">
+      <h1 class="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
+      <span class="px-2 py-1 bg-red-100 text-red-700 text-xs font-bold rounded-full">DEMO</span>
+    </div>
+
+    <!-- Auth -->
+    <div v-if="!stats" class="max-w-md mx-auto">
+      <div class="bg-white rounded-2xl border border-gray-200 p-6">
+        <h2 class="font-semibold text-gray-900 mb-4">Autentificare</h2>
+        <div class="flex gap-3">
+          <input v-model="secretInput" type="password" placeholder="Cheie secretă..."
+            class="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500"
+            @keyup.enter="loadStats" />
+          <button @click="loadStats" :disabled="isLoading"
+            class="px-5 py-3 bg-brand-600 hover:bg-brand-700 disabled:bg-gray-300 text-white font-semibold rounded-xl transition-colors">
+            <span v-if="isLoading" class="flex gap-2 items-center">
+              <div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+            </span>
+            <span v-else>Intră</span>
+          </button>
+        </div>
+        <p v-if="error" class="mt-3 text-sm text-red-600 bg-red-50 p-3 rounded-xl">{{ error }}</p>
+      </div>
+    </div>
+
+    <!-- Dashboard -->
+    <div v-else class="space-y-6">
+      <!-- Summary cards -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="bg-white rounded-2xl border border-gray-200 p-4 text-center">
+          <div class="text-3xl font-black text-brand-600">{{ stats.summary.totalBookings }}</div>
+          <div class="text-xs text-gray-500 mt-1">Rezervări totale</div>
+        </div>
+        <div class="bg-white rounded-2xl border border-gray-200 p-4 text-center">
+          <div class="text-3xl font-black text-green-600">{{ stats.summary.confirmedBookings }}</div>
+          <div class="text-xs text-gray-500 mt-1">Rezervări confirmate</div>
+        </div>
+        <div class="bg-white rounded-2xl border border-gray-200 p-4 text-center">
+          <div class="text-2xl font-black text-purple-600">€{{ stats.summary.totalRevenue.toFixed(0) }}</div>
+          <div class="text-xs text-gray-500 mt-1">Venituri totale</div>
+        </div>
+        <div class="bg-white rounded-2xl border border-gray-200 p-4 text-center">
+          <div class="text-3xl font-black text-orange-600">{{ stats.summary.totalLeads }}</div>
+          <div class="text-xs text-gray-500 mt-1">Căutări</div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Top destinations -->
+        <div class="bg-white rounded-2xl border border-gray-200 p-5">
+          <h3 class="font-semibold text-gray-900 mb-3">Top destinații căutate</h3>
+          <div v-if="!stats.topDestinations.length" class="text-gray-400 text-sm">Nu sunt date</div>
+          <div v-else class="space-y-2">
+            <div v-for="(d, i) in stats.topDestinations" :key="d.iata" class="flex items-center gap-3">
+              <span class="text-xs font-bold text-gray-400 w-4">{{ i + 1 }}</span>
+              <span class="font-mono text-sm font-bold text-brand-600 bg-brand-50 px-2 py-0.5 rounded">{{ d.iata }}</span>
+              <div class="flex-1 bg-gray-100 rounded-full h-2">
+                <div class="bg-brand-500 rounded-full h-2" :style="`width: ${(d.count / stats.topDestinations[0].count) * 100}%`"></div>
+              </div>
+              <span class="text-sm text-gray-600 w-6 text-right">{{ d.count }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent bookings -->
+        <div class="bg-white rounded-2xl border border-gray-200 p-5">
+          <h3 class="font-semibold text-gray-900 mb-3">Rezervări recente</h3>
+          <div v-if="!stats.recentBookings.length" class="text-gray-400 text-sm">Nu sunt rezervări</div>
+          <div v-else class="space-y-2">
+            <div v-for="b in stats.recentBookings" :key="b.id"
+              class="flex items-center gap-2 text-sm bg-gray-50 rounded-xl px-3 py-2">
+              <span class="font-mono font-bold text-brand-600 text-xs">{{ b.reference }}</span>
+              <span class="flex-1 text-gray-500 text-xs">{{ formatDate(b.created_at) }}</span>
+              <span class="font-semibold text-gray-900">{{ b.total_amount }} {{ b.currency }}</span>
+              <span class="text-xs px-2 py-0.5 rounded-full" :class="b.status === 'confirmed' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'">
+                {{ b.status }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent leads -->
+      <div class="bg-white rounded-2xl border border-gray-200 p-5">
+        <h3 class="font-semibold text-gray-900 mb-3">Căutări recente</h3>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="text-left text-xs text-gray-500 border-b">
+                <th class="pb-2 font-medium">Rută</th>
+                <th class="pb-2 font-medium">Data</th>
+                <th class="pb-2 font-medium">Pasageri</th>
+                <th class="pb-2 font-medium">Clasă</th>
+                <th class="pb-2 font-medium">Căutat la</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+              <tr v-for="l in stats.recentLeads" :key="l.id" class="hover:bg-gray-50">
+                <td class="py-2 font-mono font-semibold text-brand-600">{{ l.from_iata }} → {{ l.to_iata }}</td>
+                <td class="py-2 text-gray-600">{{ l.depart_date }}</td>
+                <td class="py-2">{{ l.adults }}</td>
+                <td class="py-2 text-gray-500 text-xs capitalize">{{ l.cabin_class }}</td>
+                <td class="py-2 text-gray-400 text-xs">{{ formatDate(l.created_at) }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <button @click="stats = null; secretInput = ''"
+        class="text-sm text-gray-500 hover:text-gray-700 underline">
+        ← Delogare
+      </button>
+    </div>
+  </div>
+</template>
