@@ -273,6 +273,26 @@ async function quickSearch(route: typeof popularRoutes[0]) {
       </div>
     </div>
 
+    <!-- Travel resources strip -->
+    <div class="bg-gray-50 border-y border-gray-200 py-8 px-4">
+      <div class="max-w-6xl mx-auto">
+        <h2 class="text-lg font-bold text-gray-900 text-center mb-5">Resurse pentru călători</h2>
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
+          <NuxtLink v-for="res in [
+            { to: '/visa', icon: '🛂', label: 'Cerințe Viză' },
+            { to: '/checkin', icon: '🎫', label: 'Check-in Online' },
+            { to: '/luggage', icon: '🧳', label: 'Reguli Bagaj' },
+            { to: '/flight-status', icon: '✈️', label: 'Status Zbor' },
+            { to: '/blog', icon: '📖', label: 'Blog Călătorie' },
+          ]" :key="res.to" :to="res.to"
+            class="flex flex-col items-center gap-2 py-4 px-3 bg-white rounded-xl border border-gray-200 hover:border-brand-400 hover:shadow-sm transition-all text-center group">
+            <span class="text-2xl">{{ res.icon }}</span>
+            <span class="text-xs font-semibold text-gray-700 group-hover:text-brand-600 transition-colors">{{ res.label }}</span>
+          </NuxtLink>
+        </div>
+      </div>
+    </div>
+
     <!-- Newsletter -->
     <div class="bg-gray-900 text-white py-14 px-4">
       <div class="max-w-lg mx-auto text-center">
