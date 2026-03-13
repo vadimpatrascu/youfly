@@ -1,5 +1,11 @@
 User-agent: *
 Allow: /
+
+Disallow: /admin
 Disallow: /api/
+Disallow: /seat-selection
+Disallow: /ticket-order
+Disallow: /payment
+Disallow: /booking-confirm
 
 Sitemap: https://youfly.vercel.app/sitemap.xml

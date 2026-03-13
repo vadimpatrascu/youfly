@@ -4,9 +4,17 @@ export default defineEventHandler((event) => {
 
   const pages = [
     { path: '/', priority: '1.0', changefreq: 'daily' },
-    { path: '/about', priority: '0.7', changefreq: 'monthly' },
+    { path: '/deals', priority: '0.9', changefreq: 'daily' },
+    { path: '/destinations', priority: '0.9', changefreq: 'weekly' },
+    { path: '/blog', priority: '0.8', changefreq: 'weekly' },
     { path: '/faq', priority: '0.8', changefreq: 'monthly' },
+    { path: '/about', priority: '0.7', changefreq: 'monthly' },
+    { path: '/contact', priority: '0.7', changefreq: 'monthly' },
     { path: '/my-booking', priority: '0.6', changefreq: 'monthly' },
+    { path: '/flight-status', priority: '0.6', changefreq: 'monthly' },
+    { path: '/checkin', priority: '0.7', changefreq: 'monthly' },
+    { path: '/luggage', priority: '0.7', changefreq: 'monthly' },
+    { path: '/visa', priority: '0.8', changefreq: 'monthly' },
     { path: '/terms', priority: '0.3', changefreq: 'yearly' },
     { path: '/privacy', priority: '0.3', changefreq: 'yearly' },
   ]
