@@ -1,9 +1,18 @@
 import { duffelFetch } from '../utils/duffel'
 
+// Simple in-memory cache: query -> { results, ts }
+const airportCache = new Map<string, { results: any[]; ts: number }>()
+const CACHE_TTL = 10 * 60 * 1000 // 10 minutes
+
 export default defineEventHandler(async (event) => {
   const query = getQuery(event)
-  const q = (query.q as string || '').trim()
+  const q = (query.q as string || '').trim().toLowerCase()
   if (q.length < 2) return []
+
+  const cached = airportCache.get(q)
+  if (cached && Date.now() - cached.ts < CACHE_TTL) {
+    return cached.results
+  }
 
   try {
     // Use /places/suggestions — the correct Duffel endpoint for autocomplete
@@ -59,6 +68,7 @@ export default defineEventHandler(async (event) => {
       if (results.length >= 8) break
     }
 
+    airportCache.set(q, { results, ts: Date.now() })
     return results
   } catch (e: any) {
     console.error('Airport search error:', e?.message, JSON.stringify(e?.data || {}))

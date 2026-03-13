@@ -3,6 +3,7 @@ import { useSearchStore } from '~/stores/search'
 const { t } = useI18n()
 const searchStore = useSearchStore()
 const router = useRouter()
+const { favorites, toggle: toggleFavorite, isFavorite } = useFavorites()
 
 useHead({ title: computed(() => 'YouFly — ' + t('hero.title')) })
 
@@ -123,6 +124,23 @@ async function quickSearch(route: typeof popularRoutes[0]) {
       </div>
     </div>
 
+    <!-- Saved favorites -->
+    <div v-if="favorites.length" class="max-w-6xl mx-auto px-4 pt-8">
+      <h2 class="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2">
+        <span class="text-red-500">♥</span> Rute favorite
+      </h2>
+      <div class="flex gap-2 flex-wrap">
+        <button v-for="fav in favorites" :key="fav.from + fav.to"
+          @click="quickSearch({ from: fav.from, fromCity: fav.fromCity, to: fav.to, toCity: fav.toCity, flag: '', price: '' })"
+          class="flex items-center gap-2 bg-white border border-gray-200 hover:border-brand-400 rounded-full px-4 py-2 text-sm transition-colors group">
+          <span class="font-semibold text-gray-700">{{ fav.fromCity }}</span>
+          <span class="text-gray-400">→</span>
+          <span class="font-semibold text-brand-600">{{ fav.toCity }}</span>
+          <button @click.stop="toggleFavorite(fav)" class="text-red-400 hover:text-red-600 ml-1 text-xs">✕</button>
+        </button>
+      </div>
+    </div>
+
     <!-- Price trends -->
     <div class="max-w-6xl mx-auto px-4 py-8">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
@@ -158,7 +176,15 @@ async function quickSearch(route: typeof popularRoutes[0]) {
             <div v-if="searchingRoute === route.to" class="absolute inset-0 flex items-center justify-center bg-white/80 rounded-2xl z-10">
               <div class="w-6 h-6 border-2 border-brand-500 border-t-transparent rounded-full animate-spin"></div>
             </div>
-            <div class="text-2xl mb-2">{{ route.flag }}</div>
+            <div class="flex items-start justify-between mb-1">
+              <div class="text-2xl">{{ route.flag }}</div>
+              <button @click.stop="toggleFavorite({ from: route.from, fromCity: route.fromCity, to: route.to, toCity: route.toCity })"
+                class="text-lg transition-colors"
+                :class="isFavorite(route.from, route.to) ? 'text-red-500' : 'text-gray-200 group-hover:text-gray-300'"
+                :title="isFavorite(route.from, route.to) ? 'Scoate din favorite' : 'Adaugă la favorite'">
+                ♥
+              </button>
+            </div>
             <div class="font-semibold text-gray-900 text-sm group-hover:text-brand-600 transition-colors">{{ route.toCity }}</div>
             <div class="text-xs text-gray-500 mt-0.5">{{ route.fromCity }} →</div>
             <div class="mt-2 text-brand-600 font-bold text-sm">de la €{{ route.price }}</div>
