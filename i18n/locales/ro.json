@@ -13,6 +13,6 @@
   "popularRoutes": "Rute populare",
   "from": "De la",
   "steps": { "passengers": "Pasageri", "payment": "Plată", "confirm": "Confirmare" },
-  "footer": { "rights": "Toate drepturile rezervate.", "tagline": "Caută și rezervă zboruri rapid și simplu.", "links": "Linkuri utile", "contact": "Contact", "phone": "+373 22 000 000", "email": "support@youfly.md", "terms": "Termeni și condiții", "privacy": "Politica de confidențialitate", "myBooking": "Verifică rezervarea", "powered": "Alimentat de Duffel" },
+  "footer": { "rights": "Toate drepturile rezervate.", "tagline": "Caută și rezervă zboruri rapid și simplu.", "links": "Linkuri utile", "contact": "Contact", "phone": "+373 22 000 000", "email": "support{'@'}youfly.md", "terms": "Termeni și condiții", "privacy": "Politica de confidențialitate", "myBooking": "Verifică rezervarea", "powered": "Alimentat de Duffel" },
   "errors": { "searchFailed": "Căutarea a eșuat. Vă rugăm încercați din nou.", "loadFailed": "Eroare la încărcarea zborurilor" }
 }
