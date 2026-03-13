@@ -63,6 +63,9 @@ function onSubmit() {
 
 const { formatPrice, formatTime, stopsLabel } = useFormatters()
 
+const expiresAt = computed(() => fullOffer.value?.expires_at || null)
+const { formatted: countdownFormatted, isExpiringSoon, isExpired } = useCountdown(expiresAt)
+
 function typeLabel(type: string) {
   if (type === 'adult') return t('passengers.adult')
   if (type === 'child') return t('passengers.child')
