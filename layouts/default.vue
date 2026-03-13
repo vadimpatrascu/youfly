@@ -22,6 +22,7 @@ async function switchLocale(code: string) {
         <nav class="flex items-center gap-4">
           <NuxtLink to="/" class="text-sm font-medium text-gray-600 hover:text-brand-600 transition-colors hidden sm:block">{{ t('nav.search') }}</NuxtLink>
           <NuxtLink to="/my-booking" class="text-sm font-medium text-gray-600 hover:text-brand-600 transition-colors hidden sm:block">{{ t('nav.myBooking') }}</NuxtLink>
+          <NuxtLink to="/deals" class="text-sm font-medium text-red-600 hover:text-red-700 transition-colors hidden md:block font-semibold">🔥 Oferte</NuxtLink>
           <NuxtLink to="/faq" class="text-sm font-medium text-gray-600 hover:text-brand-600 transition-colors hidden md:block">FAQ</NuxtLink>
 
           <!-- MDL toggle -->
@@ -78,6 +79,10 @@ async function switchLocale(code: string) {
         <NuxtLink to="/" class="flex-1 flex flex-col items-center py-3 text-gray-500 hover:text-brand-600 transition-colors">
           <span class="text-xl">&#9992;</span>
           <span class="text-xs mt-0.5">{{ t('nav.search') }}</span>
+        </NuxtLink>
+        <NuxtLink to="/deals" class="flex-1 flex flex-col items-center py-3 text-red-500 hover:text-red-600 transition-colors">
+          <span class="text-xl">🔥</span>
+          <span class="text-xs mt-0.5 font-semibold">Oferte</span>
         </NuxtLink>
         <NuxtLink to="/my-booking" class="flex-1 flex flex-col items-center py-3 text-gray-500 hover:text-brand-600 transition-colors">
           <span class="text-xl">&#128196;</span>
