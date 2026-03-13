@@ -33,6 +33,24 @@ const stats = [
 const searchingRoute = ref<string | null>(null)
 const searchRouteError = ref('')
 
+const { searches: recentSearches } = useRecentSearches()
+
+async function quickSearchRecent(rs: import('~/composables/useRecentSearches').RecentSearch) {
+  searchStore.origin = { iata_code: '', airport_iata: rs.originCode, name: rs.originCity, city_name: rs.originCity, country_code: '' }
+  searchStore.destination = { iata_code: '', airport_iata: rs.destinationCode, name: rs.destinationCity, city_name: rs.destinationCity, country_code: '' }
+  searchStore.departureDate = rs.departureDate
+  searchStore.adults = rs.adults
+  searchStore.tripType = rs.tripType
+  searchingRoute.value = rs.destinationCode
+  try {
+    const ok = await searchStore.submitSearch()
+    if (ok) router.push('/search')
+    else searchRouteError.value = 'Căutare eșuată. Încearcă din nou.'
+  } finally {
+    searchingRoute.value = null
+  }
+}
+
 async function quickSearch(route: typeof popularRoutes[0]) {
   searchingRoute.value = route.to
   searchRouteError.value = ''
@@ -61,6 +79,20 @@ async function quickSearch(route: typeof popularRoutes[0]) {
         <p class="text-xl text-brand-200 max-w-2xl mx-auto mb-8">{{ t('hero.subtitle') }}</p>
       </div>
       <SearchForm />
+
+      <!-- Recent searches -->
+      <div v-if="recentSearches.length" class="max-w-4xl mx-auto mt-4 px-4">
+        <div class="flex items-center gap-3 flex-wrap">
+          <span class="text-xs text-brand-300 shrink-0">Căutări recente:</span>
+          <button v-for="rs in recentSearches.slice(0, 3)" :key="rs.searchedAt"
+            @click="quickSearchRecent(rs)"
+            class="flex items-center gap-2 bg-white/10 hover:bg-white/20 backdrop-blur rounded-full px-3 py-1.5 text-xs text-white transition-colors border border-white/20">
+            <span>✈</span>
+            <span>{{ rs.originCity }} → {{ rs.destinationCity }}</span>
+            <span class="text-brand-300">{{ rs.departureDate }}</span>
+          </button>
+        </div>
+      </div>
 
       <!-- Stats -->
       <div class="max-w-2xl mx-auto mt-10 grid grid-cols-3 gap-6 text-center">
