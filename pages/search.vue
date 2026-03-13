@@ -37,6 +37,19 @@ const cheapestOfferId = computed(() => {
     parseFloat(o.total_amount) < parseFloat(min.total_amount) ? o : min
   ).id
 })
+
+// Pagination
+const PAGE_SIZE = 10
+const visibleCount = ref(PAGE_SIZE)
+const visibleOffers = computed(() => offersStore.filtered.slice(0, visibleCount.value))
+const hasMore = computed(() => visibleCount.value < offersStore.filtered.length)
+
+function loadMore() {
+  visibleCount.value += PAGE_SIZE
+}
+
+// Reset pagination when filters change
+watch(() => offersStore.filtered.length, () => { visibleCount.value = PAGE_SIZE })
 </script>
 
 <template>
@@ -141,12 +154,20 @@ const cheapestOfferId = computed(() => {
           </div>
 
           <template v-else>
-            <div v-for="offer in offersStore.filtered" :key="offer.id" class="relative">
+            <div v-for="offer in visibleOffers" :key="offer.id" class="relative">
               <div v-if="offer.id === cheapestOfferId"
                 class="absolute -top-2 left-4 z-10 bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-sm">
                 🏷 Cel mai ieftin
               </div>
               <FlightCard :offer="offer" @select="selectOffer(offer)" />
+            </div>
+
+            <!-- Load more -->
+            <div v-if="hasMore" class="text-center py-4">
+              <button @click="loadMore"
+                class="px-8 py-3 border-2 border-brand-600 text-brand-600 hover:bg-brand-50 rounded-xl font-semibold transition-colors">
+                Arată mai multe ({{ offersStore.filtered.length - visibleCount }} rămase)
+              </button>
             </div>
           </template>
         </div>

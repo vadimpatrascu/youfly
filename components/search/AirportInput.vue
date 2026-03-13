@@ -40,7 +40,17 @@ function onInput(e: Event) {
   highlightedIndex.value = -1
   if (!val) {
     emit('update:modelValue', null)
-    isOpen.value = false
+    isOpen.value = suggestions.value.length > 0
+  }
+}
+
+function onFocus() {
+  if (!props.modelValue) {
+    query.value = ''
+    isOpen.value = suggestions.value.length > 0 || true
+    // Trigger popular airports to show
+    if (!displayText.value) query.value = ' '
+    setTimeout(() => { if (query.value === ' ') query.value = '' }, 10)
   }
 }
 
@@ -80,6 +90,7 @@ onClickOutside(containerRef, () => { isOpen.value = false })
         :placeholder="placeholder"
         class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent text-gray-900 bg-white"
         @input="onInput"
+        @focus="onFocus"
         @keydown="onKeydown"
         autocomplete="off"
         spellcheck="false"
@@ -94,6 +105,9 @@ onClickOutside(containerRef, () => { isOpen.value = false })
       class="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-xl shadow-2xl overflow-hidden"
       style="max-height: 300px; overflow-y: auto;"
     >
+      <div v-if="!query" class="px-4 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wide bg-gray-50 border-b border-gray-100">
+        ⭐ Aeroporturi populare
+      </div>
       <button
         v-for="(airport, i) in suggestions"
         :key="(airport.airport_iata || airport.iata_code) + i"
