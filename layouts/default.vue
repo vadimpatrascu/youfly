@@ -5,6 +5,12 @@ const { showMdl, toggleCurrency } = useCurrency()
 
 const langNames: Record<string, string> = { ro: 'RO', ru: 'RU', en: 'EN' }
 const showLangMenu = ref(false)
+const scrolled = ref(false)
+
+if (typeof window !== 'undefined') {
+  const onScroll = () => { scrolled.value = window.scrollY > 20 }
+  window.addEventListener('scroll', onScroll, { passive: true })
+}
 
 async function switchLocale(code: string) {
   await setLocale(code)
@@ -14,8 +20,10 @@ async function switchLocale(code: string) {
 
 <template>
   <div class="min-h-screen flex flex-col bg-gray-50 font-sans">
-    <header class="bg-white border-b border-gray-200 sticky top-0 z-50">
-      <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
+    <header class="bg-white border-b border-gray-200 sticky top-0 z-50 transition-shadow duration-200"
+      :class="scrolled ? 'shadow-md' : ''">
+      <div class="max-w-6xl mx-auto px-4 flex items-center justify-between transition-all duration-200"
+        :class="scrolled ? 'h-14' : 'h-16'">
         <NuxtLink to="/" class="flex items-center gap-2">
           <span class="text-2xl font-bold text-brand-600">✈ YouFly</span>
         </NuxtLink>
@@ -68,6 +76,9 @@ async function switchLocale(code: string) {
 
     <!-- Cookie consent banner -->
     <CookieBanner />
+
+    <!-- Back to top + scroll progress -->
+    <BackToTop />
 
     <!-- Toast notifications -->
     <Teleport to="body">
