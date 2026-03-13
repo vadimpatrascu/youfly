@@ -103,6 +103,25 @@ async function quickSearch(route: typeof popularRoutes[0]) {
       </div>
     </div>
 
+    <!-- Price trends -->
+    <div class="max-w-6xl mx-auto px-4 py-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+        <PriceTrends />
+        <!-- Quick tip -->
+        <div class="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl border border-green-100 p-6">
+          <div class="text-3xl mb-3">💡</div>
+          <h3 class="font-bold text-gray-900 mb-3">Sfaturi pentru prețuri mai mici</h3>
+          <ul class="space-y-2 text-sm text-gray-700">
+            <li class="flex items-start gap-2"><span class="text-green-500 shrink-0 mt-0.5">✓</span> Rezervați cu 3-6 săptămâni înainte pentru cel mai bun preț</li>
+            <li class="flex items-start gap-2"><span class="text-green-500 shrink-0 mt-0.5">✓</span> Marți și miercuri sunt zilele cu cele mai mici prețuri</li>
+            <li class="flex items-start gap-2"><span class="text-green-500 shrink-0 mt-0.5">✓</span> Evitați zborul în ajunul sărbătorilor legale</li>
+            <li class="flex items-start gap-2"><span class="text-green-500 shrink-0 mt-0.5">✓</span> Comparați aeroporturi alternative (ex. Iași în loc de București)</li>
+            <li class="flex items-start gap-2"><span class="text-green-500 shrink-0 mt-0.5">✓</span> Zborurile cu escală sunt uneori cu 40% mai ieftine</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
     <!-- Popular routes -->
     <div class="max-w-6xl mx-auto px-4 py-12">
       <h2 class="text-2xl font-bold text-gray-900 mb-6">{{ t('popularRoutes') }}</h2>
