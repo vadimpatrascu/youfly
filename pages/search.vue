@@ -127,11 +127,17 @@ const cheapestOfferId = computed(() => {
             <button @click="router.push('/')" class="px-6 py-2 bg-brand-600 text-white rounded-xl text-sm">{{ t('results.modify') }}</button>
           </div>
 
-          <div v-else-if="!offersStore.filtered.length" class="bg-white rounded-2xl border border-gray-200 p-12 text-center">
+          <div v-else-if="!offersStore.filtered.length" class="bg-white rounded-2xl border border-gray-200 p-10 text-center">
             <div class="text-5xl mb-4">🔍</div>
             <h3 class="font-semibold text-gray-900 mb-2">{{ t('results.noFlights') }}</h3>
             <p class="text-gray-500 text-sm mb-4">{{ t('results.noFlightsDesc') }}</p>
-            <button @click="offersStore.clearFilters()" class="px-6 py-2 border border-brand-600 text-brand-600 rounded-xl text-sm hover:bg-brand-50">{{ t('results.clearFilters') }}</button>
+            <div class="flex gap-3 justify-center flex-wrap">
+              <button @click="offersStore.clearFilters()" class="px-6 py-2 border border-brand-600 text-brand-600 rounded-xl text-sm hover:bg-brand-50 transition-colors">{{ t('results.clearFilters') }}</button>
+              <button @click="router.push('/')" class="px-6 py-2 bg-brand-600 text-white rounded-xl text-sm hover:bg-brand-700 transition-colors">{{ t('results.modify') }}</button>
+            </div>
+            <p v-if="offersStore.all.length > 0" class="text-xs text-gray-400 mt-4">
+              {{ offersStore.all.length }} zboruri disponibile — încearcă să ajustezi filtrele
+            </p>
           </div>
 
           <template v-else>

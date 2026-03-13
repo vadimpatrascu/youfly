@@ -19,6 +19,14 @@ const cardName = ref('')
 const isProcessing = ref(false)
 const { formatPrice, formatTime, stopsLabel } = useFormatters()
 
+
+function cardBrand(num: string): string {
+  const n = num.replace(/s/g, '')
+  if (n.startsWith('4')) return 'VISA'
+  if (/^5[1-5]/.test(n) || /^2[2-7]/.test(n)) return 'MC'
+  if (/^3[47]/.test(n)) return 'AMEX'
+  return '••••'
+}
 async function pay() {
   if (!cardName.value.trim()) return
   isProcessing.value = true
@@ -62,6 +70,7 @@ function formatExpiry(e: Event) {
           <div class="absolute inset-0 opacity-10" style="background: radial-gradient(circle at 70% 30%, white 0%, transparent 60%)"></div>
           <div class="flex justify-between items-start relative z-10">
             <span class="text-sm font-medium opacity-80">YouFly</span>
+            <span class="font-bold text-sm tracking-widest opacity-90">{{ cardNumber ? cardBrand(cardNumber) : '' }}</span>
             <span class="text-3xl">✈</span>
           </div>
           <div class="font-mono text-xl tracking-[0.2em] relative z-10">{{ cardNumber || '•••• •••• •••• ••••' }}</div>
