@@ -4,7 +4,8 @@ import type { SimplifiedOffer } from '~/stores/offers'
 const props = defineProps<{ offer: SimplifiedOffer }>()
 const emit = defineEmits<{ select: [] }>()
 const { t } = useI18n()
-const { formatTime, formatDuration, formatPrice } = useFormatters()
+const { formatTime, formatDuration } = useFormatters()
+const { formatWithMdl } = useCurrency()
 
 const expanded = ref(false)
 
@@ -86,7 +87,7 @@ function layoverMins(arr: string, dep: string): number {
       <div class="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between gap-3">
         <div class="flex items-center gap-4">
           <div>
-            <div class="text-2xl font-bold text-brand-600">{{ formatPrice(offer.total_amount, offer.total_currency) }}</div>
+            <div class="text-2xl font-bold text-brand-600">{{ formatWithMdl(offer.total_amount, offer.total_currency) }}</div>
             <div class="text-xs text-gray-400">{{ t('flightCard.perPerson') }}</div>
           </div>
           <button @click="expanded = !expanded" class="text-xs text-brand-600 hover:underline hidden md:block">

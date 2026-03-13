@@ -1,6 +1,7 @@
 <script setup lang="ts">
 const { locale, locales, setLocale, t } = useI18n()
 const { toasts, remove } = useToast()
+const { showMdl, toggleCurrency } = useCurrency()
 
 const langNames: Record<string, string> = { ro: 'RO', ru: 'RU', en: 'EN' }
 const showLangMenu = ref(false)
@@ -22,6 +23,14 @@ async function switchLocale(code: string) {
           <NuxtLink to="/" class="text-sm font-medium text-gray-600 hover:text-brand-600 transition-colors hidden sm:block">{{ t('nav.search') }}</NuxtLink>
           <NuxtLink to="/my-booking" class="text-sm font-medium text-gray-600 hover:text-brand-600 transition-colors hidden sm:block">{{ t('nav.myBooking') }}</NuxtLink>
           <NuxtLink to="/faq" class="text-sm font-medium text-gray-600 hover:text-brand-600 transition-colors hidden md:block">FAQ</NuxtLink>
+
+          <!-- MDL toggle -->
+          <button @click="toggleCurrency"
+            class="hidden sm:flex items-center gap-1 px-2.5 py-1.5 rounded-lg border text-xs font-semibold transition-colors"
+            :class="showMdl ? 'bg-brand-600 text-white border-brand-600' : 'border-gray-300 text-gray-600 hover:bg-gray-50'"
+            title="Schimbă valuta">
+            {{ showMdl ? 'MDL' : 'EUR' }}
+          </button>
 
           <!-- Language switcher -->
           <div class="relative">
