@@ -162,13 +162,24 @@ watch(() => offersStore.filtered.length, () => { visibleCount.value = PAGE_SIZE 
             <div class="text-5xl mb-4">🔍</div>
             <h3 class="font-semibold text-gray-900 mb-2">{{ t('results.noFlights') }}</h3>
             <p class="text-gray-500 text-sm mb-4">{{ t('results.noFlightsDesc') }}</p>
-            <div class="flex gap-3 justify-center flex-wrap">
+            <div class="flex gap-3 justify-center flex-wrap mb-5">
               <button @click="offersStore.clearFilters()" class="px-6 py-2 border border-brand-600 text-brand-600 rounded-xl text-sm hover:bg-brand-50 transition-colors">{{ t('results.clearFilters') }}</button>
               <button @click="router.push('/')" class="px-6 py-2 bg-brand-600 text-white rounded-xl text-sm hover:bg-brand-700 transition-colors">{{ t('results.modify') }}</button>
             </div>
-            <p v-if="offersStore.all.length > 0" class="text-xs text-gray-400 mt-4">
+            <p v-if="offersStore.all.length > 0" class="text-xs text-gray-400 mb-4">
               {{ offersStore.all.length }} zboruri disponibile — încearcă să ajustezi filtrele
             </p>
+            <!-- Alternative date suggestions when truly no results -->
+            <div v-if="!offersStore.all.length" class="border-t pt-5">
+              <p class="text-sm text-gray-500 mb-3">Încearcă date alternative:</p>
+              <div class="flex gap-2 justify-center flex-wrap">
+                <button v-for="d in [1, 2, 3, 7, 14]" :key="d"
+                  @click="() => { const dd = new Date(searchStore.departureDate || Date.now()); dd.setDate(dd.getDate() + d); searchStore.departureDate = dd.toISOString().split('T')[0] }"
+                  class="px-3 py-1.5 text-xs border border-gray-200 rounded-full hover:border-brand-400 text-gray-600 transition-colors">
+                  +{{ d }} {{ d === 1 ? 'zi' : 'zile' }}
+                </button>
+              </div>
+            </div>
           </div>
 
           <template v-else>
