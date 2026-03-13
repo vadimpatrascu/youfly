@@ -20,6 +20,7 @@ export const useOffersStore = defineStore('offers', {
       stops: [] as string[],
       airlines: [] as string[],
       maxDuration: null as number | null,
+      timeSlots: [] as string[], // 'morning'|'afternoon'|'evening'|'night'
     },
     sortBy: 'price' as 'price' | 'duration' | 'departure',
     isLoading: false,
@@ -106,6 +107,15 @@ export const useOffersStore = defineStore('offers', {
           )
         )
       }
+      if (this.filters.timeSlots.length) {
+        results = results.filter(o => {
+          const depStr = o.slices[0]?.segments?.[0]?.departing_at || o.slices[0]?.departing_at
+          if (!depStr) return true
+          const hour = new Date(depStr).getHours()
+          const slot = hour < 6 ? 'night' : hour < 12 ? 'morning' : hour < 18 ? 'afternoon' : 'evening'
+          return this.filters.timeSlots.includes(slot)
+        })
+      }
       if (this.filters.maxDuration !== null) {
         results = results.filter(o => {
           const totalMins = o.slices.reduce((sum: number, s: any) => sum + (s.duration_minutes || 0), 0)
@@ -131,7 +141,7 @@ export const useOffersStore = defineStore('offers', {
       this.filtered = results
     },
     clearFilters() {
-      this.filters = { maxPrice: null, stops: [], airlines: [], maxDuration: null }
+      this.filters = { maxPrice: null, stops: [], airlines: [], maxDuration: null, timeSlots: [] }
       this.sortBy = 'price'
       this.applyFilters()
     }

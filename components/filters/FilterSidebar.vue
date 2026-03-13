@@ -27,6 +27,13 @@ function toggleAirline(val: string) {
   store.applyFilters()
 }
 
+function toggleTimeSlot(val: string) {
+  const idx = store.filters.timeSlots.indexOf(val)
+  if (idx === -1) store.filters.timeSlots.push(val)
+  else store.filters.timeSlots.splice(idx, 1)
+  store.applyFilters()
+}
+
 const maxDurationAvailable = computed(() => {
   if (!store.all.length) return 24
   const max = Math.max(...store.all.map(o =>
@@ -130,6 +137,27 @@ const histogram = computed(() => {
       </div>
     </div>
 
+    <!-- Departure time -->
+    <div>
+      <h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Ora plecării</h4>
+      <div class="grid grid-cols-2 gap-1.5">
+        <button v-for="slot in [
+          { v: 'morning', l: '🌅 Dimineață', sub: '6–12' },
+          { v: 'afternoon', l: '☀️ Prânz', sub: '12–18' },
+          { v: 'evening', l: '🌆 Seară', sub: '18–24' },
+          { v: 'night', l: '🌙 Noapte', sub: '0–6' },
+        ]" :key="slot.v"
+          @click="toggleTimeSlot(slot.v)"
+          class="flex flex-col items-center py-2 px-1 rounded-xl border text-xs transition-colors"
+          :class="store.filters.timeSlots.includes(slot.v)
+            ? 'bg-brand-50 border-brand-400 text-brand-700 font-semibold'
+            : 'border-gray-200 text-gray-600 hover:border-gray-300'">
+          <span>{{ slot.l }}</span>
+          <span class="text-gray-400 text-[10px]">{{ slot.sub }}</span>
+        </button>
+      </div>
+    </div>
+
     <!-- Airlines -->
     <div v-if="store.uniqueAirlines.length">
       <h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">{{ t('filters.airlines') }}</h4>
@@ -145,9 +173,9 @@ const histogram = computed(() => {
     </div>
 
     <!-- Active filters count -->
-    <div v-if="store.filters.stops.length || store.filters.airlines.length || store.filters.maxPrice"
+    <div v-if="store.filters.stops.length || store.filters.airlines.length || store.filters.maxPrice || store.filters.timeSlots.length || store.filters.maxDuration"
       class="bg-brand-50 border border-brand-100 rounded-xl p-3 text-xs text-brand-700 text-center">
-      {{ (store.filters.stops.length + store.filters.airlines.length + (store.filters.maxPrice ? 1 : 0)) }} filtru(e) activ(e)
+      {{ (store.filters.stops.length + store.filters.airlines.length + (store.filters.maxPrice ? 1 : 0) + (store.filters.timeSlots.length ? 1 : 0) + (store.filters.maxDuration ? 1 : 0)) }} filtru(e) activ(e)
       <button @click="store.clearFilters(); localMax = priceRange.max" class="ml-2 underline">Șterge</button>
     </div>
   </div>

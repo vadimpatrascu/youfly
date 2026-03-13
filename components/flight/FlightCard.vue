@@ -9,6 +9,7 @@ const { formatWithMdl } = useCurrency()
 
 const expanded = ref(false)
 const linkCopied = ref(false)
+const { toggle: toggleCompare, isSelected: isCompareSelected, compareList } = useCompare()
 
 function copyLink() {
   const text = `YouFly: ${props.offer.slices[0]?.origin?.iata_code} → ${props.offer.slices[props.offer.slices.length-1]?.destination?.iata_code} — ${formatWithMdl(props.offer.total_amount, props.offer.total_currency)}`
@@ -122,6 +123,15 @@ function layoverMins(arr: string, dep: string): number {
             class="p-2.5 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors text-gray-400 hover:text-gray-600">
             <span v-if="linkCopied" class="text-green-500">✓</span>
             <span v-else>🔗</span>
+          </button>
+          <button @click.stop="toggleCompare(offer)"
+            :disabled="!isCompareSelected(offer.id) && compareList.length >= 2"
+            :title="isCompareSelected(offer.id) ? 'Scoate din comparație' : 'Adaugă la comparație'"
+            class="p-2.5 border rounded-xl transition-colors text-sm"
+            :class="isCompareSelected(offer.id)
+              ? 'bg-purple-100 border-purple-400 text-purple-700'
+              : 'border-gray-200 text-gray-400 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed'">
+            ⚖
           </button>
           <button @click="emit('select')"
             class="px-6 py-3 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-xl transition-colors shadow-sm">

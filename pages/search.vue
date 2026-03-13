@@ -75,9 +75,9 @@ watch(() => offersStore.filtered.length, () => { visibleCount.value = PAGE_SIZE 
         </button>
         <button @click="showFilters = !showFilters" class="md:hidden px-4 py-2.5 text-sm bg-brand-600 text-white rounded-xl shrink-0 flex items-center gap-1.5">
           {{ t('results.filters') }}
-          <span v-if="offersStore.filters.stops.length + offersStore.filters.airlines.length + (offersStore.filters.maxPrice ? 1 : 0) + (offersStore.filters.maxDuration ? 1 : 0) > 0"
+          <span v-if="offersStore.filters.stops.length + offersStore.filters.airlines.length + (offersStore.filters.maxPrice ? 1 : 0) + (offersStore.filters.maxDuration ? 1 : 0) + offersStore.filters.timeSlots.length > 0"
             class="bg-white text-brand-600 text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
-            {{ offersStore.filters.stops.length + offersStore.filters.airlines.length + (offersStore.filters.maxPrice ? 1 : 0) + (offersStore.filters.maxDuration ? 1 : 0) }}
+            {{ offersStore.filters.stops.length + offersStore.filters.airlines.length + (offersStore.filters.maxPrice ? 1 : 0) + (offersStore.filters.maxDuration ? 1 : 0) + offersStore.filters.timeSlots.length }}
           </span>
         </button>
       </div>
@@ -128,6 +128,7 @@ watch(() => offersStore.filtered.length, () => { visibleCount.value = PAGE_SIZE 
         </button>
       </div>
 
+      <FlightCompareDrawer @select="selectOffer($event)" />
       <div class="flex gap-6">
         <div class="hidden md:block w-64 shrink-0 self-start sticky top-24">
           <FilterSidebar />

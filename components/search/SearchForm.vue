@@ -32,6 +32,26 @@ async function onSubmit() {
 
 const today = new Date().toISOString().split('T')[0]
 
+function addDays(n: number) {
+  const d = new Date()
+  d.setDate(d.getDate() + n)
+  return d.toISOString().split('T')[0]
+}
+
+function nextWeekday(day: number) { // 0=Sun, 5=Fri, 6=Sat
+  const d = new Date()
+  const diff = (day - d.getDay() + 7) % 7 || 7
+  d.setDate(d.getDate() + diff)
+  return d.toISOString().split('T')[0]
+}
+
+const quickDates = computed(() => [
+  { label: 'Azi', value: today },
+  { label: 'Mâine', value: addDays(1) },
+  { label: 'Vineri', value: nextWeekday(5) },
+  { label: 'Weekend', value: nextWeekday(6) },
+])
+
 const canSearch = computed(() =>
   searchStore.origin &&
   searchStore.destination &&
@@ -90,6 +110,15 @@ const cabinOptions = computed(() => [
         <label class="block text-sm font-medium text-gray-700 mb-1">{{ t('search.departure') }}</label>
         <input type="date" v-model="searchStore.departureDate" :min="today"
           class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 text-gray-900" />
+        <div class="flex gap-1.5 mt-1.5 flex-wrap">
+          <button v-for="qd in quickDates" :key="qd.label"
+            @click="searchStore.departureDate = qd.value"
+            type="button"
+            class="px-2.5 py-1 text-xs rounded-full border transition-colors"
+            :class="searchStore.departureDate === qd.value ? 'bg-brand-600 text-white border-brand-600' : 'border-gray-200 text-gray-500 hover:border-brand-300 hover:text-brand-600'">
+            {{ qd.label }}
+          </button>
+        </div>
       </div>
       <div v-if="tripType === 'return'">
         <label class="block text-sm font-medium text-gray-700 mb-1">{{ t('search.returnDate') }}</label>
