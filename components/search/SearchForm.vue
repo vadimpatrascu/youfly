@@ -3,6 +3,7 @@ import { useSearchStore } from '~/stores/search'
 const { t } = useI18n()
 const searchStore = useSearchStore()
 const router = useRouter()
+const { success, error } = useToast()
 
 const tripType = computed({
   get: () => searchStore.tripType,
@@ -22,7 +23,11 @@ function swapAirports() {
 
 async function onSubmit() {
   const ok = await searchStore.submitSearch()
-  if (ok) router.push('/search')
+  if (ok) {
+    router.push('/search')
+  } else if (searchStore.searchError) {
+    error(searchStore.searchError)
+  }
 }
 
 const today = new Date().toISOString().split('T')[0]

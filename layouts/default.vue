@@ -1,5 +1,6 @@
 <script setup lang="ts">
 const { locale, locales, setLocale, t } = useI18n()
+const { toasts, remove } = useToast()
 
 const langNames: Record<string, string> = { ro: 'RO', ru: 'RU', en: 'EN' }
 const showLangMenu = ref(false)
@@ -52,6 +53,15 @@ async function switchLocale(code: string) {
     <main class="flex-1">
       <slot />
     </main>
+
+    <!-- Toast notifications -->
+    <Teleport to="body">
+      <div class="fixed top-20 right-4 z-[200] space-y-2 pointer-events-none">
+        <div v-for="toast in toasts" :key="toast.id" class="pointer-events-auto">
+          <Toast :message="toast.message" :type="toast.type" :duration="toast.duration" @close="remove(toast.id)" />
+        </div>
+      </div>
+    </Teleport>
 
     <!-- Mobile bottom nav -->
     <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-40 md:hidden">
