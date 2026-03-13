@@ -73,8 +73,12 @@ watch(() => offersStore.filtered.length, () => { visibleCount.value = PAGE_SIZE 
           </div>
           <span class="text-gray-400 text-xs ml-auto shrink-0">{{ t('results.modify') }}</span>
         </button>
-        <button @click="showFilters = !showFilters" class="md:hidden px-4 py-2.5 text-sm bg-brand-600 text-white rounded-xl shrink-0">
+        <button @click="showFilters = !showFilters" class="md:hidden px-4 py-2.5 text-sm bg-brand-600 text-white rounded-xl shrink-0 flex items-center gap-1.5">
           {{ t('results.filters') }}
+          <span v-if="offersStore.filters.stops.length + offersStore.filters.airlines.length + (offersStore.filters.maxPrice ? 1 : 0) + (offersStore.filters.maxDuration ? 1 : 0) > 0"
+            class="bg-white text-brand-600 text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+            {{ offersStore.filters.stops.length + offersStore.filters.airlines.length + (offersStore.filters.maxPrice ? 1 : 0) + (offersStore.filters.maxDuration ? 1 : 0) }}
+          </span>
         </button>
       </div>
     </div>

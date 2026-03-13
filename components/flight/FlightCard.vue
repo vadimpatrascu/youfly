@@ -8,6 +8,15 @@ const { formatTime, formatDuration } = useFormatters()
 const { formatWithMdl } = useCurrency()
 
 const expanded = ref(false)
+const linkCopied = ref(false)
+
+function copyLink() {
+  const text = `YouFly: ${props.offer.slices[0]?.origin?.iata_code} → ${props.offer.slices[props.offer.slices.length-1]?.destination?.iata_code} — ${formatWithMdl(props.offer.total_amount, props.offer.total_currency)}`
+  navigator.clipboard.writeText(text).then(() => {
+    linkCopied.value = true
+    setTimeout(() => { linkCopied.value = false }, 2000)
+  })
+}
 
 function airlineLogo(iata: string) {
   if (!iata) return ''
@@ -95,10 +104,17 @@ function layoverMins(arr: string, dep: string): number {
             <span v-else>&#9660; Detalii zbor</span>
           </button>
         </div>
-        <button @click="emit('select')"
-          class="px-6 py-3 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-xl transition-colors shadow-sm shrink-0">
-          {{ t('flightCard.select') }}
-        </button>
+        <div class="flex items-center gap-2 shrink-0">
+          <button @click.stop="copyLink" :title="linkCopied ? 'Copiat!' : 'Copiază link'"
+            class="p-2.5 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors text-gray-400 hover:text-gray-600">
+            <span v-if="linkCopied" class="text-green-500">✓</span>
+            <span v-else>🔗</span>
+          </button>
+          <button @click="emit('select')"
+            class="px-6 py-3 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-xl transition-colors shadow-sm">
+            {{ t('flightCard.select') }}
+          </button>
+        </div>
       </div>
     </div>
 
