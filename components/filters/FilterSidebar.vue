@@ -27,6 +27,20 @@ function toggleAirline(val: string) {
   store.applyFilters()
 }
 
+const maxDurationAvailable = computed(() => {
+  if (!store.all.length) return 24
+  const max = Math.max(...store.all.map(o =>
+    o.slices.reduce((s: number, sl: any) => s + (sl.duration_minutes || 0), 0) / 60
+  ))
+  return Math.ceil(max)
+})
+
+function updateDuration(e: Event) {
+  const val = parseInt((e.target as HTMLInputElement).value)
+  store.filters.maxDuration = val >= maxDurationAvailable.value ? null : val
+  store.applyFilters()
+}
+
 // Price histogram: 8 buckets
 const histogram = computed(() => {
   const all = store.all
@@ -103,14 +117,29 @@ const histogram = computed(() => {
       </div>
     </div>
 
+    <!-- Max duration -->
+    <div v-if="store.all.length">
+      <h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
+        {{ t('filters.duration') }}: <span class="text-brand-600 font-bold">{{ store.filters.maxDuration ? store.filters.maxDuration + 'h' : t('filters.any') }}</span>
+      </h4>
+      <input type="range" min="1" :max="maxDurationAvailable" :value="store.filters.maxDuration || maxDurationAvailable"
+        @input="updateDuration" class="w-full accent-brand-600" />
+      <div class="flex justify-between text-xs text-gray-400 mt-1">
+        <span>1h</span>
+        <span>{{ maxDurationAvailable }}h</span>
+      </div>
+    </div>
+
     <!-- Airlines -->
     <div v-if="store.uniqueAirlines.length">
       <h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">{{ t('filters.airlines') }}</h4>
       <div class="space-y-2 max-h-48 overflow-y-auto pr-1">
-        <label v-for="a in store.uniqueAirlines" :key="a" class="flex items-center gap-2 cursor-pointer group">
-          <input type="checkbox" :checked="store.filters.airlines.includes(a)" @change="toggleAirline(a)"
+        <label v-for="a in store.uniqueAirlinesWithCode" :key="a.name" class="flex items-center gap-2 cursor-pointer group">
+          <input type="checkbox" :checked="store.filters.airlines.includes(a.name)" @change="toggleAirline(a.name)"
             class="rounded border-gray-300 text-brand-600 focus:ring-brand-500" />
-          <span class="text-sm text-gray-700 group-hover:text-gray-900 truncate">{{ a }}</span>
+          <img v-if="a.iata" :src="`https://assets.duffel.com/img/airlines/for-light-background/${a.iata}.svg`"
+            class="w-5 h-5 object-contain shrink-0" @error="($event.target as HTMLElement).style.display='none'" />
+          <span class="text-sm text-gray-700 group-hover:text-gray-900 truncate">{{ a.name }}</span>
         </label>
       </div>
     </div>

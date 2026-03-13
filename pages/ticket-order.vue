@@ -58,7 +58,7 @@ function validate(): boolean {
 function onSubmit() {
   if (!validate()) return
   bookingStore.setPassengers(passengerForms.value)
-  router.push('/payment')
+  router.push('/seat-selection')
 }
 
 const { formatPrice, formatTime, stopsLabel } = useFormatters()

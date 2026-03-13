@@ -1,11 +1,12 @@
 <script setup lang="ts">
-const props = defineProps<{ current: 1 | 2 | 3 }>()
+const props = defineProps<{ current: 1 | 2 | 3 | 4 }>()
 const { t } = useI18n()
 
 const steps = computed(() => [
   { n: 1, label: t('steps.passengers') },
-  { n: 2, label: t('steps.payment') },
-  { n: 3, label: t('steps.confirm') },
+  { n: 2, label: t('steps.seats') },
+  { n: 3, label: t('steps.payment') },
+  { n: 4, label: t('steps.confirm') },
 ])
 </script>
 
@@ -32,7 +33,7 @@ const steps = computed(() => [
           </div>
         </div>
         <div v-if="i < steps.length - 1"
-          class="flex-1 h-0.5 mx-2 max-w-[80px]"
+          class="flex-1 h-0.5 mx-2 max-w-[60px]"
           :class="step.n < current ? 'bg-brand-600' : 'bg-gray-200'"
         />
       </template>

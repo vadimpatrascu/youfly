@@ -37,6 +37,19 @@ export const useOffersStore = defineStore('offers', {
       })
       return Array.from(airlines).sort()
     },
+    uniqueAirlinesWithCode: (state) => {
+      const airlines = new Map<string, string>()
+      state.all.forEach(offer => {
+        offer.slices?.forEach((slice: any) => {
+          slice.segments?.forEach((seg: any) => {
+            if (seg.carrier_name && !airlines.has(seg.carrier_name)) {
+              airlines.set(seg.carrier_name, seg.carrier_iata || '')
+            }
+          })
+        })
+      })
+      return Array.from(airlines.entries()).map(([name, iata]) => ({ name, iata })).sort((a, b) => a.name.localeCompare(b.name))
+    },
     priceRange: (state) => {
       if (!state.all.length) return { min: 0, max: 9999 }
       const prices = state.all.map(o => parseFloat(o.total_amount))

@@ -45,7 +45,7 @@ function shortDateCompact(iso: string) {
 
 <template>
   <div>
-    <BookingSteps :current="3" />
+    <BookingSteps :current="4" />
 
     <div class="max-w-2xl mx-auto px-4 py-8">
       <!-- Success header -->

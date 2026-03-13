@@ -12,7 +12,7 @@
   "features": { "airlines": "Sute de companii aeriene", "airlinesDesc": "Caută și compară zboruri de la marile companii aeriene din întreaga lume.", "prices": "Cele mai bune prețuri", "pricesDesc": "Prețuri în timp real, fără taxe ascunse. Ce vezi, asta plătești.", "fast": "Rezervare rapidă", "fastDesc": "Rezervă zborul în mai puțin de 5 minute cu procesul nostru simplificat." },
   "popularRoutes": "Rute populare",
   "from": "De la",
-  "steps": { "passengers": "Pasageri", "payment": "Plată", "confirm": "Confirmare" },
+  "steps": { "passengers": "Pasageri", "seats": "Locuri", "payment": "Plată", "confirm": "Confirmare" },
   "footer": { "rights": "Toate drepturile rezervate.", "tagline": "Caută și rezervă zboruri rapid și simplu.", "links": "Linkuri utile", "contact": "Contact", "phone": "+373 22 000 000", "email": "support{'@'}youfly.md", "terms": "Termeni și condiții", "privacy": "Politica de confidențialitate", "myBooking": "Verifică rezervarea", "powered": "Alimentat de Duffel" },
   "errors": { "searchFailed": "Căutarea a eșuat. Vă rugăm încercați din nou.", "loadFailed": "Eroare la încărcarea zborurilor" }
 }

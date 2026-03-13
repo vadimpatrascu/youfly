@@ -49,7 +49,7 @@ function formatExpiry(e: Event) {
 
 <template>
   <div>
-    <BookingSteps :current="2" />
+    <BookingSteps :current="3" />
     <div class="max-w-4xl mx-auto px-4 py-6">
     <div class="flex items-center gap-3 mb-8">
       <button @click="router.back()" class="text-gray-500 hover:text-gray-700 text-sm">{{ t('payment.back') }}</button>
