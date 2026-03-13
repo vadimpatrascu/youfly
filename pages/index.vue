@@ -106,5 +106,27 @@ async function quickSearch(route: typeof popularRoutes[0]) {
         <span class="text-2xl font-bold tracking-wide">LOT</span>
       </div>
     </div>
-  </div>
+  
+    <!-- How it works -->
+    <div class="max-w-6xl mx-auto px-4 py-12 border-t border-gray-100">
+      <h2 class="text-2xl font-bold text-gray-900 mb-8 text-center">Cum funcționează</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="text-center">
+          <div class="w-12 h-12 bg-brand-100 text-brand-600 rounded-full flex items-center justify-center text-xl font-bold mx-auto mb-4">1</div>
+          <h3 class="font-semibold text-gray-900 mb-2">Caută zboruri</h3>
+          <p class="text-gray-500 text-sm">Introdu aeroportul de plecare, destinația și datele de călătorie.</p>
+        </div>
+        <div class="text-center">
+          <div class="w-12 h-12 bg-brand-100 text-brand-600 rounded-full flex items-center justify-center text-xl font-bold mx-auto mb-4">2</div>
+          <h3 class="font-semibold text-gray-900 mb-2">Compară prețurile</h3>
+          <p class="text-gray-500 text-sm">Filtrează după preț, escale, companie aeriană și durata zborului.</p>
+        </div>
+        <div class="text-center">
+          <div class="w-12 h-12 bg-brand-100 text-brand-600 rounded-full flex items-center justify-center text-xl font-bold mx-auto mb-4">3</div>
+          <h3 class="font-semibold text-gray-900 mb-2">Rezervă în câteva minute</h3>
+          <p class="text-gray-500 text-sm">Completează datele pasagerilor și finalizează rezervarea rapid și sigur.</p>
+        </div>
+      </div>
+    </div>
+</div>
 </template>
