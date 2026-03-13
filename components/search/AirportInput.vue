@@ -98,7 +98,11 @@ onClickOutside(containerRef, () => { isOpen.value = false })
       <div v-if="isLoading" class="absolute right-3 top-1/2 -translate-y-1/2">
         <div class="w-4 h-4 border-2 border-brand-500 border-t-transparent rounded-full animate-spin"></div>
       </div>
-      <div v-else-if="modelValue" class="absolute right-3 top-1/2 -translate-y-1/2 text-green-500 font-bold">&#10003;</div>
+      <template v-else-if="modelValue">
+        <button @click="emit('update:modelValue', null); displayText = ''; query.value = ''"
+          class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-300 hover:text-gray-500 transition-colors text-lg leading-none"
+          title="Șterge">✕</button>
+      </template>
     </div>
     <div
       v-if="isOpen && suggestions.length"

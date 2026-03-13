@@ -76,6 +76,20 @@ const deals = [
 
 const searchingDeal = ref<string | null>(null)
 
+// Flash sale countdown — resets daily at midnight
+const flashCountdown = ref('')
+function updateFlash() {
+  const now = new Date()
+  const midnight = new Date(now)
+  midnight.setHours(24, 0, 0, 0)
+  const diff = midnight.getTime() - now.getTime()
+  const h = Math.floor(diff / 3600000)
+  const m = Math.floor((diff % 3600000) / 60000)
+  const s = Math.floor((diff % 60000) / 1000)
+  flashCountdown.value = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`
+}
+onMounted(() => { updateFlash(); setInterval(updateFlash, 1000) })
+
 async function bookDeal(deal: typeof deals[0]) {
   searchingDeal.value = deal.to
   searchStore.origin = { iata_code: 'MD', airport_iata: deal.from, name: deal.fromCity + ' Airport', city_name: deal.fromCity, country_code: 'MD' }
@@ -94,6 +108,16 @@ async function bookDeal(deal: typeof deals[0]) {
 </script>
 
 <template>
+  <div>
+    <!-- Flash sale banner -->
+    <div class="bg-gradient-to-r from-red-600 to-rose-600 text-white py-3 px-4 text-center">
+      <div class="flex items-center justify-center gap-3 flex-wrap text-sm font-semibold">
+        <span>🔥 FLASH SALE — Oferte limitate!</span>
+        <span class="bg-white/20 px-3 py-1 rounded-full font-mono text-lg tracking-widest">{{ flashCountdown }}</span>
+        <span class="text-red-200 text-xs">Se resetează la miezul nopții</span>
+      </div>
+    </div>
+
   <div class="max-w-6xl mx-auto px-4 py-8">
     <div class="text-center mb-10">
       <div class="text-4xl mb-3">🔥</div>
@@ -146,5 +170,6 @@ async function bookDeal(deal: typeof deals[0]) {
       <p class="text-amber-800 font-medium mb-1">Prețurile sunt orientative și se pot schimba</p>
       <p class="text-amber-700 text-sm">Prețurile afișate sunt cele mai mici disponibile în perioada respectivă. Prețul final poate varia în funcție de disponibilitate și data exactă de călătorie.</p>
     </div>
+  </div>
   </div>
 </template>
