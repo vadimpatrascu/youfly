@@ -29,7 +29,7 @@ export const useSearchStore = defineStore('search', {
       this.isSearching = true
       this.searchError = null
       try {
-        const res = await $fetch<{ offerRequestId: string }>('/api/search', {
+        const res = await $fetch<{ offerRequestId: string; offers: any[] }>('/api/search', {
           method: 'POST',
           body: {
             origin: this.origin.airport_iata || this.origin.iata_code,
@@ -43,6 +43,10 @@ export const useSearchStore = defineStore('search', {
           }
         })
         this.offerRequestId = res.offerRequestId
+        // Store offers directly in offers store (no second fetch needed)
+        const { useOffersStore } = await import('./offers')
+        const offersStore = useOffersStore()
+        offersStore.setOffers(res.offers || [])
         return true
       } catch (e: any) {
         this.searchError = e?.data?.message || 'Căutarea a eșuat. Vă rugăm încercați din nou.'

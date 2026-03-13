@@ -13,7 +13,11 @@ const router = useRouter()
 
 onMounted(async () => {
   if (!searchStore.offerRequestId) return router.push('/')
-  await offersStore.loadOffers(searchStore.offerRequestId)
+  // Offers are already in store from the search POST (return_offers: true)
+  // loadOffers is a no-op if offers already loaded
+  if (offersStore.all.length === 0) {
+    await offersStore.loadOffers(searchStore.offerRequestId)
+  }
 })
 
 function selectOffer(offer: any) {

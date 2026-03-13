@@ -12,22 +12,23 @@ const features = computed(() => [
   { icon: '⚡', title: t('features.fast'), desc: t('features.fastDesc') },
 ])
 
-// Popular routes from Chisinau (like sky.md)
+// Popular routes from Chisinau
+// Duffel uses RMO for Chisinau International Airport
 const popularRoutes = [
-  { from: 'KIV', fromCity: 'Chișinău', to: 'OTP', toCity: 'București', flag: '🇷🇴', price: '35' },
-  { from: 'KIV', fromCity: 'Chișinău', to: 'IST', toCity: 'Istanbul', flag: '🇹🇷', price: '32' },
-  { from: 'KIV', fromCity: 'Chișinău', to: 'LTN', toCity: 'Londra', flag: '🇬🇧', price: '39' },
-  { from: 'KIV', fromCity: 'Chișinău', to: 'VIE', toCity: 'Viena', flag: '🇦🇹', price: '39' },
-  { from: 'KIV', fromCity: 'Chișinău', to: 'BCN', toCity: 'Barcelona', flag: '🇪🇸', price: '31' },
-  { from: 'KIV', fromCity: 'Chișinău', to: 'CDG', toCity: 'Paris', flag: '🇫🇷', price: '73' },
-  { from: 'KIV', fromCity: 'Chișinău', to: 'MXP', toCity: 'Milano', flag: '🇮🇹', price: '59' },
-  { from: 'KIV', fromCity: 'Chișinău', to: 'TLV', toCity: 'Tel Aviv', flag: '🇮🇱', price: '45' },
+  { from: 'RMO', fromCity: 'Chișinău', to: 'OTP', toCity: 'București', flag: '🇷🇴', price: '35' },
+  { from: 'RMO', fromCity: 'Chișinău', to: 'IST', toCity: 'Istanbul', flag: '🇹🇷', price: '32' },
+  { from: 'RMO', fromCity: 'Chișinău', to: 'LTN', toCity: 'Londra', flag: '🇬🇧', price: '39' },
+  { from: 'RMO', fromCity: 'Chișinău', to: 'VIE', toCity: 'Viena', flag: '🇦🇹', price: '39' },
+  { from: 'RMO', fromCity: 'Chișinău', to: 'BCN', toCity: 'Barcelona', flag: '🇪🇸', price: '31' },
+  { from: 'RMO', fromCity: 'Chișinău', to: 'CDG', toCity: 'Paris', flag: '🇫🇷', price: '73' },
+  { from: 'RMO', fromCity: 'Chișinău', to: 'MXP', toCity: 'Milano', flag: '🇮🇹', price: '59' },
+  { from: 'RMO', fromCity: 'Chișinău', to: 'TLV', toCity: 'Tel Aviv', flag: '🇮🇱', price: '45' },
 ]
 
 // Quick search from popular route
 async function quickSearch(route: typeof popularRoutes[0]) {
   // Set search params
-  searchStore.origin = { iata_code: 'MD', airport_iata: route.from, name: `${route.fromCity} Airport`, city_name: route.fromCity, country_code: 'MD' }
+  searchStore.origin = { iata_code: 'MD', airport_iata: route.from, name: `${route.fromCity} International Airport`, city_name: route.fromCity, country_code: 'MD' }
   searchStore.destination = { iata_code: '', airport_iata: route.to, name: `${route.toCity} Airport`, city_name: route.toCity, country_code: '' }
 
   // Set departure date to next Friday

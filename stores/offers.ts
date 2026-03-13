@@ -44,7 +44,20 @@ export const useOffersStore = defineStore('offers', {
     },
   },
   actions: {
+    setOffers(offers: SimplifiedOffer[]) {
+      this.all = offers
+      this.filtered = []
+      this.error = null
+      this.isLoading = false
+      this.applyFilters()
+    },
     async loadOffers(offerRequestId: string) {
+      // Offers are now returned inline from /api/search
+      // This is a fallback if navigating directly to /search without store data
+      if (this.all.length > 0) {
+        this.isLoading = false
+        return
+      }
       this.isLoading = true
       this.error = null
       this.all = []
@@ -54,7 +67,7 @@ export const useOffersStore = defineStore('offers', {
         this.all = data
         this.applyFilters()
       } catch (e: any) {
-        this.error = e?.data?.message || 'Failed to load flights'
+        this.error = e?.data?.message || 'Nu s-au putut încărca zborurile'
       } finally {
         this.isLoading = false
       }
