@@ -26,6 +26,28 @@ function toggleAirline(val: string) {
   else store.filters.airlines.splice(idx, 1)
   store.applyFilters()
 }
+
+// Price histogram: 8 buckets
+const histogram = computed(() => {
+  const all = store.all
+  if (!all.length) return []
+  const min = priceRange.value.min
+  const max = priceRange.value.max
+  const buckets = 8
+  const step = (max - min) / buckets
+  const counts = Array(buckets).fill(0)
+  all.forEach(o => {
+    const price = parseFloat(o.total_amount)
+    const idx = Math.min(buckets - 1, Math.floor((price - min) / step))
+    counts[idx]++
+  })
+  const maxCount = Math.max(...counts, 1)
+  return counts.map((c, i) => ({
+    height: Math.max(4, Math.round((c / maxCount) * 48)),
+    active: localMax.value >= min + (i + 1) * step,
+    count: c,
+  }))
+})
 </script>
 
 <template>
@@ -61,11 +83,19 @@ function toggleAirline(val: string) {
       </div>
     </div>
 
-    <!-- Price -->
+    <!-- Price with histogram -->
     <div>
-      <h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
+      <h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
         {{ t('filters.maxPrice') }}: <span class="text-brand-600 font-bold">{{ localMax >= priceRange.max ? t('filters.any') : `€${localMax}` }}</span>
       </h4>
+      <!-- Histogram bars -->
+      <div v-if="histogram.length" class="flex items-end gap-0.5 h-12 mb-2">
+        <div v-for="(bar, i) in histogram" :key="i"
+          class="flex-1 rounded-t transition-colors"
+          :style="`height: ${bar.height}px`"
+          :class="bar.active ? 'bg-brand-400' : 'bg-gray-200'"
+        ></div>
+      </div>
       <input type="range" :min="priceRange.min" :max="priceRange.max" :value="localMax" @input="updatePrice" class="w-full accent-brand-600" />
       <div class="flex justify-between text-xs text-gray-400 mt-1">
         <span>€{{ priceRange.min }}</span>
@@ -83,6 +113,13 @@ function toggleAirline(val: string) {
           <span class="text-sm text-gray-700 group-hover:text-gray-900 truncate">{{ a }}</span>
         </label>
       </div>
+    </div>
+
+    <!-- Active filters count -->
+    <div v-if="store.filters.stops.length || store.filters.airlines.length || store.filters.maxPrice"
+      class="bg-brand-50 border border-brand-100 rounded-xl p-3 text-xs text-brand-700 text-center">
+      {{ (store.filters.stops.length + store.filters.airlines.length + (store.filters.maxPrice ? 1 : 0)) }} filtru(e) activ(e)
+      <button @click="store.clearFilters(); localMax = priceRange.max" class="ml-2 underline">Șterge</button>
     </div>
   </div>
 </template>
