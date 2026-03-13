@@ -4,7 +4,7 @@ const { t } = useI18n()
 const searchStore = useSearchStore()
 const router = useRouter()
 
-useHead({ title: 'YouFly — Rezervă zboruri rapid' })
+useHead({ title: computed(() => 'YouFly — ' + t('hero.title')) })
 
 const features = computed(() => [
   { icon: '✈️', title: t('features.airlines'), desc: t('features.airlinesDesc') },
