@@ -66,6 +66,9 @@ async function switchLocale(code: string) {
       <slot />
     </main>
 
+    <!-- Cookie consent banner -->
+    <CookieBanner />
+
     <!-- Toast notifications -->
     <Teleport to="body">
       <div class="fixed top-20 right-4 z-[200] space-y-2 pointer-events-none">

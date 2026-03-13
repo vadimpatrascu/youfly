@@ -167,11 +167,27 @@ function layoverMins(arr: string, dep: string): number {
                 <div>
                   <div class="font-bold text-gray-900">{{ formatTime(seg.departing_at) }}</div>
                   <div class="text-xs text-gray-500">{{ seg.origin && seg.origin.iata_code }} · {{ shortDate(seg.departing_at) }}</div>
+                  <div class="text-xs text-gray-400 mt-0.5">{{ seg.origin && (seg.origin.name || seg.origin.city_name) }}</div>
+                </div>
+                <div class="text-center text-xs text-gray-400">
+                  <div>{{ seg.duration ? formatDuration(seg.duration) : '' }}</div>
+                  <div class="w-20 h-px bg-gray-200 my-1 mx-auto"></div>
+                  <div v-if="seg.aircraft">{{ seg.aircraft.name || seg.aircraft.iata_code }}</div>
                 </div>
                 <div class="text-right">
                   <div class="font-bold text-gray-900">{{ formatTime(seg.arriving_at) }}</div>
                   <div class="text-xs text-gray-500">{{ seg.destination && seg.destination.iata_code }} · {{ shortDate(seg.arriving_at) }}</div>
+                  <div class="text-xs text-gray-400 mt-0.5">{{ seg.destination && (seg.destination.name || seg.destination.city_name) }}</div>
                 </div>
+              </div>
+              <!-- Baggage for this segment -->
+              <div v-if="offer.passengers?.[0]?.baggages?.length" class="mt-3 pt-3 border-t border-gray-50 flex flex-wrap gap-2">
+                <span v-for="bag in offer.passengers[0].baggages" :key="bag.type"
+                  class="text-xs px-2 py-1 rounded-full"
+                  :class="bag.type === 'checked' ? 'bg-blue-50 text-blue-700' : 'bg-gray-100 text-gray-600'">
+                  {{ bag.type === 'checked' ? '🧳' : '💼' }}
+                  {{ bag.quantity }}× {{ bag.type === 'checked' ? 'bagaj la cală' : 'bagaj de mână' }}
+                </span>
               </div>
             </div>
           </div>
