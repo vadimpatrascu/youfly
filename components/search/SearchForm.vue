@@ -123,5 +123,6 @@ const cabinOptions = computed(() => [
       </span>
       <span v-else>🔍 {{ t('search.searchButton') }}</span>
     </button>
+    <LoadingOverlay v-if="searchStore.isSearching" />
   </div>
 </template>

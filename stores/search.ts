@@ -45,7 +45,7 @@ export const useSearchStore = defineStore('search', {
         this.offerRequestId = res.offerRequestId
         return true
       } catch (e: any) {
-        this.searchError = e?.data?.message || 'Search failed. Please try again.'
+        this.searchError = e?.data?.message || 'Căutarea a eșuat. Vă rugăm încercați din nou.'
         return false
       } finally {
         this.isSearching = false

@@ -158,6 +158,8 @@
     "fast": "Rezervare rapidă",
     "fastDesc": "Rezervă zborul în mai puțin de 5 minute cu procesul nostru simplificat."
   },
+  "popularRoutes": "Rute populare",
+  "from": "De la",
   "footer": {
     "rights": "Toate drepturile rezervate."
   },

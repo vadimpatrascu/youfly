@@ -1,25 +1,36 @@
 import { useDebounceFn } from '@vueuse/core'
 import type { Airport } from '~/stores/search'
 
+const cache = new Map<string, Airport[]>()
+
 export function useAirports() {
   const query = ref('')
   const suggestions = ref<Airport[]>([])
   const isLoading = ref(false)
-  const cache = new Map<string, Airport[]>()
 
-  const search = useDebounceFn(async (q: string) => {
-    if (q.length < 2) { suggestions.value = []; return }
-    if (cache.has(q)) { suggestions.value = cache.get(q)!; return }
+  const doSearch = useDebounceFn(async (q: string) => {
+    const trimmed = q.trim()
+    if (trimmed.length < 2) {
+      suggestions.value = []
+      return
+    }
+    if (cache.has(trimmed)) {
+      suggestions.value = cache.get(trimmed)!
+      return
+    }
     isLoading.value = true
     try {
-      const results = await $fetch<Airport[]>(`/api/airports?q=${encodeURIComponent(q)}`)
-      cache.set(q, results)
+      const results = await $fetch<Airport[]>(`/api/airports?q=${encodeURIComponent(trimmed)}`)
+      cache.set(trimmed, results)
       suggestions.value = results
+    } catch {
+      suggestions.value = []
     } finally {
       isLoading.value = false
     }
-  }, 300)
+  }, 350)
 
-  watch(query, search)
+  watch(query, doSearch)
+
   return { query, suggestions, isLoading }
 }

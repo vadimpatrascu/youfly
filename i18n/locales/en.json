@@ -158,6 +158,8 @@
     "fast": "Fast Booking",
     "fastDesc": "Book your flight in under 5 minutes with our streamlined checkout."
   },
+  "popularRoutes": "Popular Routes",
+  "from": "From",
   "footer": {
     "rights": "All rights reserved."
   },
