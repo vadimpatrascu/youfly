@@ -52,6 +52,21 @@ async function switchLocale(code: string) {
       <slot />
     </main>
 
+    <!-- Mobile bottom nav -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-40 md:hidden">
+      <div class="flex">
+        <NuxtLink to="/" class="flex-1 flex flex-col items-center py-3 text-gray-500 hover:text-brand-600 transition-colors">
+          <span class="text-xl">&#9992;</span>
+          <span class="text-xs mt-0.5">{{ t('nav.search') }}</span>
+        </NuxtLink>
+        <NuxtLink to="/my-booking" class="flex-1 flex flex-col items-center py-3 text-gray-500 hover:text-brand-600 transition-colors">
+          <span class="text-xl">&#128196;</span>
+          <span class="text-xs mt-0.5">{{ t('nav.myBooking') }}</span>
+        </NuxtLink>
+      </div>
+    </nav>
+    <div class="h-14 md:hidden"></div>
+
     <footer class="bg-white border-t border-gray-200 mt-auto">
       <div class="max-w-6xl mx-auto px-4 py-10">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
