@@ -60,7 +60,7 @@ async function switchLocale(code: string) {
       </div>
     </header>
 
-    <main class="flex-1">
+    <main class="flex-1" id="main-content">
       <slot />
     </main>
 
