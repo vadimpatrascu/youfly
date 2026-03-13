@@ -90,13 +90,23 @@ watch(() => offersStore.filtered.length, () => { visibleCount.value = PAGE_SIZE 
       </div>
     </div>
 
+    <!-- Price guarantee strip -->
+    <div v-if="!offersStore.isLoading && offersStore.filtered.length > 0"
+      class="bg-green-50 border-b border-green-100 py-2 px-4 text-center text-xs text-green-700 font-medium">
+      ✓ Prețuri în timp real de la companiile aeriene · Fără taxe ascunse · Rezervare instantă
+    </div>
+
     <div class="max-w-6xl mx-auto px-4 py-6">
-      <div class="flex items-center justify-between mb-4">
+      <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
         <p class="text-sm text-gray-500">
           <span v-if="!offersStore.isLoading" class="font-semibold text-gray-800">{{ offersStore.filtered.length }}</span>
           <span v-if="!offersStore.isLoading"> {{ t('results.flightsFound') }}</span>
           <span v-else>{{ t('results.loading') }}</span>
         </p>
+        <div v-if="!offersStore.isLoading && offersStore.filtered.length > 0" class="text-xs text-gray-400">
+          De la <span class="font-semibold text-gray-700">{{ formatPrice(offersStore.priceRange.min.toString(), offersStore.filtered[0]?.total_currency || 'EUR') }}</span>
+          la <span class="font-semibold text-gray-700">{{ formatPrice(offersStore.priceRange.max.toString(), offersStore.filtered[0]?.total_currency || 'EUR') }}</span>
+        </div>
       </div>
 
       <!-- Quick sort pills -->
