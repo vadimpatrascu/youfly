@@ -34,6 +34,13 @@ function shortDate(iso: string) {
   return new Date(iso).toLocaleDateString('ro-MD', { day: 'numeric', month: 'short' })
 }
 
+function dayDiff(departure: string, arrival: string): number {
+  if (!departure || !arrival) return 0
+  const d1 = new Date(departure)
+  const d2 = new Date(arrival)
+  return Math.floor((d2.setHours(0,0,0,0) - d1.setHours(0,0,0,0)) / 86400000)
+}
+
 function layoverMins(arr: string, dep: string): number {
   return Math.round((new Date(dep).getTime() - new Date(arr).getTime()) / 60000)
 }
@@ -77,7 +84,13 @@ function layoverMins(arr: string, dep: string): number {
               </div>
             </div>
             <div class="text-right">
-              <div class="text-xl md:text-2xl font-bold text-gray-900">{{ formatTime(slice.arriving_at) }}</div>
+              <div class="flex items-baseline justify-end gap-1">
+                <span class="text-xl md:text-2xl font-bold text-gray-900">{{ formatTime(slice.arriving_at) }}</span>
+                <span v-if="dayDiff(slice.departing_at, slice.arriving_at) > 0"
+                  class="text-xs text-orange-500 font-bold bg-orange-50 px-1.5 py-0.5 rounded">
+                  +{{ dayDiff(slice.departing_at, slice.arriving_at) }}
+                </span>
+              </div>
               <div class="text-sm font-semibold text-gray-700">{{ slice.destination && slice.destination.iata_code }}</div>
               <div class="text-xs text-gray-400">{{ shortDate(slice.arriving_at) }}</div>
             </div>

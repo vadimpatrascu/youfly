@@ -17,18 +17,29 @@ const cardExpiry = ref('')
 const cardCvv = ref('')
 const cardName = ref('')
 const isProcessing = ref(false)
+const payErrors = ref<Record<string, string>>({})
 const { formatPrice, formatTime, stopsLabel } = useFormatters()
 
-
 function cardBrand(num: string): string {
-  const n = num.replace(/s/g, '')
+  const n = num.replace(/\s/g, '')
   if (n.startsWith('4')) return 'VISA'
   if (/^5[1-5]/.test(n) || /^2[2-7]/.test(n)) return 'MC'
   if (/^3[47]/.test(n)) return 'AMEX'
   return '••••'
 }
+
+function validateCard(): boolean {
+  payErrors.value = {}
+  const digits = cardNumber.value.replace(/\s/g, '')
+  if (digits.length < 13) payErrors.value.cardNumber = 'Număr card invalid'
+  if (!cardName.value.trim()) payErrors.value.cardName = 'Câmp obligatoriu'
+  if (cardExpiry.value.length < 5) payErrors.value.cardExpiry = 'Data expirare invalidă'
+  if (cardCvv.value.length < 3) payErrors.value.cardCvv = 'CVV invalid'
+  return Object.keys(payErrors.value).length === 0
+}
+
 async function pay() {
-  if (!cardName.value.trim()) return
+  if (!validateCard()) return
   isProcessing.value = true
   await new Promise(r => setTimeout(r, 1800))
   const ok = await bookingStore.submitBooking()
@@ -91,23 +102,30 @@ function formatExpiry(e: Event) {
             <label class="block text-sm font-medium text-gray-700 mb-1">{{ t('payment.cardNumber') }}</label>
             <input :value="cardNumber" @input="formatCardNumber" type="text" maxlength="19"
               placeholder="1234 5678 9012 3456"
-              class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 font-mono tracking-wider" />
+              class="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 font-mono tracking-wider"
+              :class="payErrors.cardNumber ? 'border-red-400 bg-red-50' : 'border-gray-300'" />
+            <p v-if="payErrors.cardNumber" class="text-xs text-red-500 mt-1">{{ payErrors.cardNumber }}</p>
           </div>
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">{{ t('payment.nameOnCard') }}</label>
             <input v-model="cardName" type="text" :placeholder="t('payment.nameOnCardPlaceholder')"
-              class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500" />
+              class="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500"
+              :class="payErrors.cardName ? 'border-red-400 bg-red-50' : 'border-gray-300'" />
+            <p v-if="payErrors.cardName" class="text-xs text-red-500 mt-1">{{ payErrors.cardName }}</p>
           </div>
           <div class="grid grid-cols-2 gap-4">
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">{{ t('payment.expiry') }}</label>
               <input :value="cardExpiry" @input="formatExpiry" type="text" maxlength="5" placeholder="MM/YY"
-                class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 font-mono" />
+                class="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 font-mono"
+                :class="payErrors.cardExpiry ? 'border-red-400 bg-red-50' : 'border-gray-300'" />
+              <p v-if="payErrors.cardExpiry" class="text-xs text-red-500 mt-1">{{ payErrors.cardExpiry }}</p>
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">{{ t('payment.cvv') }}</label>
               <input v-model="cardCvv" type="text" maxlength="4" placeholder="•••"
-                class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 font-mono" />
+                class="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 font-mono"
+                :class="payErrors.cardCvv ? 'border-red-400 bg-red-50' : 'border-gray-300'" />
             </div>
           </div>
         </div>
