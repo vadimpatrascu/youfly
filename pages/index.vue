@@ -35,6 +35,26 @@ const searchRouteError = ref('')
 
 const { searches: recentSearches } = useRecentSearches()
 
+// Newsletter
+const newsletterEmail = ref('')
+const newsletterLoading = ref(false)
+const newsletterMsg = ref('')
+
+async function subscribeNewsletter() {
+  if (!newsletterEmail.value.trim()) return
+  newsletterLoading.value = true
+  newsletterMsg.value = ''
+  try {
+    await $fetch('/api/newsletter', { method: 'POST', body: { email: newsletterEmail.value } })
+    newsletterMsg.value = '✓ Abonare cu succes! Vei primi alertele de prețuri.'
+    newsletterEmail.value = ''
+  } catch {
+    newsletterMsg.value = 'Eroare. Te rugăm să încerci din nou.'
+  } finally {
+    newsletterLoading.value = false
+  }
+}
+
 async function quickSearchRecent(rs: import('~/composables/useRecentSearches').RecentSearch) {
   searchStore.origin = { iata_code: '', airport_iata: rs.originCode, name: rs.originCity, city_name: rs.originCity, country_code: '' }
   searchStore.destination = { iata_code: '', airport_iata: rs.destinationCode, name: rs.destinationCity, city_name: rs.destinationCity, country_code: '' }
@@ -221,6 +241,25 @@ async function quickSearch(route: typeof popularRoutes[0]) {
           <h3 class="font-semibold text-gray-900 mb-2">Rezervă în câteva minute</h3>
           <p class="text-gray-500 text-sm">Completează datele pasagerilor și finalizează rezervarea rapid și sigur.</p>
         </div>
+      </div>
+    </div>
+
+    <!-- Newsletter -->
+    <div class="bg-gray-900 text-white py-14 px-4">
+      <div class="max-w-lg mx-auto text-center">
+        <div class="text-4xl mb-4">✉️</div>
+        <h2 class="text-2xl font-bold mb-3">Prețuri speciale în inbox-ul tău</h2>
+        <p class="text-gray-400 text-sm mb-6">Abonează-te și primești alertele de prețuri pentru rutele tale favorite. Niciun spam.</p>
+        <form @submit.prevent="subscribeNewsletter" class="flex gap-3 max-w-sm mx-auto">
+          <input v-model="newsletterEmail" type="email" placeholder="email@exemplu.com"
+            class="flex-1 px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-400" />
+          <button type="submit" :disabled="newsletterLoading"
+            class="px-5 py-3 bg-brand-500 hover:bg-brand-400 disabled:opacity-50 text-white font-semibold rounded-xl transition-colors shrink-0">
+            {{ newsletterLoading ? '...' : 'Abonare' }}
+          </button>
+        </form>
+        <p v-if="newsletterMsg" class="mt-3 text-sm" :class="newsletterMsg.includes('succes') ? 'text-green-400' : 'text-red-400'">{{ newsletterMsg }}</p>
+        <p class="text-xs text-gray-600 mt-3">Poți dezabona oricând. Datele tale sunt în siguranță.</p>
       </div>
     </div>
 </div>
