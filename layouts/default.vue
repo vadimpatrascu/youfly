@@ -20,6 +20,7 @@ async function switchLocale(code: string) {
         <nav class="flex items-center gap-4">
           <NuxtLink to="/" class="text-sm font-medium text-gray-600 hover:text-brand-600 transition-colors hidden sm:block">{{ t('nav.search') }}</NuxtLink>
           <NuxtLink to="/my-booking" class="text-sm font-medium text-gray-600 hover:text-brand-600 transition-colors hidden sm:block">{{ t('nav.myBooking') }}</NuxtLink>
+          <NuxtLink to="/faq" class="text-sm font-medium text-gray-600 hover:text-brand-600 transition-colors hidden md:block">FAQ</NuxtLink>
 
           <!-- Language switcher -->
           <div class="relative">
@@ -84,6 +85,8 @@ async function switchLocale(code: string) {
             <ul class="space-y-2 text-sm text-gray-500">
               <li><NuxtLink to="/" class="hover:text-brand-600 transition-colors">{{ t('nav.search') }}</NuxtLink></li>
               <li><NuxtLink to="/my-booking" class="hover:text-brand-600 transition-colors">{{ t('footer.myBooking') }}</NuxtLink></li>
+              <li><NuxtLink to="/about" class="hover:text-brand-600 transition-colors">Despre YouFly</NuxtLink></li>
+              <li><NuxtLink to="/faq" class="hover:text-brand-600 transition-colors">Întrebări frecvente</NuxtLink></li>
               <li><a href="#" class="hover:text-brand-600 transition-colors">{{ t('footer.terms') }}</a></li>
               <li><a href="#" class="hover:text-brand-600 transition-colors">{{ t('footer.privacy') }}</a></li>
             </ul>

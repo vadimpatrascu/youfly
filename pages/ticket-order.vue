@@ -93,6 +93,18 @@ function typeLabel(type: string) {
       <button @click="router.push('/')" class="px-6 py-3 bg-brand-600 text-white rounded-xl font-medium">{{ t('passengers.searchAgain') }}</button>
     </div>
 
+    <!-- Expiry countdown banner -->
+    <div v-if="fullOffer && !offerError"
+      class="mb-4 flex items-center gap-2 text-sm px-4 py-2.5 rounded-xl border"
+      :class="isExpired ? 'bg-red-50 border-red-200 text-red-700' :
+              isExpiringSoon ? 'bg-orange-50 border-orange-200 text-orange-700' :
+              'bg-brand-50 border-brand-100 text-brand-700'">
+      <span>&#9200;</span>
+      <span v-if="isExpired">Oferta a expirat. Vă rugăm căutați din nou.</span>
+      <span v-else-if="isExpiringSoon">Oferta expiră în <strong>{{ countdownFormatted }}</strong>! Completați rapid.</span>
+      <span v-else>Oferta este rezervată pentru <strong>{{ countdownFormatted }}</strong></span>
+    </div>
+
     <div v-else class="grid grid-cols-1 lg:grid-cols-3 gap-6">
       <!-- Forms -->
       <div class="lg:col-span-2 space-y-5">

@@ -30,15 +30,25 @@ const stats = [
   { value: '5 min', label: 'Timp mediu rezervare' },
 ]
 
+const searchingRoute = ref<string | null>(null)
+const searchRouteError = ref('')
+
 async function quickSearch(route: typeof popularRoutes[0]) {
+  searchingRoute.value = route.to
+  searchRouteError.value = ''
   searchStore.origin = { iata_code: 'MD', airport_iata: route.from, name: `${route.fromCity} International Airport`, city_name: route.fromCity, country_code: 'MD' }
   searchStore.destination = { iata_code: '', airport_iata: route.to, name: `${route.toCity} Airport`, city_name: route.toCity, country_code: '' }
   const nextFriday = new Date()
   nextFriday.setDate(nextFriday.getDate() + ((5 - nextFriday.getDay() + 7) % 7 || 7))
   searchStore.departureDate = nextFriday.toISOString().split('T')[0]
   searchStore.tripType = 'oneway'
-  const ok = await searchStore.submitSearch()
-  if (ok) router.push('/search')
+  try {
+    const ok = await searchStore.submitSearch()
+    if (ok) router.push('/search')
+    else searchRouteError.value = 'Căutare eșuată. Încearcă din nou.'
+  } finally {
+    searchingRoute.value = null
+  }
 }
 </script>
 
@@ -69,16 +79,21 @@ async function quickSearch(route: typeof popularRoutes[0]) {
           v-for="route in popularRoutes"
           :key="route.to"
           @click="quickSearch(route)"
-          class="bg-white rounded-2xl border border-gray-200 p-4 text-left hover:border-brand-400 hover:shadow-md transition-all group relative overflow-hidden"
+          :disabled="searchingRoute !== null"
+          class="bg-white rounded-2xl border border-gray-200 p-4 text-left hover:border-brand-400 hover:shadow-md transition-all group relative overflow-hidden disabled:opacity-60 disabled:cursor-wait"
         >
           <div class="absolute inset-0 bg-gradient-to-br from-brand-50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
           <div class="relative">
+            <div v-if="searchingRoute === route.to" class="absolute inset-0 flex items-center justify-center bg-white/80 rounded-2xl z-10">
+              <div class="w-6 h-6 border-2 border-brand-500 border-t-transparent rounded-full animate-spin"></div>
+            </div>
             <div class="text-2xl mb-2">{{ route.flag }}</div>
             <div class="font-semibold text-gray-900 text-sm group-hover:text-brand-600 transition-colors">{{ route.toCity }}</div>
             <div class="text-xs text-gray-500 mt-0.5">{{ route.fromCity }} →</div>
             <div class="mt-2 text-brand-600 font-bold text-sm">de la €{{ route.price }}</div>
           </div>
         </button>
+        <p v-if="searchRouteError" class="col-span-full text-red-600 text-sm text-center">{{ searchRouteError }}</p>
       </div>
     </div>
 
@@ -107,6 +122,35 @@ async function quickSearch(route: typeof popularRoutes[0]) {
       </div>
     </div>
   
+    <!-- Testimonials -->
+    <div class="bg-brand-600 text-white py-14 px-4">
+      <div class="max-w-6xl mx-auto">
+        <h2 class="text-2xl font-bold text-center mb-8 text-white">Ce spun clienții noștri</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+          <div v-for="review in [
+            { name: 'Maria C.', city: 'Chișinău', text: 'Am găsit un zbor spre Londra cu 40€ mai ieftin decât pe alte platforme! Procesul a fost extrem de simplu.', stars: 5 },
+            { name: 'Alexandru P.', city: 'Bălți', text: 'Rezervarea a durat mai puțin de 5 minute. Interfața e clară și ușor de folosit. Recomand cu încredere!', stars: 5 },
+            { name: 'Elena M.', city: 'Chișinău', text: 'Am rezervat bilete pentru întreaga familie la prețuri foarte bune. Filtrele de căutare sunt foarte utile.', stars: 5 },
+          ]" :key="review.name"
+            class="bg-white/10 backdrop-blur rounded-2xl p-5">
+            <div class="flex mb-3">
+              <span v-for="s in review.stars" :key="s" class="text-yellow-300 text-lg">★</span>
+            </div>
+            <p class="text-brand-100 text-sm leading-relaxed mb-4">"{{ review.text }}"</p>
+            <div class="flex items-center gap-3">
+              <div class="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center text-white font-bold text-sm shrink-0">
+                {{ review.name[0] }}
+              </div>
+              <div>
+                <div class="text-sm font-semibold text-white">{{ review.name }}</div>
+                <div class="text-xs text-brand-300">{{ review.city }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- How it works -->
     <div class="max-w-6xl mx-auto px-4 py-12 border-t border-gray-100">
       <h2 class="text-2xl font-bold text-gray-900 mb-8 text-center">Cum funcționează</h2>
