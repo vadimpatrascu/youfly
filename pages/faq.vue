@@ -49,6 +49,8 @@ const faqs = [
     a: 'Modificările și anulările depind de tariful ales la rezervare. Unele bilete sunt nerambursabile, altele permit modificări cu o taxă. Contactați-ne pentru asistență.'
   }
 ]
+
+useFAQStructuredData(faqs.map(f => ({ question: f.q, answer: f.a })))
 </script>
 
 <template>

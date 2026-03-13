@@ -5,6 +5,9 @@ const searchStore = useSearchStore()
 const router = useRouter()
 const { favorites, toggle: toggleFavorite, isFavorite } = useFavorites()
 
+useWebsiteStructuredData()
+useOrganizationStructuredData()
+
 useHead({ title: computed(() => 'YouFly — ' + t('hero.title')) })
 
 const features = computed(() => [
