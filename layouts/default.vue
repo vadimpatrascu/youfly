@@ -87,8 +87,8 @@ async function switchLocale(code: string) {
               <li><NuxtLink to="/my-booking" class="hover:text-brand-600 transition-colors">{{ t('footer.myBooking') }}</NuxtLink></li>
               <li><NuxtLink to="/about" class="hover:text-brand-600 transition-colors">Despre YouFly</NuxtLink></li>
               <li><NuxtLink to="/faq" class="hover:text-brand-600 transition-colors">Întrebări frecvente</NuxtLink></li>
-              <li><a href="#" class="hover:text-brand-600 transition-colors">{{ t('footer.terms') }}</a></li>
-              <li><a href="#" class="hover:text-brand-600 transition-colors">{{ t('footer.privacy') }}</a></li>
+              <li><NuxtLink to="/terms" class="hover:text-brand-600 transition-colors">{{ t('footer.terms') }}</NuxtLink></li>
+              <li><NuxtLink to="/privacy" class="hover:text-brand-600 transition-colors">{{ t('footer.privacy') }}</NuxtLink></li>
             </ul>
           </div>
           <!-- Contact -->

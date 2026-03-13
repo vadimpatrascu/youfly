@@ -1,5 +1,6 @@
 import { duffelFetch } from '../utils/duffel'
 import { createServerSupabase } from '../utils/supabase'
+import { checkRateLimit } from '../utils/rateLimit'
 
 function parseDurationMins(iso: string): number {
   if (!iso) return 0
@@ -52,6 +53,13 @@ function mapOffer(offer: any) {
 }
 
 export default defineEventHandler(async (event) => {
+  // Rate limit: 20 searches per minute per IP
+  const ip = getHeader(event, 'x-forwarded-for')?.split(',')[0] || getHeader(event, 'x-real-ip') || 'unknown'
+  const rl = checkRateLimit(ip, 20, 60_000)
+  if (!rl.allowed) {
+    throw createError({ statusCode: 429, message: 'Prea multe căutări. Vă rugăm așteptați un minut.' })
+  }
+
   const body = await readBody(event)
   const { origin, destination, departureDate, returnDate, adults = 1, children = 0, infants = 0, cabinClass = 'economy' } = body
 
