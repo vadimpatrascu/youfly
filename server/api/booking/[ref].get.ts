@@ -17,7 +17,7 @@ export default defineEventHandler(async (event) => {
 
   const { data: booking, error } = await supabase
     .from('bookings')
-    .select('*, passengers(*)')
+    .select('id, reference, status, total_amount, currency, raw_offer, created_at, passengers(id, type, first_name, last_name, email, dob)')
     .eq('reference', ref.toUpperCase())
     .maybeSingle()
 
