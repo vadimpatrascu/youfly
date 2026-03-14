@@ -20,10 +20,11 @@ async function copyLink() {
     try { await navigator.share({ text, url: window.location.href }) } catch {}
     return
   }
-  navigator.clipboard.writeText(text).then(() => {
+  try {
+    await navigator.clipboard.writeText(text)
     linkCopied.value = true
     setTimeout(() => { linkCopied.value = false }, 2000)
-  })
+  } catch {}
 }
 
 function airlineLogo(iata: string) {
