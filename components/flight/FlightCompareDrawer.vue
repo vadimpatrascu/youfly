@@ -2,6 +2,7 @@
 import { useCompare } from '~/composables/useCompare'
 const { compareList, clear } = useCompare()
 const { formatPrice } = useFormatters()
+const { t, locale } = useI18n()
 const emit = defineEmits<{ select: [offer: any] }>()
 
 function formatDuration(mins: number) {
@@ -26,7 +27,7 @@ function airline(offer: any): string {
 function depTime(offer: any): string {
   const dep = offer.slices?.[0]?.segments?.[0]?.departing_at
   if (!dep) return '—'
-  return new Date(dep).toLocaleTimeString('ro-MD', { hour: '2-digit', minute: '2-digit' })
+  return new Date(dep).toLocaleTimeString(locale.value, { hour: '2-digit', minute: '2-digit' })
 }
 
 function arrTime(offer: any): string {
@@ -34,40 +35,41 @@ function arrTime(offer: any): string {
   if (!segs?.length) return '—'
   const arr = segs[segs.length - 1]?.arriving_at
   if (!arr) return '—'
-  return new Date(arr).toLocaleTimeString('ro-MD', { hour: '2-digit', minute: '2-digit' })
+  return new Date(arr).toLocaleTimeString(locale.value, { hour: '2-digit', minute: '2-digit' })
 }
 
 function baggage(offer: any): string {
   const pass = offer.passengers?.[0]
   if (!pass) return '—'
   const bags = pass.baggages?.find((b: any) => b.type === 'checked')
-  if (!bags) return 'Fără bagaj'
-  return `${bags.quantity} bagaj${bags.quantity > 1 ? 'e' : ''} inclus`
+  if (!bags) return t('common.noBaggage')
+  return `${bags.quantity} ${bags.quantity > 1 ? t('flightCard.checkedBags') : t('flightCard.checkedBag')}`
 }
 
 const [a, b] = [computed(() => compareList.value[0]), computed(() => compareList.value[1])]
 
 const rows = computed(() => [
-  { label: 'Preț', va: a.value ? formatPrice(a.value.total_amount, a.value.total_currency) : '—', vb: b.value ? formatPrice(b.value.total_amount, b.value.total_currency) : '—', better: a.value && b.value ? (parseFloat(a.value.total_amount) <= parseFloat(b.value.total_amount) ? 'a' : 'b') : null },
-  { label: 'Durată', va: a.value ? formatDuration(totalDuration(a.value)) : '—', vb: b.value ? formatDuration(totalDuration(b.value)) : '—', better: a.value && b.value ? (totalDuration(a.value) <= totalDuration(b.value) ? 'a' : 'b') : null },
-  { label: 'Escale', va: a.value ? (stops(a.value) === 0 ? 'Direct' : `${stops(a.value)} esc.`) : '—', vb: b.value ? (stops(b.value) === 0 ? 'Direct' : `${stops(b.value)} esc.`) : '—', better: a.value && b.value ? (stops(a.value) <= stops(b.value) ? 'a' : 'b') : null },
-  { label: 'Companie', va: a.value ? airline(a.value) : '—', vb: b.value ? airline(b.value) : '—', better: null },
-  { label: 'Plecare', va: a.value ? depTime(a.value) : '—', vb: b.value ? depTime(b.value) : '—', better: null },
-  { label: 'Sosire', va: a.value ? arrTime(a.value) : '—', vb: b.value ? arrTime(b.value) : '—', better: null },
-  { label: 'Bagaj', va: a.value ? baggage(a.value) : '—', vb: b.value ? baggage(b.value) : '—', better: null },
+  { label: t('compare.price'), va: a.value ? formatPrice(a.value.total_amount, a.value.total_currency) : '—', vb: b.value ? formatPrice(b.value.total_amount, b.value.total_currency) : '—', better: a.value && b.value ? (parseFloat(a.value.total_amount) <= parseFloat(b.value.total_amount) ? 'a' : 'b') : null },
+  { label: t('compare.duration'), va: a.value ? formatDuration(totalDuration(a.value)) : '—', vb: b.value ? formatDuration(totalDuration(b.value)) : '—', better: a.value && b.value ? (totalDuration(a.value) <= totalDuration(b.value) ? 'a' : 'b') : null },
+  { label: t('compare.stops'), va: a.value ? (stops(a.value) === 0 ? t('compare.direct') : `${stops(a.value)}${t('compare.stopSuffix')}`) : '—', vb: b.value ? (stops(b.value) === 0 ? t('compare.direct') : `${stops(b.value)}${t('compare.stopSuffix')}`) : '—', better: a.value && b.value ? (stops(a.value) <= stops(b.value) ? 'a' : 'b') : null },
+  { label: t('compare.airline'), va: a.value ? airline(a.value) : '—', vb: b.value ? airline(b.value) : '—', better: null },
+  { label: t('compare.departure'), va: a.value ? depTime(a.value) : '—', vb: b.value ? depTime(b.value) : '—', better: null },
+  { label: t('compare.arrival'), va: a.value ? arrTime(a.value) : '—', vb: b.value ? arrTime(b.value) : '—', better: null },
+  { label: t('compare.baggage'), va: a.value ? baggage(a.value) : '—', vb: b.value ? baggage(b.value) : '—', better: null },
 ])
 </script>
 
 <template>
   <div v-if="compareList.length > 0"
+    role="region" :aria-label="t('compare.title')"
     class="fixed bottom-16 md:bottom-0 left-0 right-0 z-40 bg-white border-t-2 border-brand-500 shadow-2xl">
     <div class="max-w-6xl mx-auto px-4 py-3">
       <!-- Header row -->
       <div class="flex items-center justify-between mb-3">
         <span class="text-sm font-semibold text-gray-700">
-          Compară zboruri ({{ compareList.length }}/2)
+          {{ t('compare.title') }} ({{ compareList.length }}/2)
         </span>
-        <button @click="clear" class="text-xs text-gray-400 hover:text-red-500 transition-colors">✕ Șterge toate</button>
+        <button @click="clear" :aria-label="t('compare.clearAll')" class="text-xs text-gray-400 hover:text-red-500 transition-colors"><span aria-hidden="true">✕</span> {{ t('compare.clearAll') }}</button>
       </div>
 
       <!-- Compact compare if 1 flight -->
@@ -77,7 +79,7 @@ const rows = computed(() => [
           <span class="mx-2 text-gray-400">·</span>
           <span class="text-gray-700">{{ formatPrice(compareList[0].total_amount, compareList[0].total_currency) }}</span>
         </div>
-        <p class="text-xs text-gray-400">Selectează al doilea zbor pentru comparație</p>
+        <p class="text-xs text-gray-400">{{ t('compare.selectSecond') }}</p>
       </div>
 
       <!-- Full comparison table if 2 flights -->
@@ -85,14 +87,14 @@ const rows = computed(() => [
         <table class="w-full text-sm">
           <thead>
             <tr>
-              <th class="text-left text-xs text-gray-400 font-medium pb-2 w-24">Criteriu</th>
-              <th class="text-center pb-2 text-brand-700 font-semibold">
+              <th scope="col" class="text-left text-xs text-gray-400 font-medium pb-2 w-24">{{ t('compare.criteria') }}</th>
+              <th scope="col" class="text-center pb-2 text-brand-700 font-semibold">
                 {{ airline(a) }}
-                <button @click="emit('select', a)" class="ml-2 px-3 py-1 bg-brand-600 text-white text-xs rounded-lg hover:bg-brand-700 transition-colors">Rezervă</button>
+                <button @click="emit('select', a)" :aria-label="t('compare.bookFlight', { airline: airline(a) })" class="ml-2 px-3 py-1 bg-brand-600 text-white text-xs rounded-lg hover:bg-brand-700 transition-colors">{{ t('compare.book') }}</button>
               </th>
-              <th class="text-center pb-2 text-purple-700 font-semibold">
+              <th scope="col" class="text-center pb-2 text-purple-700 font-semibold">
                 {{ airline(b) }}
-                <button @click="emit('select', b)" class="ml-2 px-3 py-1 bg-purple-600 text-white text-xs rounded-lg hover:bg-purple-700 transition-colors">Rezervă</button>
+                <button @click="emit('select', b)" :aria-label="t('compare.bookFlight', { airline: airline(b) })" class="ml-2 px-3 py-1 bg-purple-600 text-white text-xs rounded-lg hover:bg-purple-700 transition-colors">{{ t('compare.book') }}</button>
               </th>
             </tr>
           </thead>
@@ -102,12 +104,12 @@ const rows = computed(() => [
               <td class="py-1.5 text-center font-medium"
                 :class="row.better === 'a' ? 'text-green-600' : 'text-gray-800'">
                 {{ row.va }}
-                <span v-if="row.better === 'a'" class="ml-1 text-green-500 text-xs">✓</span>
+                <span v-if="row.better === 'a'" aria-hidden="true" class="ml-1 text-green-500 text-xs">✓</span>
               </td>
               <td class="py-1.5 text-center font-medium"
                 :class="row.better === 'b' ? 'text-green-600' : 'text-gray-800'">
                 {{ row.vb }}
-                <span v-if="row.better === 'b'" class="ml-1 text-green-500 text-xs">✓</span>
+                <span v-if="row.better === 'b'" aria-hidden="true" class="ml-1 text-green-500 text-xs">✓</span>
               </td>
             </tr>
           </tbody>

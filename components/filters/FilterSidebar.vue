@@ -72,7 +72,7 @@ const histogram = computed(() => {
 </script>
 
 <template>
-  <div class="bg-white rounded-2xl border border-gray-200 p-5 space-y-5">
+  <div role="region" :aria-label="t('filters.title')" class="bg-white rounded-2xl border border-gray-200 p-5 space-y-5">
     <div class="flex items-center justify-between">
       <h3 class="font-semibold text-gray-900">{{ t('filters.title') }}</h3>
       <button @click="store.clearFilters(); localMax = priceRange.max" class="text-xs text-brand-600 hover:underline">{{ t('filters.clearAll') }}</button>
@@ -85,6 +85,7 @@ const histogram = computed(() => {
         <button v-for="s in [{ v: 'price', l: t('filters.cheapest') }, { v: 'duration', l: t('filters.fastest') }, { v: 'departure', l: t('filters.earliest') }]"
           :key="s.v"
           @click="store.sortBy = s.v as any; store.applyFilters()"
+          :aria-pressed="store.sortBy === s.v"
           class="text-left px-3 py-2 rounded-lg text-sm transition-colors"
           :class="store.sortBy === s.v ? 'bg-brand-100 text-brand-700 font-semibold' : 'text-gray-600 hover:bg-gray-50'"
         >{{ s.l }}</button>
@@ -110,14 +111,15 @@ const histogram = computed(() => {
         {{ t('filters.maxPrice') }}: <span class="text-brand-600 font-bold">{{ localMax >= priceRange.max ? t('filters.any') : `€${localMax}` }}</span>
       </h4>
       <!-- Histogram bars -->
-      <div v-if="histogram.length" class="flex items-end gap-0.5 h-12 mb-2">
+      <div v-if="histogram.length" aria-hidden="true" class="flex items-end gap-0.5 h-12 mb-2">
         <div v-for="(bar, i) in histogram" :key="i"
           class="flex-1 rounded-t transition-colors"
           :style="`height: ${bar.height}px`"
           :class="bar.active ? 'bg-brand-400' : 'bg-gray-200'"
         ></div>
       </div>
-      <input type="range" :min="priceRange.min" :max="priceRange.max" :value="localMax" @input="updatePrice" class="w-full accent-brand-600" />
+      <input type="range" :min="priceRange.min" :max="priceRange.max" :value="localMax" @input="updatePrice"
+        :aria-label="t('filters.maxPrice')" :aria-valuetext="`€${localMax}`" class="w-full accent-brand-600" />
       <div class="flex justify-between text-xs text-gray-400 mt-1">
         <span>€{{ priceRange.min }}</span>
         <span>€{{ priceRange.max }}</span>
@@ -130,7 +132,9 @@ const histogram = computed(() => {
         {{ t('filters.duration') }}: <span class="text-brand-600 font-bold">{{ store.filters.maxDuration ? store.filters.maxDuration + 'h' : t('filters.any') }}</span>
       </h4>
       <input type="range" min="1" :max="maxDurationAvailable" :value="store.filters.maxDuration || maxDurationAvailable"
-        @input="updateDuration" class="w-full accent-brand-600" />
+        @input="updateDuration" :aria-label="t('filters.duration')"
+        :aria-valuetext="store.filters.maxDuration ? store.filters.maxDuration + 'h' : t('filters.any')"
+        class="w-full accent-brand-600" />
       <div class="flex justify-between text-xs text-gray-400 mt-1">
         <span>1h</span>
         <span>{{ maxDurationAvailable }}h</span>
@@ -139,20 +143,21 @@ const histogram = computed(() => {
 
     <!-- Departure time -->
     <div>
-      <h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Ora plecării</h4>
+      <h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">{{ t('filters.departureTime') }}</h4>
       <div class="grid grid-cols-2 gap-1.5">
         <button v-for="slot in [
-          { v: 'morning', l: '🌅 Dimineață', sub: '6–12' },
-          { v: 'afternoon', l: '☀️ Prânz', sub: '12–18' },
-          { v: 'evening', l: '🌆 Seară', sub: '18–24' },
-          { v: 'night', l: '🌙 Noapte', sub: '0–6' },
+          { v: 'morning', icon: '🌅', l: t('filters.morning'), sub: t('filters.morningHours') },
+          { v: 'afternoon', icon: '☀️', l: t('filters.afternoon'), sub: t('filters.afternoonHours') },
+          { v: 'evening', icon: '🌆', l: t('filters.evening'), sub: t('filters.eveningHours') },
+          { v: 'night', icon: '🌙', l: t('filters.night'), sub: t('filters.nightHours') },
         ]" :key="slot.v"
           @click="toggleTimeSlot(slot.v)"
+          :aria-pressed="store.filters.timeSlots.includes(slot.v)"
           class="flex flex-col items-center py-2 px-1 rounded-xl border text-xs transition-colors"
           :class="store.filters.timeSlots.includes(slot.v)
             ? 'bg-brand-50 border-brand-400 text-brand-700 font-semibold'
             : 'border-gray-200 text-gray-600 hover:border-gray-300'">
-          <span>{{ slot.l }}</span>
+          <span><span aria-hidden="true">{{ slot.icon }}</span> {{ slot.l }}</span>
           <span class="text-gray-400 text-[10px]">{{ slot.sub }}</span>
         </button>
       </div>
@@ -166,7 +171,7 @@ const histogram = computed(() => {
           <input type="checkbox" :checked="store.filters.airlines.includes(a.name)" @change="toggleAirline(a.name)"
             class="rounded border-gray-300 text-brand-600 focus:ring-brand-500" />
           <img v-if="a.iata" :src="`https://assets.duffel.com/img/airlines/for-light-background/${a.iata}.svg`"
-            class="w-5 h-5 object-contain shrink-0" @error="($event.target as HTMLElement).style.display='none'" />
+            :alt="a.name" class="w-5 h-5 object-contain shrink-0" @error="($event.target as HTMLElement).style.display='none'" />
           <span class="text-sm text-gray-700 group-hover:text-gray-900 truncate">{{ a.name }}</span>
         </label>
       </div>
@@ -174,9 +179,10 @@ const histogram = computed(() => {
 
     <!-- Active filters count -->
     <div v-if="store.filters.stops.length || store.filters.airlines.length || store.filters.maxPrice || store.filters.timeSlots.length || store.filters.maxDuration"
+      aria-live="polite" aria-atomic="true"
       class="bg-brand-50 border border-brand-100 rounded-xl p-3 text-xs text-brand-700 text-center">
-      {{ (store.filters.stops.length + store.filters.airlines.length + (store.filters.maxPrice ? 1 : 0) + (store.filters.timeSlots.length ? 1 : 0) + (store.filters.maxDuration ? 1 : 0)) }} filtru(e) activ(e)
-      <button @click="store.clearFilters(); localMax = priceRange.max" class="ml-2 underline">Șterge</button>
+      {{ (store.filters.stops.length + store.filters.airlines.length + (store.filters.maxPrice ? 1 : 0) + (store.filters.timeSlots.length ? 1 : 0) + (store.filters.maxDuration ? 1 : 0)) }} {{ t('filters.activeFilters') }}
+      <button @click="store.clearFilters(); localMax = priceRange.max" class="ml-2 underline">{{ t('filters.deleteFilters') }}</button>
     </div>
   </div>
 </template>

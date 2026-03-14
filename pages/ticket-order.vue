@@ -83,12 +83,12 @@ function typeLabel(type: string) {
       <h1 class="text-2xl font-bold text-gray-900">{{ t('passengers.title') }}</h1>
     </div>
 
-    <div v-if="isLoading" class="flex justify-center py-20">
+    <div v-if="isLoading" role="status" :aria-label="t('common.loading')" class="flex justify-center py-20">
       <div class="w-12 h-12 border-4 border-brand-500 border-t-transparent rounded-full animate-spin"></div>
     </div>
 
-    <div v-else-if="offerError" class="bg-red-50 border border-red-200 rounded-2xl p-6 text-center">
-      <div class="text-5xl mb-4">⏱️</div>
+    <div v-else-if="offerError" role="alert" class="bg-red-50 border border-red-200 rounded-2xl p-6 text-center">
+      <div aria-hidden="true" class="text-5xl mb-4">⏱️</div>
       <p class="text-red-600 font-medium mb-4">{{ offerError }}</p>
       <button @click="router.push('/')" class="px-6 py-3 bg-brand-600 text-white rounded-xl font-medium">{{ t('passengers.searchAgain') }}</button>
     </div>
@@ -99,24 +99,24 @@ function typeLabel(type: string) {
       :class="isExpired ? 'bg-red-50 border-red-200 text-red-700' :
               isExpiringSoon ? 'bg-orange-50 border-orange-200 text-orange-700' :
               'bg-brand-50 border-brand-100 text-brand-700'">
-      <span>&#9200;</span>
-      <span v-if="isExpired">Oferta a expirat. Vă rugăm căutați din nou.</span>
-      <span v-else-if="isExpiringSoon">Oferta expiră în <strong>{{ countdownFormatted }}</strong>! Completați rapid.</span>
-      <span v-else>Oferta este rezervată pentru <strong>{{ countdownFormatted }}</strong></span>
+      <span aria-hidden="true">&#9200;</span>
+      <span v-if="isExpired">{{ t('ticketOrder.expired') }}</span>
+      <span v-else-if="isExpiringSoon" v-html="t('ticketOrder.expiringSoon', { time: '<strong>' + countdownFormatted + '</strong>' })"></span>
+      <span v-else v-html="t('ticketOrder.reserved', { time: '<strong>' + countdownFormatted + '</strong>' })"></span>
     </div>
 
-    <div v-else class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div v-if="fullOffer && !offerError" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
       <!-- Forms -->
       <div class="lg:col-span-2 space-y-5">
-        <div v-for="(passenger, i) in passengerForms" :key="i" class="bg-white rounded-2xl border border-gray-200 p-6">
-          <h2 class="font-semibold text-gray-900 mb-4 flex items-center gap-2">
+        <div v-for="(passenger, i) in passengerForms" :key="i" role="group" :aria-labelledby="`pax-heading-${i}`" class="bg-white rounded-2xl border border-gray-200 p-6">
+          <h2 :id="`pax-heading-${i}`" class="font-semibold text-gray-900 mb-4 flex items-center gap-2">
             {{ typeLabel(passenger.type) }} {{ i + 1 }}
             <span v-if="i === 0" class="text-xs text-brand-600 bg-brand-50 px-2 py-1 rounded-full">{{ t('passengers.leadPassenger') }}</span>
           </h2>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Titlu</label>
-              <select v-model="passenger.title" class="w-full px-3 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500">
+              <label :for="`pax-${i}-title`" class="block text-sm font-medium text-gray-700 mb-1">{{ t('passengers.title_label') }}</label>
+              <select :id="`pax-${i}-title`" v-model="passenger.title" class="w-full px-3 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500">
                 <option value="mr">{{ t('passengers.title_mr') }}</option>
                 <option value="ms">{{ t('passengers.title_ms') }}</option>
                 <option value="mrs">{{ t('passengers.title_mrs') }}</option>
@@ -124,59 +124,69 @@ function typeLabel(type: string) {
               </select>
             </div>
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">{{ t('passengers.gender') }}</label>
-              <select v-model="passenger.gender" class="w-full px-3 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500">
+              <label :for="`pax-${i}-gender`" class="block text-sm font-medium text-gray-700 mb-1">{{ t('passengers.gender') }}</label>
+              <select :id="`pax-${i}-gender`" v-model="passenger.gender" class="w-full px-3 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500">
                 <option value="m">{{ t('passengers.male') }}</option>
                 <option value="f">{{ t('passengers.female') }}</option>
               </select>
             </div>
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">{{ t('passengers.firstName') }}</label>
-              <input v-model="passenger.given_name" type="text" :placeholder="t('passengers.firstNamePlaceholder')"
+              <label :for="`pax-${i}-given-name`" class="block text-sm font-medium text-gray-700 mb-1">{{ t('passengers.firstName') }}</label>
+              <input :id="`pax-${i}-given-name`" v-model="passenger.given_name" type="text" :placeholder="t('passengers.firstNamePlaceholder')"
+                :aria-invalid="!!errors[`${i}_given_name`]"
+                :autocomplete="i === 0 ? 'given-name' : 'off'"
                 class="w-full px-3 py-2.5 border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500"
                 :class="errors[`${i}_given_name`] ? 'border-red-400 bg-red-50' : 'border-gray-300'" />
             </div>
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">{{ t('passengers.lastName') }}</label>
-              <input v-model="passenger.family_name" type="text" :placeholder="t('passengers.lastNamePlaceholder')"
+              <label :for="`pax-${i}-family-name`" class="block text-sm font-medium text-gray-700 mb-1">{{ t('passengers.lastName') }}</label>
+              <input :id="`pax-${i}-family-name`" v-model="passenger.family_name" type="text" :placeholder="t('passengers.lastNamePlaceholder')"
+                :aria-invalid="!!errors[`${i}_family_name`]"
+                :autocomplete="i === 0 ? 'family-name' : 'off'"
                 class="w-full px-3 py-2.5 border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500"
                 :class="errors[`${i}_family_name`] ? 'border-red-400 bg-red-50' : 'border-gray-300'" />
             </div>
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">{{ t('passengers.dob') }}</label>
-              <input v-model="passenger.born_on" type="date"
+              <label :for="`pax-${i}-born-on`" class="block text-sm font-medium text-gray-700 mb-1">{{ t('passengers.dob') }}</label>
+              <input :id="`pax-${i}-born-on`" v-model="passenger.born_on" type="date"
+                :aria-invalid="!!errors[`${i}_born_on`]"
+                autocomplete="bday"
                 class="w-full px-3 py-2.5 border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500"
                 :class="errors[`${i}_born_on`] ? 'border-red-400 bg-red-50' : 'border-gray-300'" />
             </div>
             <template v-if="i === 0">
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">{{ t('passengers.email') }}</label>
-                <input v-model="passenger.email" type="email" :placeholder="t('passengers.emailPlaceholder')"
+                <label :for="`pax-${i}-email`" class="block text-sm font-medium text-gray-700 mb-1">{{ t('passengers.email') }}</label>
+                <input :id="`pax-${i}-email`" v-model="passenger.email" type="email" :placeholder="t('passengers.emailPlaceholder')"
+                  :aria-invalid="!!errors[`${i}_email`]"
+                  autocomplete="email"
                   class="w-full px-3 py-2.5 border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500"
                   :class="errors[`${i}_email`] ? 'border-red-400 bg-red-50' : 'border-gray-300'" />
               </div>
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">{{ t('passengers.phone') }}</label>
-                <input v-model="passenger.phone" type="tel" :placeholder="t('passengers.phonePlaceholder')"
+                <label :for="`pax-${i}-phone`" class="block text-sm font-medium text-gray-700 mb-1">{{ t('passengers.phone') }}</label>
+                <input :id="`pax-${i}-phone`" v-model="passenger.phone" type="tel" :placeholder="t('passengers.phonePlaceholder')"
+                  :aria-invalid="!!errors[`${i}_phone`]"
+                  autocomplete="tel"
                   class="w-full px-3 py-2.5 border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500"
                   :class="errors[`${i}_phone`] ? 'border-red-400 bg-red-50' : 'border-gray-300'" />
               </div>
             </template>
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">{{ t('passengers.passport') }}</label>
-              <input v-model="passenger.passport_number" type="text" :placeholder="t('passengers.passportPlaceholder')"
+              <label :for="`pax-${i}-passport`" class="block text-sm font-medium text-gray-700 mb-1">{{ t('passengers.passport') }}</label>
+              <input :id="`pax-${i}-passport`" v-model="passenger.passport_number" type="text" :placeholder="t('passengers.passportPlaceholder')"
                 class="w-full px-3 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500" />
             </div>
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">{{ t('passengers.passportExpiry') }}</label>
-              <input v-model="passenger.passport_expires" type="date"
+              <label :for="`pax-${i}-passport-expires`" class="block text-sm font-medium text-gray-700 mb-1">{{ t('passengers.passportExpiry') }}</label>
+              <input :id="`pax-${i}-passport-expires`" v-model="passenger.passport_expires" type="date"
                 class="w-full px-3 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500" />
             </div>
           </div>
         </div>
 
-        <div v-if="Object.keys(errors).length" class="bg-red-50 border border-red-200 rounded-xl p-3 text-sm text-red-600">
-          Vă rugăm completați toate câmpurile obligatorii (*).
+        <div v-if="Object.keys(errors).length" role="alert" class="bg-red-50 border border-red-200 rounded-xl p-3 text-sm text-red-600">
+          {{ t('passengers.requiredFields') }}
         </div>
 
         <button @click="onSubmit"
@@ -192,7 +202,7 @@ function typeLabel(type: string) {
           <div v-if="bookingStore.selectedOffer" class="space-y-4">
             <div v-for="(slice, i) in bookingStore.selectedOffer.slices" :key="i" class="text-sm">
               <div class="font-semibold text-gray-800">
-                {{ slice.origin?.iata_code }} → {{ slice.destination?.iata_code }}
+                {{ slice.origin?.iata_code }} <span aria-hidden="true">→</span> {{ slice.destination?.iata_code }}
               </div>
               <div class="text-gray-500 mt-0.5">
                 {{ formatTime(slice.departing_at) }} – {{ formatTime(slice.arriving_at) }}

@@ -3,9 +3,23 @@ const { locale, locales, setLocale, t } = useI18n()
 const { toasts, remove } = useToast()
 const { showMdl, toggleCurrency } = useCurrency()
 
+// Keep html lang attribute in sync with selected locale
+useHead(computed(() => ({ htmlAttrs: { lang: locale.value } })))
+
 const langNames: Record<string, string> = { ro: 'RO', ru: 'RU', en: 'EN' }
 const showLangMenu = ref(false)
 const scrolled = ref(false)
+const langMenuRef = ref<HTMLDivElement>()
+const langToggleBtn = ref<HTMLButtonElement>()
+onClickOutside(langMenuRef, () => { showLangMenu.value = false })
+
+watch(showLangMenu, async (val) => {
+  if (!val) { await nextTick(); langToggleBtn.value?.focus() }
+})
+
+function onLangKeydown(e: KeyboardEvent) {
+  if (e.key === 'Escape') { showLangMenu.value = false }
+}
 
 if (typeof window !== 'undefined') {
   const onScroll = () => { scrolled.value = window.scrollY > 20 }
@@ -20,48 +34,58 @@ async function switchLocale(code: string) {
 
 <template>
   <div class="min-h-screen flex flex-col bg-gray-50 font-sans">
-    <header class="bg-white border-b border-gray-200 sticky top-0 z-50 transition-shadow duration-200"
+    <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[999] focus:px-4 focus:py-2 focus:bg-brand-600 focus:text-white focus:rounded-lg focus:font-semibold focus:shadow-lg">
+      {{ t('nav.skipToMain') }}
+    </a>
+    <header role="banner" class="bg-white border-b border-gray-200 sticky top-0 z-50 transition-shadow duration-200"
       :class="scrolled ? 'shadow-md' : ''">
       <div class="max-w-6xl mx-auto px-4 flex items-center justify-between transition-all duration-200"
         :class="scrolled ? 'h-14' : 'h-16'">
-        <NuxtLink to="/" class="flex items-center gap-2">
-          <span class="text-2xl font-bold text-brand-600">✈ YouFly</span>
+        <NuxtLink to="/" class="flex items-center gap-2" aria-label="YouFly">
+          <span class="text-2xl font-bold text-brand-600" aria-hidden="true">✈ YouFly</span>
         </NuxtLink>
-        <nav class="flex items-center gap-4">
+        <nav :aria-label="t('nav.mainNav')" class="flex items-center gap-4">
           <NuxtLink to="/" class="text-sm font-medium text-gray-600 hover:text-brand-600 transition-colors hidden sm:block">{{ t('nav.search') }}</NuxtLink>
           <NuxtLink to="/my-booking" class="text-sm font-medium text-gray-600 hover:text-brand-600 transition-colors hidden sm:block">{{ t('nav.myBooking') }}</NuxtLink>
-          <NuxtLink to="/destinations" class="text-sm font-medium text-gray-600 hover:text-brand-600 transition-colors hidden md:block">Destinații</NuxtLink>
-          <NuxtLink to="/deals" class="text-sm font-medium text-red-600 hover:text-red-700 transition-colors hidden md:block font-semibold">🔥 Oferte</NuxtLink>
-          <NuxtLink to="/blog" class="text-sm font-medium text-gray-600 hover:text-brand-600 transition-colors hidden md:block">Blog</NuxtLink>
-          <NuxtLink to="/faq" class="text-sm font-medium text-gray-600 hover:text-brand-600 transition-colors hidden md:block">FAQ</NuxtLink>
+          <NuxtLink to="/destinations" class="text-sm font-medium text-gray-600 hover:text-brand-600 transition-colors hidden md:block">{{ t('nav.destinations') }}</NuxtLink>
+          <NuxtLink to="/deals" class="text-sm font-medium text-red-600 hover:text-red-700 transition-colors hidden md:block font-semibold"><span aria-hidden="true">🔥</span> {{ t('nav.deals') }}</NuxtLink>
+          <NuxtLink to="/blog" class="text-sm font-medium text-gray-600 hover:text-brand-600 transition-colors hidden md:block">{{ t('nav.blog') }}</NuxtLink>
+          <NuxtLink to="/faq" class="text-sm font-medium text-gray-600 hover:text-brand-600 transition-colors hidden md:block">{{ t('nav.faq') }}</NuxtLink>
 
           <!-- MDL toggle -->
           <button @click="toggleCurrency"
             class="hidden sm:flex items-center gap-1 px-2.5 py-1.5 rounded-lg border text-xs font-semibold transition-colors"
             :class="showMdl ? 'bg-brand-600 text-white border-brand-600' : 'border-gray-300 text-gray-600 hover:bg-gray-50'"
-            title="Schimbă valuta">
+            :title="t('nav.switchCurrency')"
+            :aria-label="t('nav.switchCurrency')">
             {{ showMdl ? 'MDL' : 'EUR' }}
           </button>
 
           <!-- Language switcher -->
-          <div class="relative">
+          <div class="relative" ref="langMenuRef" @keydown="onLangKeydown">
             <button
+              ref="langToggleBtn"
               @click="showLangMenu = !showLangMenu"
+              :aria-expanded="showLangMenu"
+              aria-haspopup="listbox"
+              :aria-label="t('nav.switchLanguage')"
               class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-300 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
             >
-              🌐 {{ langNames[locale] || locale.toUpperCase() }}
-              <span class="text-gray-400 text-xs">▾</span>
+              <span aria-hidden="true">🌐</span> {{ langNames[locale] || locale.toUpperCase() }}
+              <span aria-hidden="true" class="text-gray-400 text-xs">▾</span>
             </button>
-            <div v-if="showLangMenu" class="absolute right-0 top-full mt-1 bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden z-50 min-w-[120px]">
+            <div v-if="showLangMenu" role="listbox" :aria-label="t('nav.switchLanguage')" class="absolute right-0 top-full mt-1 bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden z-50 min-w-[120px]">
               <button
                 v-for="loc in locales"
                 :key="loc.code"
                 @click="switchLocale(loc.code)"
+                role="option"
+                :aria-selected="locale === loc.code"
                 class="w-full px-4 py-2.5 text-left text-sm hover:bg-brand-50 transition-colors flex items-center gap-2"
                 :class="locale === loc.code ? 'text-brand-600 font-semibold bg-brand-50' : 'text-gray-700'"
               >
-                <span v-if="locale === loc.code" class="text-brand-600">✓</span>
-                <span v-else class="w-4"></span>
+                <span aria-hidden="true" v-if="locale === loc.code" class="text-brand-600">✓</span>
+                <span aria-hidden="true" v-else class="w-4"></span>
                 {{ loc.name }}
               </button>
             </div>
@@ -80,6 +104,9 @@ async function switchLocale(code: string) {
     <!-- Back to top + scroll progress -->
     <BackToTop />
 
+    <!-- Keyboard shortcuts help modal -->
+    <HelpModal />
+
     <!-- Toast notifications -->
     <Teleport to="body">
       <div class="fixed top-20 right-4 z-[200] space-y-2 pointer-events-none">
@@ -90,30 +117,30 @@ async function switchLocale(code: string) {
     </Teleport>
 
     <!-- Mobile bottom nav -->
-    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-40 md:hidden">
+    <nav :aria-label="t('nav.mobileNav')" class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-40 md:hidden">
       <div class="flex">
         <NuxtLink to="/" class="flex-1 flex flex-col items-center py-3 text-gray-500 hover:text-brand-600 transition-colors">
-          <span class="text-xl">&#9992;</span>
+          <span aria-hidden="true" class="text-xl">&#9992;</span>
           <span class="text-xs mt-0.5">{{ t('nav.search') }}</span>
         </NuxtLink>
         <NuxtLink to="/deals" class="flex-1 flex flex-col items-center py-3 text-red-500 hover:text-red-600 transition-colors">
-          <span class="text-xl">🔥</span>
-          <span class="text-xs mt-0.5 font-semibold">Oferte</span>
+          <span aria-hidden="true" class="text-xl">🔥</span>
+          <span class="text-xs mt-0.5 font-semibold">{{ t('nav.deals') }}</span>
         </NuxtLink>
         <NuxtLink to="/my-booking" class="flex-1 flex flex-col items-center py-3 text-gray-500 hover:text-brand-600 transition-colors">
-          <span class="text-xl">&#128196;</span>
+          <span aria-hidden="true" class="text-xl">&#128196;</span>
           <span class="text-xs mt-0.5">{{ t('nav.myBooking') }}</span>
         </NuxtLink>
       </div>
     </nav>
     <div class="h-14 md:hidden"></div>
 
-    <footer class="bg-white border-t border-gray-200 mt-auto">
+    <footer role="contentinfo" class="bg-white border-t border-gray-200 mt-auto">
       <div class="max-w-6xl mx-auto px-4 py-10">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
           <!-- Brand -->
           <div>
-            <div class="text-xl font-bold text-brand-600 mb-2">✈ YouFly</div>
+            <div class="text-xl font-bold text-brand-600 mb-2"><span aria-hidden="true">✈</span> YouFly</div>
             <p class="text-sm text-gray-500 leading-relaxed">{{ t('footer.tagline') }}</p>
             <div class="mt-4 flex items-center gap-2 text-xs text-gray-400">
               <span>{{ t('footer.powered') }}</span>
@@ -125,14 +152,15 @@ async function switchLocale(code: string) {
             <ul class="space-y-2 text-sm text-gray-500">
               <li><NuxtLink to="/" class="hover:text-brand-600 transition-colors">{{ t('nav.search') }}</NuxtLink></li>
               <li><NuxtLink to="/my-booking" class="hover:text-brand-600 transition-colors">{{ t('footer.myBooking') }}</NuxtLink></li>
-              <li><NuxtLink to="/about" class="hover:text-brand-600 transition-colors">Despre YouFly</NuxtLink></li>
-              <li><NuxtLink to="/blog" class="hover:text-brand-600 transition-colors">Blog</NuxtLink></li>
-              <li><NuxtLink to="/faq" class="hover:text-brand-600 transition-colors">Întrebări frecvente</NuxtLink></li>
-              <li><NuxtLink to="/flight-status" class="hover:text-brand-600 transition-colors">Status Zbor</NuxtLink></li>
-              <li><NuxtLink to="/checkin" class="hover:text-brand-600 transition-colors">Check-in Online</NuxtLink></li>
-              <li><NuxtLink to="/luggage" class="hover:text-brand-600 transition-colors">Reguli Bagaj</NuxtLink></li>
-              <li><NuxtLink to="/visa" class="hover:text-brand-600 transition-colors">Cerințe Viză</NuxtLink></li>
-              <li><NuxtLink to="/contact" class="hover:text-brand-600 transition-colors">Contact</NuxtLink></li>
+              <li><NuxtLink to="/about" class="hover:text-brand-600 transition-colors">{{ t('nav.about') }}</NuxtLink></li>
+              <li><NuxtLink to="/blog" class="hover:text-brand-600 transition-colors">{{ t('nav.blog') }}</NuxtLink></li>
+              <li><NuxtLink to="/faq" class="hover:text-brand-600 transition-colors">{{ t('nav.faq') }}</NuxtLink></li>
+              <li><NuxtLink to="/flight-status" class="hover:text-brand-600 transition-colors">{{ t('nav.flightStatus') }}</NuxtLink></li>
+              <li><NuxtLink to="/checkin" class="hover:text-brand-600 transition-colors">{{ t('nav.checkin') }}</NuxtLink></li>
+              <li><NuxtLink to="/luggage" class="hover:text-brand-600 transition-colors">{{ t('nav.luggage') }}</NuxtLink></li>
+              <li><NuxtLink to="/visa" class="hover:text-brand-600 transition-colors">{{ t('nav.visa') }}</NuxtLink></li>
+              <li><NuxtLink to="/airports" class="hover:text-brand-600 transition-colors">{{ t('nav.airports') }}</NuxtLink></li>
+              <li><NuxtLink to="/contact" class="hover:text-brand-600 transition-colors">{{ t('nav.contact') }}</NuxtLink></li>
               <li><NuxtLink to="/terms" class="hover:text-brand-600 transition-colors">{{ t('footer.terms') }}</NuxtLink></li>
               <li><NuxtLink to="/privacy" class="hover:text-brand-600 transition-colors">{{ t('footer.privacy') }}</NuxtLink></li>
             </ul>
@@ -141,8 +169,8 @@ async function switchLocale(code: string) {
           <div>
             <h4 class="text-sm font-semibold text-gray-800 mb-3">{{ t('footer.contact') }}</h4>
             <ul class="space-y-2 text-sm text-gray-500">
-              <li class="flex items-center gap-2">📞 <a :href="`tel:${t('footer.phone')}`" class="hover:text-brand-600 transition-colors">{{ t('footer.phone') }}</a></li>
-              <li class="flex items-center gap-2">✉️ <a :href="`mailto:${t('footer.email')}`" class="hover:text-brand-600 transition-colors">{{ t('footer.email') }}</a></li>
+              <li class="flex items-center gap-2"><span aria-hidden="true">📞</span> <a :href="`tel:${t('footer.phone')}`" class="hover:text-brand-600 transition-colors">{{ t('footer.phone') }}</a></li>
+              <li class="flex items-center gap-2"><span aria-hidden="true">✉️</span> <a :href="`mailto:${t('footer.email')}`" class="hover:text-brand-600 transition-colors">{{ t('footer.email') }}</a></li>
             </ul>
           </div>
         </div>

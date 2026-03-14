@@ -81,7 +81,8 @@ export const useOffersStore = defineStore('offers', {
         this.all = data
         this.applyFilters()
       } catch (e: any) {
-        this.error = e?.data?.message || 'Nu s-au putut încărca zborurile'
+        const { $i18n } = useNuxtApp()
+        this.error = e?.data?.message || ($i18n as any).t('errors.loadFailed')
       } finally {
         this.isLoading = false
       }

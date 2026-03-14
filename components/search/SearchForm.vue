@@ -46,10 +46,10 @@ function nextWeekday(day: number) { // 0=Sun, 5=Fri, 6=Sat
 }
 
 const quickDates = computed(() => [
-  { label: 'Azi', value: today },
-  { label: 'Mâine', value: addDays(1) },
-  { label: 'Vineri', value: nextWeekday(5) },
-  { label: 'Weekend', value: nextWeekday(6) },
+  { label: t('search.today'), value: today },
+  { label: t('search.tomorrow'), value: addDays(1) },
+  { label: t('search.friday'), value: nextWeekday(5) },
+  { label: t('search.weekend'), value: nextWeekday(6) },
 ])
 
 const canSearch = computed(() =>
@@ -71,7 +71,8 @@ const sameAirportError = computed(() =>
 const totalPassengers = computed(() => searchStore.adults + searchStore.children + searchStore.infants)
 const passengersLabel = computed(() => {
   const n = totalPassengers.value
-  return `${n} ${n === 1 ? t('search.passenger') : t('search.passengers_plural')} · ${searchStore.cabinClass}`
+  const cabinLabel = cabinOptions.value.find(o => o.value === searchStore.cabinClass)?.label || searchStore.cabinClass
+  return `${n} ${n === 1 ? t('search.passenger') : t('search.passengers_plural')} · ${cabinLabel}`
 })
 
 const cabinOptions = computed(() => [
@@ -83,13 +84,14 @@ const cabinOptions = computed(() => [
 </script>
 
 <template>
-  <div class="bg-white rounded-2xl shadow-xl p-6 w-full max-w-4xl mx-auto">
+  <div role="search" :aria-label="t('search.formLabel')" class="bg-white rounded-2xl shadow-xl p-6 w-full max-w-4xl mx-auto">
     <!-- Trip type -->
     <div class="flex gap-2 mb-6">
       <button
         v-for="type in [{ v: 'oneway', label: t('search.oneWay') }, { v: 'return', label: t('search.return') }]"
         :key="type.v"
         @click="tripType = type.v as any"
+        :aria-pressed="tripType === type.v"
         class="px-4 py-2 rounded-full text-sm font-medium transition-all"
         :class="tripType === type.v ? 'bg-brand-600 text-white shadow-md' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'"
       >{{ type.label }}</button>
@@ -98,8 +100,8 @@ const cabinOptions = computed(() => [
     <!-- Airport row -->
     <div class="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] gap-3 mb-4 items-end">
       <AirportInput v-model="searchStore.origin" :label="t('search.from')" :placeholder="t('search.fromPlaceholder')" />
-      <button @click="swapAirports" class="mb-1 p-3 rounded-full hover:bg-gray-100 transition-colors text-gray-500 text-lg self-end border border-gray-200" title="Swap">
-        ⇄
+      <button @click="swapAirports" :aria-label="t('search.swap')" class="mb-1 p-3 rounded-full hover:bg-gray-100 transition-colors text-gray-500 text-lg self-end border border-gray-200">
+        <span aria-hidden="true">⇄</span>
       </button>
       <AirportInput v-model="searchStore.destination" :label="t('search.to')" :placeholder="t('search.toPlaceholder')" />
     </div>
@@ -107,13 +109,14 @@ const cabinOptions = computed(() => [
     <!-- Dates + passengers -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6">
       <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">{{ t('search.departure') }}</label>
-        <input type="date" v-model="searchStore.departureDate" :min="today"
+        <label for="search-departure" class="block text-sm font-medium text-gray-700 mb-1">{{ t('search.departure') }}</label>
+        <input id="search-departure" type="date" v-model="searchStore.departureDate" :min="today"
           class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 text-gray-900" />
         <div class="flex gap-1.5 mt-1.5 flex-wrap">
           <button v-for="qd in quickDates" :key="qd.label"
             @click="searchStore.departureDate = qd.value"
             type="button"
+            :aria-pressed="searchStore.departureDate === qd.value"
             class="px-2.5 py-1 text-xs rounded-full border transition-colors"
             :class="searchStore.departureDate === qd.value ? 'bg-brand-600 text-white border-brand-600' : 'border-gray-200 text-gray-500 hover:border-brand-300 hover:text-brand-600'">
             {{ qd.label }}
@@ -121,14 +124,16 @@ const cabinOptions = computed(() => [
         </div>
       </div>
       <div v-if="tripType === 'return'">
-        <label class="block text-sm font-medium text-gray-700 mb-1">{{ t('search.returnDate') }}</label>
-        <input type="date" v-model="searchStore.returnDate" :min="searchStore.departureDate || today"
+        <label for="search-return" class="block text-sm font-medium text-gray-700 mb-1">{{ t('search.returnDate') }}</label>
+        <input id="search-return" type="date" v-model="searchStore.returnDate" :min="searchStore.departureDate || today"
           class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 text-gray-900" />
       </div>
       <div :class="tripType === 'return' ? 'md:col-span-1' : 'md:col-span-2'">
-        <label class="block text-sm font-medium text-gray-700 mb-1">{{ t('search.passengers') }}</label>
+        <label id="passengers-label" class="block text-sm font-medium text-gray-700 mb-1">{{ t('search.passengers') }}</label>
         <div class="relative" ref="passengerDropdownRef">
           <button @click="showPassengers = !showPassengers"
+            aria-labelledby="passengers-label"
+            :aria-expanded="showPassengers" aria-haspopup="true"
             class="w-full px-4 py-3 border border-gray-300 rounded-xl text-left text-gray-900 hover:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500 transition-colors">
             {{ passengersLabel }}
           </button>
@@ -144,10 +149,12 @@ const cabinOptions = computed(() => [
               </div>
               <div class="flex items-center gap-3">
                 <button @click="(searchStore as any)[p.key] = Math.max(p.min, (searchStore as any)[p.key] - 1)"
-                  class="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100 text-gray-700 font-bold">−</button>
-                <span class="w-6 text-center text-sm font-semibold">{{ (searchStore as any)[p.key] }}</span>
+                  :aria-label="t('search.decrease') + ' ' + p.label"
+                  class="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100 text-gray-700 font-bold"><span aria-hidden="true">−</span></button>
+                <span class="w-6 text-center text-sm font-semibold" aria-live="polite">{{ (searchStore as any)[p.key] }}</span>
                 <button @click="(searchStore as any)[p.key]++"
-                  class="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100 text-gray-700 font-bold">+</button>
+                  :aria-label="t('search.increase') + ' ' + p.label"
+                  class="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100 text-gray-700 font-bold"><span aria-hidden="true">+</span></button>
               </div>
             </div>
             <div class="mt-3 pt-3 border-t">
@@ -162,17 +169,17 @@ const cabinOptions = computed(() => [
       </div>
     </div>
 
-    <p v-if="sameAirportError" class="text-orange-600 text-sm mb-4 bg-orange-50 p-3 rounded-xl">&#9888; Aeroportul de plecare și destinație nu pot fi identice.</p>
-    <p v-if="searchStore.searchError" class="text-red-600 text-sm mb-4 bg-red-50 p-3 rounded-xl">{{ searchStore.searchError }}</p>
+    <p v-if="sameAirportError" role="alert" class="text-orange-600 text-sm mb-4 bg-orange-50 p-3 rounded-xl"><span aria-hidden="true">&#9888;</span> {{ t('common.sameAirportError') }}</p>
+    <p v-if="searchStore.searchError" role="alert" class="text-red-600 text-sm mb-4 bg-red-50 p-3 rounded-xl">{{ searchStore.searchError }}</p>
 
     <button @click="onSubmit"
       :disabled="searchStore.isSearching || !canSearch"
       class="w-full py-4 bg-brand-600 hover:bg-brand-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-semibold rounded-xl text-lg transition-colors shadow-lg">
       <span v-if="searchStore.isSearching" class="flex items-center justify-center gap-2">
-        <div class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+        <div role="status" :aria-label="t('common.loading')" class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
         {{ t('search.searching') }}
       </span>
-      <span v-else>🔍 {{ t('search.searchButton') }}</span>
+      <span v-else><span aria-hidden="true">🔍</span> {{ t('search.searchButton') }}</span>
     </button>
     <LoadingOverlay v-if="searchStore.isSearching" />
   </div>

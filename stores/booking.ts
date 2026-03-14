@@ -53,10 +53,12 @@ export const useBookingStore = defineStore('booking', {
         return true
       } catch (e: any) {
         const msg = e?.data?.message || ''
+        const { $i18n } = useNuxtApp()
+        const t = ($i18n as any).t
         if (msg === 'offer_expired') {
-          this.bookingError = 'Sorry, this offer has expired. Please search again.'
+          this.bookingError = t('payment.offerExpired')
         } else {
-          this.bookingError = msg || 'Booking failed. Please try again.'
+          this.bookingError = msg || t('payment.bookingFailed')
         }
         return false
       } finally {

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+const { t } = useI18n()
 const show = ref(false)
 const progress = ref(0)
 
@@ -20,7 +21,7 @@ function scrollToTop() {
 <template>
   <Teleport to="body">
     <!-- Scroll progress bar -->
-    <div class="fixed top-0 left-0 right-0 h-0.5 z-[60] pointer-events-none">
+    <div role="progressbar" :aria-valuenow="progress" aria-valuemin="0" aria-valuemax="100" :aria-valuetext="progress + '%'" :aria-label="t('common.readingProgress')" class="fixed top-0 left-0 right-0 h-0.5 z-[60] pointer-events-none">
       <div class="h-full bg-brand-500 transition-all duration-100"
         :style="`width: ${progress}%`"></div>
     </div>
@@ -29,8 +30,8 @@ function scrollToTop() {
     <Transition name="fade-up">
       <button v-if="show" @click="scrollToTop"
         class="fixed bottom-20 md:bottom-6 right-4 z-40 w-10 h-10 bg-white border border-gray-200 rounded-full shadow-lg flex items-center justify-center text-gray-600 hover:bg-brand-600 hover:text-white hover:border-brand-600 transition-all"
-        title="Înapoi sus">
-        ↑
+        :title="t('common.backToTop')" :aria-label="t('common.backToTop')">
+        <span aria-hidden="true">↑</span>
       </button>
     </Transition>
   </Teleport>

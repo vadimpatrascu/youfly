@@ -17,22 +17,27 @@ const features = computed(() => [
 ])
 
 // Popular routes from Chisinau (RMO = Chisinau in Duffel)
-const popularRoutes = [
-  { from: 'RMO', fromCity: 'Chișinău', to: 'OTP', toCity: 'București', flag: '🇷🇴', price: '35' },
-  { from: 'RMO', fromCity: 'Chișinău', to: 'IST', toCity: 'Istanbul', flag: '🇹🇷', price: '32' },
-  { from: 'RMO', fromCity: 'Chișinău', to: 'LTN', toCity: 'Londra', flag: '🇬🇧', price: '39' },
-  { from: 'RMO', fromCity: 'Chișinău', to: 'VIE', toCity: 'Viena', flag: '🇦🇹', price: '39' },
-  { from: 'RMO', fromCity: 'Chișinău', to: 'BCN', toCity: 'Barcelona', flag: '🇪🇸', price: '31' },
-  { from: 'RMO', fromCity: 'Chișinău', to: 'CDG', toCity: 'Paris', flag: '🇫🇷', price: '73' },
-  { from: 'RMO', fromCity: 'Chișinău', to: 'MXP', toCity: 'Milano', flag: '🇮🇹', price: '59' },
-  { from: 'RMO', fromCity: 'Chișinău', to: 'TLV', toCity: 'Tel Aviv', flag: '🇮🇱', price: '45' },
+const routeData = [
+  { from: 'RMO', to: 'OTP', flag: '🇷🇴', price: '35' },
+  { from: 'RMO', to: 'IST', flag: '🇹🇷', price: '32' },
+  { from: 'RMO', to: 'LTN', flag: '🇬🇧', price: '39' },
+  { from: 'RMO', to: 'VIE', flag: '🇦🇹', price: '39' },
+  { from: 'RMO', to: 'BCN', flag: '🇪🇸', price: '31' },
+  { from: 'RMO', to: 'CDG', flag: '🇫🇷', price: '73' },
+  { from: 'RMO', to: 'MXP', flag: '🇮🇹', price: '59' },
+  { from: 'RMO', to: 'TLV', flag: '🇮🇱', price: '45' },
 ]
+const popularRoutes = computed(() => routeData.map(r => ({
+  ...r,
+  fromCity: t('index.cityRMO'),
+  toCity: t(`index.city_${r.to}`),
+})))
 
-const stats = [
-  { value: '500+', label: 'Companii aeriene' },
-  { value: '10K+', label: 'Destinații' },
-  { value: '5 min', label: 'Timp mediu rezervare' },
-]
+const stats = computed(() => [
+  { value: '500+', label: t('index.statAirlines') },
+  { value: '10K+', label: t('index.statDestinations') },
+  { value: '5 min', label: t('index.statTime') },
+])
 
 const searchingRoute = ref<string | null>(null)
 const searchRouteError = ref('')
@@ -43,6 +48,7 @@ const { searches: recentSearches } = useRecentSearches()
 const newsletterEmail = ref('')
 const newsletterLoading = ref(false)
 const newsletterMsg = ref('')
+const newsletterSuccess = ref(false)
 
 async function subscribeNewsletter() {
   if (!newsletterEmail.value.trim()) return
@@ -50,10 +56,12 @@ async function subscribeNewsletter() {
   newsletterMsg.value = ''
   try {
     await $fetch('/api/newsletter', { method: 'POST', body: { email: newsletterEmail.value } })
-    newsletterMsg.value = '✓ Abonare cu succes! Vei primi alertele de prețuri.'
+    newsletterMsg.value = t('index.newsletterSuccess')
+    newsletterSuccess.value = true
     newsletterEmail.value = ''
   } catch {
-    newsletterMsg.value = 'Eroare. Te rugăm să încerci din nou.'
+    newsletterMsg.value = t('index.newsletterError')
+    newsletterSuccess.value = false
   } finally {
     newsletterLoading.value = false
   }
@@ -69,13 +77,13 @@ async function quickSearchRecent(rs: import('~/composables/useRecentSearches').R
   try {
     const ok = await searchStore.submitSearch()
     if (ok) router.push('/search')
-    else searchRouteError.value = 'Căutare eșuată. Încearcă din nou.'
+    else searchRouteError.value = t('index.searchError')
   } finally {
     searchingRoute.value = null
   }
 }
 
-async function quickSearch(route: typeof popularRoutes[0]) {
+async function quickSearch(route: (typeof popularRoutes.value)[0]) {
   searchingRoute.value = route.to
   searchRouteError.value = ''
   searchStore.origin = { iata_code: 'MD', airport_iata: route.from, name: `${route.fromCity} International Airport`, city_name: route.fromCity, country_code: 'MD' }
@@ -87,7 +95,7 @@ async function quickSearch(route: typeof popularRoutes[0]) {
   try {
     const ok = await searchStore.submitSearch()
     if (ok) router.push('/search')
-    else searchRouteError.value = 'Căutare eșuată. Încearcă din nou.'
+    else searchRouteError.value = t('index.searchError')
   } finally {
     searchingRoute.value = null
   }
@@ -107,12 +115,13 @@ async function quickSearch(route: typeof popularRoutes[0]) {
       <!-- Recent searches -->
       <div v-if="recentSearches.length" class="max-w-4xl mx-auto mt-4 px-4">
         <div class="flex items-center gap-3 flex-wrap">
-          <span class="text-xs text-brand-300 shrink-0">Căutări recente:</span>
+          <span class="text-xs text-brand-300 shrink-0">{{ t('index.recentSearches') }}</span>
           <button v-for="rs in recentSearches.slice(0, 3)" :key="rs.searchedAt"
             @click="quickSearchRecent(rs)"
+            :aria-label="t('index.recentSearchLabel', { from: rs.originCity, to: rs.destinationCity, date: rs.departureDate })"
             class="flex items-center gap-2 bg-white/10 hover:bg-white/20 backdrop-blur rounded-full px-3 py-1.5 text-xs text-white transition-colors border border-white/20">
-            <span>✈</span>
-            <span>{{ rs.originCity }} → {{ rs.destinationCity }}</span>
+            <span aria-hidden="true">✈</span>
+            <span>{{ rs.originCity }} <span aria-hidden="true">→</span> {{ rs.destinationCity }}</span>
             <span class="text-brand-300">{{ rs.departureDate }}</span>
           </button>
         </div>
@@ -130,17 +139,20 @@ async function quickSearch(route: typeof popularRoutes[0]) {
     <!-- Saved favorites -->
     <div v-if="favorites.length" class="max-w-6xl mx-auto px-4 pt-8">
       <h2 class="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2">
-        <span class="text-red-500">♥</span> Rute favorite
+        <span aria-hidden="true" class="text-red-500">♥</span> {{ t('index.savedFavorites') }}
       </h2>
       <div class="flex gap-2 flex-wrap">
-        <button v-for="fav in favorites" :key="fav.from + fav.to"
-          @click="quickSearch({ from: fav.from, fromCity: fav.fromCity, to: fav.to, toCity: fav.toCity, flag: '', price: '' })"
-          class="flex items-center gap-2 bg-white border border-gray-200 hover:border-brand-400 rounded-full px-4 py-2 text-sm transition-colors group">
-          <span class="font-semibold text-gray-700">{{ fav.fromCity }}</span>
-          <span class="text-gray-400">→</span>
-          <span class="font-semibold text-brand-600">{{ fav.toCity }}</span>
-          <button @click.stop="toggleFavorite(fav)" class="text-red-400 hover:text-red-600 ml-1 text-xs">✕</button>
-        </button>
+        <div v-for="fav in favorites" :key="fav.from + fav.to"
+          class="flex items-center gap-2 bg-white border border-gray-200 hover:border-brand-400 rounded-full px-4 py-2 text-sm transition-colors">
+          <button @click="quickSearch({ from: fav.from, fromCity: fav.fromCity, to: fav.to, toCity: fav.toCity, flag: '', price: '' })"
+            :aria-label="t('index.searchRouteLabel', { from: fav.fromCity, to: fav.toCity })"
+            class="flex items-center gap-2">
+            <span class="font-semibold text-gray-700">{{ fav.fromCity }}</span>
+            <span aria-hidden="true" class="text-gray-400">→</span>
+            <span class="font-semibold text-brand-600">{{ fav.toCity }}</span>
+          </button>
+          <button @click.stop="toggleFavorite(fav)" :aria-label="t('index.favoriteRemoveRoute', { from: fav.fromCity, to: fav.toCity })" class="text-red-400 hover:text-red-600 ml-1 text-xs"><span aria-hidden="true">✕</span></button>
+        </div>
       </div>
     </div>
 
@@ -150,14 +162,14 @@ async function quickSearch(route: typeof popularRoutes[0]) {
         <PriceTrends />
         <!-- Quick tip -->
         <div class="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl border border-green-100 p-6">
-          <div class="text-3xl mb-3">💡</div>
-          <h3 class="font-bold text-gray-900 mb-3">Sfaturi pentru prețuri mai mici</h3>
+          <div aria-hidden="true" class="text-3xl mb-3">💡</div>
+          <h3 class="font-bold text-gray-900 mb-3">{{ t('index.priceTips') }}</h3>
           <ul class="space-y-2 text-sm text-gray-700">
-            <li class="flex items-start gap-2"><span class="text-green-500 shrink-0 mt-0.5">✓</span> Rezervați cu 3-6 săptămâni înainte pentru cel mai bun preț</li>
-            <li class="flex items-start gap-2"><span class="text-green-500 shrink-0 mt-0.5">✓</span> Marți și miercuri sunt zilele cu cele mai mici prețuri</li>
-            <li class="flex items-start gap-2"><span class="text-green-500 shrink-0 mt-0.5">✓</span> Evitați zborul în ajunul sărbătorilor legale</li>
-            <li class="flex items-start gap-2"><span class="text-green-500 shrink-0 mt-0.5">✓</span> Comparați aeroporturi alternative (ex. Iași în loc de București)</li>
-            <li class="flex items-start gap-2"><span class="text-green-500 shrink-0 mt-0.5">✓</span> Zborurile cu escală sunt uneori cu 40% mai ieftine</li>
+            <li class="flex items-start gap-2"><span aria-hidden="true" class="text-green-500 shrink-0 mt-0.5">✓</span> {{ t('index.tip1') }}</li>
+            <li class="flex items-start gap-2"><span aria-hidden="true" class="text-green-500 shrink-0 mt-0.5">✓</span> {{ t('index.tip2') }}</li>
+            <li class="flex items-start gap-2"><span aria-hidden="true" class="text-green-500 shrink-0 mt-0.5">✓</span> {{ t('index.tip3') }}</li>
+            <li class="flex items-start gap-2"><span aria-hidden="true" class="text-green-500 shrink-0 mt-0.5">✓</span> {{ t('index.tip4') }}</li>
+            <li class="flex items-start gap-2"><span aria-hidden="true" class="text-green-500 shrink-0 mt-0.5">✓</span> {{ t('index.tip5') }}</li>
           </ul>
         </div>
       </div>
@@ -167,33 +179,37 @@ async function quickSearch(route: typeof popularRoutes[0]) {
     <div class="max-w-6xl mx-auto px-4 py-12">
       <h2 class="text-2xl font-bold text-gray-900 mb-6">{{ t('popularRoutes') }}</h2>
       <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <button
+        <div
           v-for="route in popularRoutes"
           :key="route.to"
-          @click="quickSearch(route)"
-          :disabled="searchingRoute !== null"
-          class="bg-white rounded-2xl border border-gray-200 p-4 text-left hover:border-brand-400 hover:shadow-md transition-all group relative overflow-hidden disabled:opacity-60 disabled:cursor-wait"
+          class="bg-white rounded-2xl border border-gray-200 hover:border-brand-400 hover:shadow-md transition-all group relative overflow-hidden"
         >
-          <div class="absolute inset-0 bg-gradient-to-br from-brand-50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-          <div class="relative">
+          <div class="absolute inset-0 bg-gradient-to-br from-brand-50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
+          <div class="relative p-4">
             <div v-if="searchingRoute === route.to" class="absolute inset-0 flex items-center justify-center bg-white/80 rounded-2xl z-10">
-              <div class="w-6 h-6 border-2 border-brand-500 border-t-transparent rounded-full animate-spin"></div>
+              <div role="status" :aria-label="t('common.loading')" class="w-6 h-6 border-2 border-brand-500 border-t-transparent rounded-full animate-spin"></div>
             </div>
             <div class="flex items-start justify-between mb-1">
-              <div class="text-2xl">{{ route.flag }}</div>
-              <button @click.stop="toggleFavorite({ from: route.from, fromCity: route.fromCity, to: route.to, toCity: route.toCity })"
+              <span aria-hidden="true" class="text-2xl">{{ route.flag }}</span>
+              <button
+                @click.stop="toggleFavorite({ from: route.from, fromCity: route.fromCity, to: route.to, toCity: route.toCity })"
                 class="text-lg transition-colors"
                 :class="isFavorite(route.from, route.to) ? 'text-red-500' : 'text-gray-200 group-hover:text-gray-300'"
-                :title="isFavorite(route.from, route.to) ? 'Scoate din favorite' : 'Adaugă la favorite'">
-                ♥
+                :aria-label="isFavorite(route.from, route.to) ? t('index.favoriteRemoveRoute', { from: route.fromCity, to: route.toCity }) : t('index.favoriteAdd')"
+                :aria-pressed="isFavorite(route.from, route.to)">
+                <span aria-hidden="true">♥</span>
               </button>
             </div>
-            <div class="font-semibold text-gray-900 text-sm group-hover:text-brand-600 transition-colors">{{ route.toCity }}</div>
-            <div class="text-xs text-gray-500 mt-0.5">{{ route.fromCity }} →</div>
-            <div class="mt-2 text-brand-600 font-bold text-sm">de la €{{ route.price }}</div>
+            <button @click="quickSearch(route)" :disabled="searchingRoute !== null"
+              :aria-label="t('index.searchRouteLabel', { from: route.fromCity, to: route.toCity })"
+              class="w-full text-left relative disabled:opacity-60 disabled:cursor-wait focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-1 rounded-lg">
+              <div class="font-semibold text-gray-900 text-sm group-hover:text-brand-600 transition-colors">{{ route.toCity }}</div>
+              <div class="text-xs text-gray-500 mt-0.5">{{ route.fromCity }} <span aria-hidden="true">→</span></div>
+              <div class="mt-2 text-brand-600 font-bold text-sm">{{ t('index.fromPrice') }}{{ route.price }}</div>
+            </button>
           </div>
-        </button>
-        <p v-if="searchRouteError" class="col-span-full text-red-600 text-sm text-center">{{ searchRouteError }}</p>
+        </div>
+        <p v-if="searchRouteError" role="alert" class="col-span-full text-red-600 text-sm text-center">{{ searchRouteError }}</p>
       </div>
     </div>
 
@@ -202,7 +218,7 @@ async function quickSearch(route: typeof popularRoutes[0]) {
       <div class="max-w-6xl mx-auto px-4 py-16">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div v-for="f in features" :key="f.title" class="text-center p-6">
-            <div class="text-5xl mb-4">{{ f.icon }}</div>
+            <div aria-hidden="true" class="text-5xl mb-4">{{ f.icon }}</div>
             <h3 class="font-bold text-gray-900 mb-2 text-lg">{{ f.title }}</h3>
             <p class="text-gray-500 text-sm leading-relaxed">{{ f.desc }}</p>
           </div>
@@ -212,29 +228,29 @@ async function quickSearch(route: typeof popularRoutes[0]) {
 
     <!-- Trust strip -->
     <div class="max-w-6xl mx-auto px-4 py-10 text-center">
-      <p class="text-sm text-gray-400 mb-4">Partener de încredere</p>
-      <div class="flex items-center justify-center gap-8 opacity-40 grayscale">
-        <span class="text-2xl font-bold tracking-wide">TAROM</span>
-        <span class="text-2xl font-bold tracking-wide">TURKISH</span>
-        <span class="text-2xl font-bold tracking-wide">RYANAIR</span>
-        <span class="text-2xl font-bold tracking-wide">WIZZ</span>
-        <span class="text-2xl font-bold tracking-wide">LOT</span>
+      <p class="text-sm text-gray-400 mb-4">{{ t('index.trustedPartner') }}</p>
+      <div role="img" :aria-label="t('index.airlinesLabel')" class="flex items-center justify-center gap-8 opacity-40 grayscale">
+        <span aria-hidden="true" class="text-2xl font-bold tracking-wide">TAROM</span>
+        <span aria-hidden="true" class="text-2xl font-bold tracking-wide">TURKISH</span>
+        <span aria-hidden="true" class="text-2xl font-bold tracking-wide">RYANAIR</span>
+        <span aria-hidden="true" class="text-2xl font-bold tracking-wide">WIZZ</span>
+        <span aria-hidden="true" class="text-2xl font-bold tracking-wide">LOT</span>
       </div>
     </div>
   
     <!-- Testimonials -->
     <div class="bg-brand-600 text-white py-14 px-4">
       <div class="max-w-6xl mx-auto">
-        <h2 class="text-2xl font-bold text-center mb-8 text-white">Ce spun clienții noștri</h2>
+        <h2 class="text-2xl font-bold text-center mb-8 text-white">{{ t('index.testimonialsTitle') }}</h2>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
           <div v-for="review in [
-            { name: 'Maria C.', city: 'Chișinău', text: 'Am găsit un zbor spre Londra cu 40€ mai ieftin decât pe alte platforme! Procesul a fost extrem de simplu.', stars: 5 },
-            { name: 'Alexandru P.', city: 'Bălți', text: 'Rezervarea a durat mai puțin de 5 minute. Interfața e clară și ușor de folosit. Recomand cu încredere!', stars: 5 },
-            { name: 'Elena M.', city: 'Chișinău', text: 'Am rezervat bilete pentru întreaga familie la prețuri foarte bune. Filtrele de căutare sunt foarte utile.', stars: 5 },
+            { name: 'Maria C.', city: t('index.cityRMO'), text: t('index.review1'), stars: 5 },
+            { name: 'Alexandru P.', city: t('index.cityBalti'), text: t('index.review2'), stars: 5 },
+            { name: 'Elena M.', city: t('index.cityRMO'), text: t('index.review3'), stars: 5 },
           ]" :key="review.name"
             class="bg-white/10 backdrop-blur rounded-2xl p-5">
-            <div class="flex mb-3">
-              <span v-for="s in review.stars" :key="s" class="text-yellow-300 text-lg">★</span>
+            <div role="img" :aria-label="t('index.starsLabel', { n: review.stars })" class="flex mb-3">
+              <span v-for="s in review.stars" :key="s" aria-hidden="true" class="text-yellow-300 text-lg">★</span>
             </div>
             <p class="text-brand-100 text-sm leading-relaxed mb-4">"{{ review.text }}"</p>
             <div class="flex items-center gap-3">
@@ -253,22 +269,22 @@ async function quickSearch(route: typeof popularRoutes[0]) {
 
     <!-- How it works -->
     <div class="max-w-6xl mx-auto px-4 py-12 border-t border-gray-100">
-      <h2 class="text-2xl font-bold text-gray-900 mb-8 text-center">Cum funcționează</h2>
+      <h2 class="text-2xl font-bold text-gray-900 mb-8 text-center">{{ t('index.howItWorksTitle') }}</h2>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div class="text-center">
           <div class="w-12 h-12 bg-brand-100 text-brand-600 rounded-full flex items-center justify-center text-xl font-bold mx-auto mb-4">1</div>
-          <h3 class="font-semibold text-gray-900 mb-2">Caută zboruri</h3>
-          <p class="text-gray-500 text-sm">Introdu aeroportul de plecare, destinația și datele de călătorie.</p>
+          <h3 class="font-semibold text-gray-900 mb-2">{{ t('index.step1Title') }}</h3>
+          <p class="text-gray-500 text-sm">{{ t('index.step1Desc') }}</p>
         </div>
         <div class="text-center">
           <div class="w-12 h-12 bg-brand-100 text-brand-600 rounded-full flex items-center justify-center text-xl font-bold mx-auto mb-4">2</div>
-          <h3 class="font-semibold text-gray-900 mb-2">Compară prețurile</h3>
-          <p class="text-gray-500 text-sm">Filtrează după preț, escale, companie aeriană și durata zborului.</p>
+          <h3 class="font-semibold text-gray-900 mb-2">{{ t('index.step2Title') }}</h3>
+          <p class="text-gray-500 text-sm">{{ t('index.step2Desc') }}</p>
         </div>
         <div class="text-center">
           <div class="w-12 h-12 bg-brand-100 text-brand-600 rounded-full flex items-center justify-center text-xl font-bold mx-auto mb-4">3</div>
-          <h3 class="font-semibold text-gray-900 mb-2">Rezervă în câteva minute</h3>
-          <p class="text-gray-500 text-sm">Completează datele pasagerilor și finalizează rezervarea rapid și sigur.</p>
+          <h3 class="font-semibold text-gray-900 mb-2">{{ t('index.step3Title') }}</h3>
+          <p class="text-gray-500 text-sm">{{ t('index.step3Desc') }}</p>
         </div>
       </div>
     </div>
@@ -276,17 +292,17 @@ async function quickSearch(route: typeof popularRoutes[0]) {
     <!-- Travel resources strip -->
     <div class="bg-gray-50 border-y border-gray-200 py-8 px-4">
       <div class="max-w-6xl mx-auto">
-        <h2 class="text-lg font-bold text-gray-900 text-center mb-5">Resurse pentru călători</h2>
+        <h2 class="text-lg font-bold text-gray-900 text-center mb-5">{{ t('index.resourcesTitle') }}</h2>
         <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
           <NuxtLink v-for="res in [
-            { to: '/visa', icon: '🛂', label: 'Cerințe Viză' },
-            { to: '/checkin', icon: '🎫', label: 'Check-in Online' },
-            { to: '/luggage', icon: '🧳', label: 'Reguli Bagaj' },
-            { to: '/flight-status', icon: '✈️', label: 'Status Zbor' },
-            { to: '/blog', icon: '📖', label: 'Blog Călătorie' },
+            { to: '/visa', icon: '🛂', label: t('index.resourceVisa') },
+            { to: '/checkin', icon: '🎫', label: t('index.resourceCheckin') },
+            { to: '/luggage', icon: '🧳', label: t('index.resourceLuggage') },
+            { to: '/flight-status', icon: '✈️', label: t('index.resourceStatus') },
+            { to: '/blog', icon: '📖', label: t('index.resourceBlog') },
           ]" :key="res.to" :to="res.to"
             class="flex flex-col items-center gap-2 py-4 px-3 bg-white rounded-xl border border-gray-200 hover:border-brand-400 hover:shadow-sm transition-all text-center group">
-            <span class="text-2xl">{{ res.icon }}</span>
+            <span aria-hidden="true" class="text-2xl">{{ res.icon }}</span>
             <span class="text-xs font-semibold text-gray-700 group-hover:text-brand-600 transition-colors">{{ res.label }}</span>
           </NuxtLink>
         </div>
@@ -296,19 +312,21 @@ async function quickSearch(route: typeof popularRoutes[0]) {
     <!-- Newsletter -->
     <div class="bg-gray-900 text-white py-14 px-4">
       <div class="max-w-lg mx-auto text-center">
-        <div class="text-4xl mb-4">✉️</div>
-        <h2 class="text-2xl font-bold mb-3">Prețuri speciale în inbox-ul tău</h2>
-        <p class="text-gray-400 text-sm mb-6">Abonează-te și primești alertele de prețuri pentru rutele tale favorite. Niciun spam.</p>
+        <div aria-hidden="true" class="text-4xl mb-4">✉️</div>
+        <h2 class="text-2xl font-bold mb-3">{{ t('index.newsletterTitle') }}</h2>
+        <p class="text-gray-400 text-sm mb-6">{{ t('index.newsletterSubtitle') }}</p>
         <form @submit.prevent="subscribeNewsletter" class="flex gap-3 max-w-sm mx-auto">
-          <input v-model="newsletterEmail" type="email" placeholder="email@exemplu.com"
+          <input v-model="newsletterEmail" type="email" :placeholder="t('index.newsletterPlaceholder')"
+            :aria-label="t('index.newsletterPlaceholder')" autocomplete="email"
             class="flex-1 px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-400" />
           <button type="submit" :disabled="newsletterLoading"
             class="px-5 py-3 bg-brand-500 hover:bg-brand-400 disabled:opacity-50 text-white font-semibold rounded-xl transition-colors shrink-0">
-            {{ newsletterLoading ? '...' : 'Abonare' }}
+            <span v-if="newsletterLoading" role="status" :aria-label="t('common.loading')"><span aria-hidden="true">...</span></span>
+            <span v-else>{{ t('index.newsletterBtn') }}</span>
           </button>
         </form>
-        <p v-if="newsletterMsg" class="mt-3 text-sm" :class="newsletterMsg.includes('succes') ? 'text-green-400' : 'text-red-400'">{{ newsletterMsg }}</p>
-        <p class="text-xs text-gray-600 mt-3">Poți dezabona oricând. Datele tale sunt în siguranță.</p>
+        <p v-if="newsletterMsg" aria-live="polite" class="mt-3 text-sm" :class="newsletterSuccess ? 'text-green-400' : 'text-red-400'">{{ newsletterMsg }}</p>
+        <p class="text-xs text-gray-600 mt-3">{{ t('index.newsletterUnsub') }}</p>
       </div>
     </div>
 </div>

@@ -8,10 +8,14 @@ const props = defineProps<{
 }>()
 const emit = defineEmits<{ 'update:modelValue': [Airport | null] }>()
 
+const { t } = useI18n()
 const { query, suggestions, isLoading } = useAirports()
 const isOpen = ref(false)
 const highlightedIndex = ref(-1)
 const containerRef = ref<HTMLDivElement>()
+const uid = Math.random().toString(36).slice(2, 8)
+const listboxId = `airport-listbox-${uid}`
+const optionId = (i: number) => `airport-option-${uid}-${i}`
 
 const displayText = ref(props.modelValue ? formatDisplay(props.modelValue) : '')
 
@@ -83,38 +87,50 @@ onClickOutside(containerRef, () => { isOpen.value = false })
 
 <template>
   <div class="relative" ref="containerRef">
-    <label v-if="label" class="block text-sm font-medium text-gray-700 mb-1">{{ label }}</label>
+    <label v-if="label" :for="`airport-input-${uid}`" class="block text-sm font-medium text-gray-700 mb-1">{{ label }}</label>
     <div class="relative">
       <input
+        :id="`airport-input-${uid}`"
         :value="displayText"
         :placeholder="placeholder"
         class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent text-gray-900 bg-white"
         @input="onInput"
         @focus="onFocus"
         @keydown="onKeydown"
+        role="combobox"
+        :aria-expanded="isOpen && suggestions.length > 0"
+        aria-autocomplete="list"
+        :aria-controls="listboxId"
+        :aria-activedescendant="highlightedIndex >= 0 ? optionId(highlightedIndex) : undefined"
         autocomplete="off"
         spellcheck="false"
       />
-      <div v-if="isLoading" class="absolute right-3 top-1/2 -translate-y-1/2">
-        <div class="w-4 h-4 border-2 border-brand-500 border-t-transparent rounded-full animate-spin"></div>
+      <div v-if="isLoading" role="status" :aria-label="t('common.loading')" class="absolute right-3 top-1/2 -translate-y-1/2">
+        <div aria-hidden="true" class="w-4 h-4 border-2 border-brand-500 border-t-transparent rounded-full animate-spin"></div>
       </div>
       <template v-else-if="modelValue">
         <button @click="emit('update:modelValue', null); displayText = ''; query.value = ''"
           class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-300 hover:text-gray-500 transition-colors text-lg leading-none"
-          title="Șterge">✕</button>
+          :title="t('common.clear')" :aria-label="t('common.clear')"><span aria-hidden="true">✕</span></button>
       </template>
     </div>
     <div
       v-if="isOpen && suggestions.length"
+      :id="listboxId"
+      role="listbox"
+      :aria-label="label || placeholder"
       class="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-xl shadow-2xl overflow-hidden"
       style="max-height: 300px; overflow-y: auto;"
     >
       <div v-if="!query" class="px-4 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wide bg-gray-50 border-b border-gray-100">
-        ⭐ Aeroporturi populare
+        <span aria-hidden="true">⭐</span> {{ t('search.popularAirports') }}
       </div>
       <button
         v-for="(airport, i) in suggestions"
         :key="(airport.airport_iata || airport.iata_code) + i"
+        :id="optionId(i)"
+        role="option"
+        :aria-selected="modelValue ? (modelValue.airport_iata || modelValue.iata_code) === (airport.airport_iata || airport.iata_code) : false"
         class="w-full px-4 py-3 text-left flex items-center gap-3 border-b border-gray-100 last:border-0 transition-colors"
         :class="i === highlightedIndex ? 'bg-brand-50' : 'hover:bg-gray-50'"
         @mousedown.prevent="select(airport)"
@@ -131,12 +147,12 @@ onClickOutside(containerRef, () => { isOpen.value = false })
         <div class="min-w-0 flex-1">
           <div class="text-sm font-semibold text-gray-900 truncate flex items-center gap-1.5">
             {{ airport.city_name }}
-            <span v-if="(airport as any).is_city" class="text-xs font-normal text-brand-500 bg-brand-50 px-1.5 py-0.5 rounded-full shrink-0">Toate aeroporturile</span>
+            <span v-if="(airport as any).is_city" class="text-xs font-normal text-brand-500 bg-brand-50 px-1.5 py-0.5 rounded-full shrink-0">{{ t('search.allAirports') }}</span>
           </div>
-          <div class="text-xs text-gray-500 truncate">{{ airport.name }}</div>
+          <div class="text-xs text-gray-500 truncate">{{ (airport as any).is_city ? t('search.allAirports') : airport.name }}</div>
         </div>
         <div v-if="modelValue && (modelValue.airport_iata || modelValue.iata_code) === (airport.airport_iata || airport.iata_code)"
-          class="shrink-0 text-brand-600 font-bold text-sm">&#10003;</div>
+          aria-hidden="true" class="shrink-0 text-brand-600 font-bold text-sm">&#10003;</div>
       </button>
     </div>
   </div>

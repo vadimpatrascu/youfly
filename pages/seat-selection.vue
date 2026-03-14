@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { useBookingStore } from '~/stores/booking'
+const { t } = useI18n()
 const bookingStore = useBookingStore()
 const router = useRouter()
 
-useHead({ title: 'Selectare loc — YouFly' })
+useHead({ title: computed(() => t('seatSelection.title') + ' — YouFly') })
 
 onMounted(() => {
   if (!bookingStore.selectedOffer || !bookingStore.passengers.length) router.push('/')
@@ -94,9 +95,9 @@ function skip() {
 <template>
   <div class="max-w-5xl mx-auto px-4 py-6">
     <div class="flex items-center gap-3 mb-6">
-      <button @click="router.back()" class="text-gray-500 hover:text-gray-700 text-sm">← Înapoi</button>
-      <h1 class="text-2xl font-bold text-gray-900">Selectare loc</h1>
-      <button @click="skip" class="ml-auto text-sm text-gray-500 hover:text-brand-600 underline">Sari peste</button>
+      <button @click="router.back()" :aria-label="t('seatSelection.back')" class="text-gray-500 hover:text-gray-700 text-sm">{{ t('seatSelection.back') }}</button>
+      <h1 class="text-2xl font-bold text-gray-900">{{ t('seatSelection.title') }}</h1>
+      <button @click="skip" class="ml-auto text-sm text-gray-500 hover:text-brand-600 underline">{{ t('seatSelection.skip') }}</button>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -105,15 +106,15 @@ function skip() {
         <div class="bg-white rounded-2xl border border-gray-200 p-4 overflow-x-auto">
           <!-- Legend -->
           <div class="flex items-center gap-4 mb-4 text-xs flex-wrap">
-            <div class="flex items-center gap-1.5"><div class="w-5 h-5 bg-yellow-100 border-b-2 border-yellow-400 rounded-t-sm"></div> Business (1-3)</div>
-            <div class="flex items-center gap-1.5"><div class="w-5 h-5 bg-green-100 border-b-2 border-green-400 rounded-t-sm"></div> Extra legroom (4-10)</div>
-            <div class="flex items-center gap-1.5"><div class="w-5 h-5 bg-blue-50 border-b-2 border-blue-200 rounded-t-sm"></div> Standard</div>
-            <div class="flex items-center gap-1.5"><div class="w-5 h-5 bg-brand-500 border-b-2 border-brand-700 rounded-t-sm"></div> Selectat</div>
-            <div class="flex items-center gap-1.5"><div class="w-5 h-5 bg-gray-300 border-b-2 border-gray-400 rounded-t-sm opacity-60"></div> Ocupat</div>
+            <div class="flex items-center gap-1.5"><div aria-hidden="true" class="w-5 h-5 bg-yellow-100 border-b-2 border-yellow-400 rounded-t-sm"></div> {{ t('seatSelection.legendBusiness') }}</div>
+            <div class="flex items-center gap-1.5"><div aria-hidden="true" class="w-5 h-5 bg-green-100 border-b-2 border-green-400 rounded-t-sm"></div> {{ t('seatSelection.legendExtraLeg') }}</div>
+            <div class="flex items-center gap-1.5"><div aria-hidden="true" class="w-5 h-5 bg-blue-50 border-b-2 border-blue-200 rounded-t-sm"></div> {{ t('seatSelection.legendStandard') }}</div>
+            <div class="flex items-center gap-1.5"><div aria-hidden="true" class="w-5 h-5 bg-brand-500 border-b-2 border-brand-700 rounded-t-sm"></div> {{ t('seatSelection.legendSelected') }}</div>
+            <div class="flex items-center gap-1.5"><div aria-hidden="true" class="w-5 h-5 bg-gray-300 border-b-2 border-gray-400 rounded-t-sm opacity-60"></div> {{ t('seatSelection.legendTaken') }}</div>
           </div>
 
           <!-- Airplane nose -->
-          <div class="text-center text-3xl mb-2">✈</div>
+          <div aria-hidden="true" class="text-center text-3xl mb-2">✈</div>
 
           <!-- Seat grid -->
           <div class="min-w-[280px]">
@@ -130,7 +131,7 @@ function skip() {
               <!-- Exit row marker -->
               <div v-if="isExit(row)" class="flex items-center gap-1 my-1 text-xs text-orange-500 font-semibold">
                 <div class="flex-1 h-px bg-orange-200"></div>
-                <span>🚪 Ieșire urgență</span>
+                <span>{{ t('seatSelection.exitRow') }}</span>
                 <div class="flex-1 h-px bg-orange-200"></div>
               </div>
 
@@ -139,19 +140,25 @@ function skip() {
                 <div class="w-8 text-xs text-center text-gray-400 font-mono">{{ row }}</div>
                 <div class="w-2"></div>
                 <!-- Left seats A B C -->
-                <div v-for="col in ['A','B','C']" :key="col"
+                <button v-for="col in ['A','B','C']" :key="col"
                   :class="getSeatClass(row, col)"
+                  :disabled="getSeatStatus(row, col) === 'taken'"
+                  :aria-label="`${t('seatSelection.seat')} ${row}${col} — ${getSeatStatus(row, col) === 'taken' ? t('seatSelection.taken') : getSeatStatus(row, col) === 'mine' ? t('seatSelection.selected') : t('seatSelection.available')}`"
+                  :aria-pressed="getSeatStatus(row, col) === 'mine'"
                   @click="selectSeat(row, col)">
                   {{ col }}
-                </div>
+                </button>
                 <!-- Aisle -->
-                <div class="w-6 text-center text-xs text-gray-300">|</div>
+                <div aria-hidden="true" class="w-6 text-center text-xs text-gray-300">|</div>
                 <!-- Right seats D E F -->
-                <div v-for="col in ['D','E','F']" :key="col"
+                <button v-for="col in ['D','E','F']" :key="col"
                   :class="getSeatClass(row, col)"
+                  :disabled="getSeatStatus(row, col) === 'taken'"
+                  :aria-label="`${t('seatSelection.seat')} ${row}${col} — ${getSeatStatus(row, col) === 'taken' ? t('seatSelection.taken') : getSeatStatus(row, col) === 'mine' ? t('seatSelection.selected') : t('seatSelection.available')}`"
+                  :aria-pressed="getSeatStatus(row, col) === 'mine'"
                   @click="selectSeat(row, col)">
                   {{ col }}
-                </div>
+                </button>
               </div>
             </div>
           </div>
@@ -162,10 +169,11 @@ function skip() {
       <div class="space-y-4">
         <!-- Passengers -->
         <div class="bg-white rounded-2xl border border-gray-200 p-5">
-          <h3 class="font-semibold text-gray-900 mb-3">Pasageri</h3>
+          <h3 class="font-semibold text-gray-900 mb-3">{{ t('seatSelection.passengers') }}</h3>
           <div class="space-y-2">
             <button v-for="(p, i) in passengers" :key="p.duffelPassengerId"
               @click="activePassengerIdx = i"
+              :aria-pressed="activePassengerIdx === i"
               class="w-full flex items-center gap-3 p-3 rounded-xl transition-all"
               :class="activePassengerIdx === i ? 'bg-brand-50 border border-brand-200' : 'bg-gray-50 border border-transparent hover:border-gray-200'">
               <div class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold shrink-0"
@@ -175,12 +183,12 @@ function skip() {
               <div class="flex-1 text-left">
                 <div class="text-sm font-medium text-gray-900">{{ p.given_name }} {{ p.family_name }}</div>
                 <div v-if="selectedSeats[p.duffelPassengerId]" class="text-xs text-brand-600 font-semibold">
-                  Loc: {{ selectedSeats[p.duffelPassengerId] }}
+                  {{ t('seatSelection.seatLabel') }} {{ selectedSeats[p.duffelPassengerId] }}
                 </div>
-                <div v-else class="text-xs text-gray-400">Nu a selectat</div>
+                <div v-else class="text-xs text-gray-400">{{ t('seatSelection.noSeat') }}</div>
               </div>
-              <span v-if="selectedSeats[p.duffelPassengerId]" class="text-green-500">✓</span>
-              <span v-else class="text-gray-300">○</span>
+              <span v-if="selectedSeats[p.duffelPassengerId]" aria-hidden="true" class="text-green-500">✓</span>
+              <span v-else aria-hidden="true" class="text-gray-300">○</span>
             </button>
           </div>
         </div>
@@ -188,9 +196,9 @@ function skip() {
         <button @click="proceed"
           class="w-full py-4 font-semibold rounded-xl text-lg transition-colors shadow-lg"
           :class="allSelected ? 'bg-brand-600 hover:bg-brand-700 text-white' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'">
-          {{ allSelected ? 'Continuă la plată →' : 'Continuă fără loc selectat' }}
+          {{ allSelected ? t('seatSelection.continueWithSeat') : t('seatSelection.continueWithoutSeat') }}
         </button>
-        <p class="text-xs text-center text-gray-400">Selecția locului este opțională</p>
+        <p class="text-xs text-center text-gray-400">{{ t('seatSelection.optional') }}</p>
       </div>
     </div>
   </div>

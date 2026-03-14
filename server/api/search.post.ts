@@ -46,6 +46,8 @@ function mapOffer(offer: any) {
           carrier_name: seg.marketing_carrier?.name || seg.operating_carrier?.name || '',
           carrier_iata: seg.marketing_carrier?.iata_code || seg.operating_carrier?.iata_code || '',
           flight_number: `${seg.marketing_carrier?.iata_code || ''}${seg.marketing_carrier_flight_number || ''}`,
+          duration: parseDurationMins(seg.duration || ''),
+          aircraft: seg.aircraft ? { name: seg.aircraft.name, iata_code: seg.aircraft.iata_code } : null,
         })),
       }
     }),
@@ -57,7 +59,7 @@ export default defineEventHandler(async (event) => {
   const ip = getHeader(event, 'x-forwarded-for')?.split(',')[0] || getHeader(event, 'x-real-ip') || 'unknown'
   const rl = checkRateLimit(ip, 20, 60_000)
   if (!rl.allowed) {
-    throw createError({ statusCode: 429, message: 'Prea multe căutări. Vă rugăm așteptați un minut.' })
+    throw createError({ statusCode: 429, message: 'Too many searches. Please wait a minute.' })
   }
 
   const body = await readBody(event)

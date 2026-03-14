@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useBookingStore } from '~/stores/booking'
-const { t } = useI18n()
-useHead({ title: computed(() => t('confirm.title') + ' — YouFly') })
+const { t, locale } = useI18n()
+useSeo({ title: t('confirm.title'), description: t('confirm.seoDesc') })
 
 const bookingStore = useBookingStore()
 const router = useRouter()
@@ -35,12 +35,12 @@ function printBoardingPass() {
 
 function shortDate(iso: string) {
   if (!iso) return ''
-  return new Date(iso).toLocaleDateString('ro-MD', { weekday: 'short', day: 'numeric', month: 'long' })
+  return new Date(iso).toLocaleDateString(locale.value, { weekday: 'short', day: 'numeric', month: 'long' })
 }
 
 function shortDateCompact(iso: string) {
   if (!iso) return ''
-  return new Date(iso).toLocaleDateString('ro-MD', { day: 'numeric', month: 'short', year: 'numeric' })
+  return new Date(iso).toLocaleDateString(locale.value, { day: 'numeric', month: 'short', year: 'numeric' })
 }
 </script>
 
@@ -51,7 +51,7 @@ function shortDateCompact(iso: string) {
     <div class="max-w-2xl mx-auto px-4 py-8">
       <!-- Success header -->
       <div class="text-center mb-8 no-print">
-        <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+        <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg" aria-hidden="true">
           <span class="text-4xl">&#10003;</span>
         </div>
         <h1 class="text-3xl font-bold text-gray-900 mb-2">{{ t('confirm.title') }}</h1>
@@ -63,7 +63,7 @@ function shortDateCompact(iso: string) {
         <!-- Header strip -->
         <div class="bg-gradient-to-r from-brand-600 to-brand-700 text-white px-6 py-4 flex items-center justify-between">
           <div class="flex items-center gap-2">
-            <span class="text-2xl">✈</span>
+            <span aria-hidden="true" class="text-2xl">✈</span>
             <span class="font-bold text-lg tracking-wider">YouFly</span>
           </div>
           <div class="text-right">
@@ -88,11 +88,11 @@ function shortDateCompact(iso: string) {
               <div class="flex-1 text-center">
                 <div class="flex items-center gap-2">
                   <div class="flex-1 h-px border-t border-dashed border-gray-300"></div>
-                  <span class="text-xl text-gray-400">✈</span>
+                  <span aria-hidden="true" class="text-xl text-gray-400">✈</span>
                   <div class="flex-1 h-px border-t border-dashed border-gray-300"></div>
                 </div>
                 <div class="text-xs text-gray-400 mt-1">
-                  {{ slice.stops === 0 ? 'Direct' : slice.stops + ' escală(e)' }}
+                  {{ slice.stops === 0 ? t('flightCard.direct') : slice.stops + ' ' + t('confirm.stopsLabel') }}
                 </div>
               </div>
               <div class="text-center">
@@ -122,7 +122,7 @@ function shortDateCompact(iso: string) {
         <!-- Passengers + payment row -->
         <div class="px-6 py-4 grid grid-cols-2 gap-4 bg-gray-50">
           <div>
-            <div class="text-xs text-gray-400 uppercase tracking-wider mb-2">Pasageri</div>
+            <div class="text-xs text-gray-400 uppercase tracking-wider mb-2">{{ t('steps.passengers') }}</div>
             <div class="space-y-1">
               <div v-for="p in bookingStore.passengers" :key="p.duffelPassengerId"
                 class="text-sm font-semibold text-gray-800 uppercase tracking-wide">
@@ -143,14 +143,15 @@ function shortDateCompact(iso: string) {
 
       <!-- Copy ref -->
       <div class="bg-brand-50 border border-brand-100 rounded-xl p-4 mb-4 flex items-center gap-3">
-        <span class="text-brand-600 text-xl">🎫</span>
+        <span aria-hidden="true" class="text-brand-600 text-xl">🎫</span>
         <div class="flex-1">
           <div class="text-sm text-gray-500 mb-1">{{ t('confirm.saveHint') }}</div>
           <div class="font-mono font-bold text-brand-700 text-xl tracking-widest">{{ booking && booking.reference }}</div>
         </div>
         <button @click="copyRef"
+          :aria-label="copied ? t('confirm.copied') : t('confirm.copy')"
           class="px-4 py-2 border border-brand-300 text-brand-600 rounded-lg hover:bg-brand-100 transition-colors font-medium text-sm whitespace-nowrap">
-          {{ copied ? '✓ ' + t('confirm.copied') : t('confirm.copy') }}
+          <span v-if="copied" aria-hidden="true">✓ </span>{{ copied ? t('confirm.copied') : t('confirm.copy') }}
         </button>
       </div>
 
@@ -158,7 +159,7 @@ function shortDateCompact(iso: string) {
       <div class="flex gap-3 flex-wrap no-print">
         <button @click="printBoardingPass"
           class="flex-1 py-3 border border-gray-300 rounded-xl text-center text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors flex items-center justify-center gap-2">
-          🖨️ Printează / Salvează PDF
+          <span aria-hidden="true">🖨️</span> {{ t('confirm.printSave') }}
         </button>
         <NuxtLink :to="'/my-booking?ref=' + (booking && booking.reference)"
           class="flex-1 py-3 border border-gray-300 rounded-xl text-center text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">

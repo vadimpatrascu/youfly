@@ -3,7 +3,7 @@ import type { SimplifiedOffer } from '~/stores/offers'
 
 const props = defineProps<{ offer: SimplifiedOffer }>()
 const emit = defineEmits<{ select: [] }>()
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const { formatTime, formatDuration } = useFormatters()
 const { formatWithMdl } = useCurrency()
 
@@ -11,8 +11,15 @@ const expanded = ref(false)
 const linkCopied = ref(false)
 const { toggle: toggleCompare, isSelected: isCompareSelected, compareList } = useCompare()
 
-function copyLink() {
-  const text = `YouFly: ${props.offer.slices[0]?.origin?.iata_code} → ${props.offer.slices[props.offer.slices.length-1]?.destination?.iata_code} — ${formatWithMdl(props.offer.total_amount, props.offer.total_currency)}`
+async function copyLink() {
+  const from = props.offer.slices[0]?.origin?.iata_code
+  const to = props.offer.slices[props.offer.slices.length-1]?.destination?.iata_code
+  const price = formatWithMdl(props.offer.total_amount, props.offer.total_currency)
+  const text = t('flightCard.shareText', { from, to, price })
+  if (navigator.share) {
+    try { await navigator.share({ text, url: window.location.href }) } catch {}
+    return
+  }
   navigator.clipboard.writeText(text).then(() => {
     linkCopied.value = true
     setTimeout(() => { linkCopied.value = false }, 2000)
@@ -32,7 +39,7 @@ function stopsLabel(stops: number) {
 
 function shortDate(iso: string) {
   if (!iso) return ''
-  return new Date(iso).toLocaleDateString('ro-MD', { day: 'numeric', month: 'short' })
+  return new Date(iso).toLocaleDateString(locale.value, { day: 'numeric', month: 'short' })
 }
 
 function dayDiff(departure: string, arrival: string): number {
@@ -54,17 +61,18 @@ function layoverMins(arr: string, dep: string): number {
         :class="i > 0 ? 'mt-4 pt-4 border-t border-gray-100' : ''">
         <div v-if="offer.slices.length > 1"
           class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3 flex items-center gap-2">
-          <span class="w-1.5 h-1.5 rounded-full bg-brand-400 inline-block"></span>
+          <span aria-hidden="true" class="w-1.5 h-1.5 rounded-full bg-brand-400 inline-block"></span>
           <span>{{ i === 0 ? t('flightCard.outbound') : t('flightCard.return') }}</span>
         </div>
         <div class="flex items-center gap-3 md:gap-6">
           <div class="shrink-0 w-10 h-10 flex items-center justify-center">
             <img v-if="slice.segments && slice.segments[0] && slice.segments[0].carrier_iata"
               :src="airlineLogo(slice.segments[0].carrier_iata)"
+              :alt="slice.segments[0].carrier_name || slice.segments[0].carrier_iata"
               class="w-10 h-10 object-contain"
               @error="($event.target).style.display = 'none'"
             />
-            <div v-else class="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-gray-400 text-sm">&#9992;</div>
+            <div v-else aria-hidden="true" class="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-gray-400 text-sm">&#9992;</div>
           </div>
           <div class="flex-1 grid grid-cols-3 items-center gap-2">
             <div>
@@ -76,7 +84,7 @@ function layoverMins(arr: string, dep: string): number {
               <div class="text-xs text-gray-500 mb-1.5">{{ formatDuration(slice.duration_minutes) }}</div>
               <div class="relative flex items-center">
                 <div class="flex-1 h-px bg-gray-300"></div>
-                <span class="text-xs mx-1 text-gray-400">&#9992;</span>
+                <span aria-hidden="true" class="text-xs mx-1 text-gray-400">&#9992;</span>
                 <div class="flex-1 h-px bg-gray-300"></div>
               </div>
               <div class="text-xs mt-1.5 font-semibold"
@@ -88,7 +96,8 @@ function layoverMins(arr: string, dep: string): number {
               <div class="flex items-baseline justify-end gap-1">
                 <span class="text-xl md:text-2xl font-bold text-gray-900">{{ formatTime(slice.arriving_at) }}</span>
                 <span v-if="dayDiff(slice.departing_at, slice.arriving_at) > 0"
-                  class="text-xs text-orange-500 font-bold bg-orange-50 px-1.5 py-0.5 rounded">
+                  class="text-xs text-orange-500 font-bold bg-orange-50 px-1.5 py-0.5 rounded"
+                  :aria-label="t('flightCard.nextDay', { n: dayDiff(slice.departing_at, slice.arriving_at) })">
                   +{{ dayDiff(slice.departing_at, slice.arriving_at) }}
                 </span>
               </div>
@@ -113,27 +122,32 @@ function layoverMins(arr: string, dep: string): number {
             <div class="text-2xl font-bold text-brand-600">{{ formatWithMdl(offer.total_amount, offer.total_currency) }}</div>
             <div class="text-xs text-gray-400">{{ t('flightCard.perPerson') }}</div>
           </div>
-          <button @click="expanded = !expanded" class="text-xs text-brand-600 hover:underline hidden md:block">
-            <span v-if="expanded">&#9650; Ascunde detalii</span>
-            <span v-else>&#9660; Detalii zbor</span>
+          <button @click="expanded = !expanded" :aria-expanded="expanded" :aria-controls="`flight-details-${offer.id}`" class="text-xs text-brand-600 hover:underline hidden md:block">
+            <span v-if="expanded"><span aria-hidden="true">&#9650;</span> {{ t('flightCard.hideDetails') }}</span>
+            <span v-else><span aria-hidden="true">&#9660;</span> {{ t('flightCard.details') }}</span>
           </button>
         </div>
         <div class="flex items-center gap-2 shrink-0">
-          <button @click.stop="copyLink" :title="linkCopied ? 'Copiat!' : 'Copiază link'"
+          <button @click.stop="copyLink"
+            :title="linkCopied ? t('flightCard.copied') : t('flightCard.copyLink')"
+            :aria-label="linkCopied ? t('flightCard.copied') : t('flightCard.copyLink')"
             class="p-2.5 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors text-gray-400 hover:text-gray-600">
-            <span v-if="linkCopied" class="text-green-500">✓</span>
-            <span v-else>🔗</span>
+            <span aria-hidden="true" v-if="linkCopied" class="text-green-500">✓</span>
+            <span aria-hidden="true" v-else>🔗</span>
           </button>
           <button @click.stop="toggleCompare(offer)"
             :disabled="!isCompareSelected(offer.id) && compareList.length >= 2"
-            :title="isCompareSelected(offer.id) ? 'Scoate din comparație' : 'Adaugă la comparație'"
+            :title="isCompareSelected(offer.id) ? t('flightCard.removeCompare') : t('flightCard.compare')"
+            :aria-label="isCompareSelected(offer.id) ? t('flightCard.removeCompare') : t('flightCard.compare')"
+            :aria-pressed="isCompareSelected(offer.id)"
             class="p-2.5 border rounded-xl transition-colors text-sm"
             :class="isCompareSelected(offer.id)
               ? 'bg-purple-100 border-purple-400 text-purple-700'
               : 'border-gray-200 text-gray-400 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed'">
-            ⚖
+            <span aria-hidden="true">⚖</span>
           </button>
           <button @click="emit('select')"
+            :aria-label="t('flightCard.selectFlight', { from: offer.slices[0]?.origin?.iata_code || '', to: offer.slices[offer.slices.length-1]?.destination?.iata_code || '', price: formatWithMdl(offer.total_amount, offer.total_currency) })"
             class="px-6 py-3 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-xl transition-colors shadow-sm">
             {{ t('flightCard.select') }}
           </button>
@@ -141,7 +155,7 @@ function layoverMins(arr: string, dep: string): number {
       </div>
     </div>
 
-    <div v-if="expanded" class="border-t border-gray-100 bg-gray-50 rounded-b-2xl px-6 py-5">
+    <div v-if="expanded" :id="`flight-details-${offer.id}`" class="border-t border-gray-100 bg-gray-50 rounded-b-2xl px-6 py-5">
       <div v-for="(slice, si) in offer.slices" :key="'exp'+si"
         :class="si > 0 ? 'mt-5 pt-5 border-t border-gray-200' : ''">
         <div v-if="offer.slices.length > 1" class="text-xs font-semibold text-gray-500 uppercase mb-3">
@@ -150,13 +164,13 @@ function layoverMins(arr: string, dep: string): number {
         <template v-for="(seg, idx) in (slice.segments || [])" :key="seg.id || idx">
           <div v-if="idx > 0"
             class="flex items-center gap-2 my-3 text-xs text-orange-600 bg-orange-50 rounded-lg px-3 py-2">
-            &#9200; Escala {{ formatDuration(layoverMins(slice.segments[idx-1].arriving_at, seg.departing_at)) }}
-            in {{ (seg.origin && seg.origin.name) || (seg.origin && seg.origin.iata_code) }}
+            <span aria-hidden="true">&#9200;</span> {{ t('flightCard.layover') }} {{ formatDuration(layoverMins(slice.segments[idx-1].arriving_at, seg.departing_at)) }}
+            {{ t('flightCard.layoverIn') }} {{ (seg.origin && seg.origin.name) || (seg.origin && seg.origin.iata_code) }}
           </div>
           <div class="flex gap-4 items-start bg-white rounded-xl p-4 border border-gray-100 mb-2">
             <div class="shrink-0 w-8 h-8 flex items-center justify-center">
               <img v-if="seg.carrier_iata" :src="airlineLogo(seg.carrier_iata)"
-                class="w-8 h-8 object-contain" @error="($event.target).style.display = 'none'" />
+                :alt="seg.carrier_name || seg.carrier_iata" class="w-8 h-8 object-contain" @error="($event.target).style.display = 'none'" />
             </div>
             <div class="flex-1 text-sm">
               <div class="flex items-center gap-2 mb-2">
@@ -185,8 +199,8 @@ function layoverMins(arr: string, dep: string): number {
                 <span v-for="bag in offer.passengers[0].baggages" :key="bag.type"
                   class="text-xs px-2 py-1 rounded-full"
                   :class="bag.type === 'checked' ? 'bg-blue-50 text-blue-700' : 'bg-gray-100 text-gray-600'">
-                  {{ bag.type === 'checked' ? '🧳' : '💼' }}
-                  {{ bag.quantity }}× {{ bag.type === 'checked' ? 'bagaj la cală' : 'bagaj de mână' }}
+                  <span aria-hidden="true">{{ bag.type === 'checked' ? '🧳' : '💼' }}</span>
+                  {{ bag.quantity }}× {{ bag.type === 'checked' ? t('flightCard.checkedBag') : t('flightCard.cabinBag') }}
                 </span>
               </div>
             </div>

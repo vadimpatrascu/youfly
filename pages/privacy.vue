@@ -1,60 +1,64 @@
 <script setup lang="ts">
-useHead({ title: 'Politica de confidențialitate — YouFly' })
+const { t } = useI18n()
+useSeo({ title: t('privacy.title'), description: t('privacy.seoDesc') })
+useBreadcrumbStructuredData([
+  { name: 'YouFly', url: '/' },
+  { name: t('privacy.title'), url: '/privacy' },
+])
 </script>
 
 <template>
   <div class="max-w-3xl mx-auto px-4 py-12">
     <div class="text-center mb-10">
-      <h1 class="text-3xl font-bold text-gray-900 mb-3">Politica de confidențialitate</h1>
-      <p class="text-gray-500 text-sm">Ultima actualizare: Ianuarie 2026</p>
+      <h1 class="text-3xl font-bold text-gray-900 mb-3">{{ t('privacy.title') }}</h1>
+      <p class="text-gray-500 text-sm">{{ t('privacy.lastUpdated') }}</p>
     </div>
 
     <div class="bg-white rounded-2xl border border-gray-200 p-8 space-y-6 text-sm text-gray-700 leading-relaxed">
-      <section>
-        <h2 class="text-lg font-bold text-gray-900 mb-3">1. Date colectate</h2>
-        <p>YouFly colectează datele personale necesare pentru procesarea rezervărilor: nume, prenume, data nașterii, numărul pașaportului, adresa de email și numărul de telefon. De asemenea, colectăm date de utilizare anonimizate pentru îmbunătățirea serviciului.</p>
+      <section aria-labelledby="privacy-s1-title">
+        <h2 id="privacy-s1-title" class="text-lg font-bold text-gray-900 mb-3">{{ t('privacy.s1Title') }}</h2>
+        <p>{{ t('privacy.s1') }}</p>
       </section>
 
-      <section>
-        <h2 class="text-lg font-bold text-gray-900 mb-3">2. Utilizarea datelor</h2>
-        <p>Datele dumneavoastră sunt utilizate exclusiv pentru:</p>
+      <section aria-labelledby="privacy-s2-title">
+        <h2 id="privacy-s2-title" class="text-lg font-bold text-gray-900 mb-3">{{ t('privacy.s2Title') }}</h2>
+        <p>{{ t('privacy.s2Intro') }}</p>
         <ul class="list-disc list-inside mt-2 space-y-1 text-gray-600">
-          <li>Procesarea și confirmarea rezervărilor</li>
-          <li>Comunicarea despre rezervările existente</li>
-          <li>Îmbunătățirea experienței utilizatorilor pe platformă</li>
-          <li>Conformarea cu obligațiile legale</li>
+          <li>{{ t('privacy.s2L1') }}</li>
+          <li>{{ t('privacy.s2L2') }}</li>
+          <li>{{ t('privacy.s2L3') }}</li>
+          <li>{{ t('privacy.s2L4') }}</li>
         </ul>
       </section>
 
-      <section>
-        <h2 class="text-lg font-bold text-gray-900 mb-3">3. Partajarea datelor</h2>
-        <p>Partajăm datele dumneavoastră personale cu:</p>
+      <section aria-labelledby="privacy-s3-title">
+        <h2 id="privacy-s3-title" class="text-lg font-bold text-gray-900 mb-3">{{ t('privacy.s3Title') }}</h2>
+        <p>{{ t('privacy.s3Intro') }}</p>
         <ul class="list-disc list-inside mt-2 space-y-1 text-gray-600">
-          <li>Companiile aeriene relevante (pentru procesarea biletelor)</li>
-          <li>Duffel Technologies Ltd (procesator de plăți și rezervări)</li>
-          <li>Autoritățile de stat (la cerere legală)</li>
+          <li>{{ t('privacy.s3L1') }}</li>
+          <li>{{ t('privacy.s3L2') }}</li>
         </ul>
-        <p class="mt-2">Nu vindem datele dumneavoastră personale niciunei terțe părți.</p>
+        <p class="mt-2">{{ t('privacy.s3Note') }}</p>
       </section>
 
-      <section>
-        <h2 class="text-lg font-bold text-gray-900 mb-3">4. Securitate</h2>
-        <p>Toate datele sunt transmise prin conexiuni criptate (HTTPS/TLS). Datele de plată nu sunt stocate pe serverele noastre. Utilizăm cele mai bune practici de securitate pentru protecția datelor.</p>
+      <section aria-labelledby="privacy-s4-title">
+        <h2 id="privacy-s4-title" class="text-lg font-bold text-gray-900 mb-3">{{ t('privacy.s4Title') }}</h2>
+        <p>{{ t('privacy.s4') }}</p>
       </section>
 
-      <section>
-        <h2 class="text-lg font-bold text-gray-900 mb-3">5. Drepturile dumneavoastră (GDPR)</h2>
-        <p>Aveți dreptul la: acces la datele personale, rectificarea datelor incorecte, ștergerea datelor ("dreptul de a fi uitat"), portabilitatea datelor, opoziția față de prelucrare. Pentru exercitarea acestor drepturi, contactați-ne la privacy@youfly.md.</p>
+      <section aria-labelledby="privacy-s5-title">
+        <h2 id="privacy-s5-title" class="text-lg font-bold text-gray-900 mb-3">{{ t('privacy.s5Title') }}</h2>
+        <p>{{ t('privacy.s5') }}</p>
       </section>
 
-      <section>
-        <h2 class="text-lg font-bold text-gray-900 mb-3">6. Cookie-uri</h2>
-        <p>YouFly folosește cookie-uri esențiale pentru funcționarea platformei și stochează preferințele de căutare în localStorage. Nu utilizăm cookie-uri de tracking sau publicitate.</p>
+      <section aria-labelledby="privacy-s6-title">
+        <h2 id="privacy-s6-title" class="text-lg font-bold text-gray-900 mb-3">{{ t('privacy.s6Title') }}</h2>
+        <p>{{ t('privacy.s6') }}</p>
       </section>
     </div>
 
     <div class="mt-6 text-center">
-      <NuxtLink to="/" class="text-brand-600 hover:underline text-sm">← Înapoi la pagina principală</NuxtLink>
+      <NuxtLink to="/" class="text-brand-600 hover:underline text-sm">{{ t('privacy.backHome') }}</NuxtLink>
     </div>
   </div>
 </template>

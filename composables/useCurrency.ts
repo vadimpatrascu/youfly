@@ -31,6 +31,8 @@ export function useCurrency() {
     fetchRates()
   }
 
+  const { locale } = useI18n()
+
   function convertToMdl(amount: string, currency: string): number {
     const value = parseFloat(amount)
     const rate = rates.value[currency?.toUpperCase()] ?? 1
@@ -40,9 +42,9 @@ export function useCurrency() {
   function formatWithMdl(amount: string, currency: string): string {
     if (showMdl.value && currency !== 'MDL') {
       const mdl = convertToMdl(amount, currency)
-      return `${Math.round(mdl).toLocaleString('ro-MD')} MDL`
+      return `${Math.round(mdl).toLocaleString(locale.value)} MDL`
     }
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat(locale.value, {
       style: 'currency',
       currency,
       minimumFractionDigits: 0,

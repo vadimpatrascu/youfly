@@ -21,6 +21,13 @@ const payErrors = ref<Record<string, string>>({})
 const { formatPrice, formatTime, stopsLabel } = useFormatters()
 const { formatWithMdl, showMdl } = useCurrency()
 
+function passengerTypeLabel(type: string) {
+  if (type === 'adult') return t('passengers.adult')
+  if (type === 'child') return t('passengers.child')
+  if (type === 'infant_without_seat') return t('passengers.infant')
+  return type
+}
+
 function cardBrand(num: string): string {
   const n = num.replace(/\s/g, '')
   if (n.startsWith('4')) return 'VISA'
@@ -32,10 +39,10 @@ function cardBrand(num: string): string {
 function validateCard(): boolean {
   payErrors.value = {}
   const digits = cardNumber.value.replace(/\s/g, '')
-  if (digits.length < 13) payErrors.value.cardNumber = 'Număr card invalid'
-  if (!cardName.value.trim()) payErrors.value.cardName = 'Câmp obligatoriu'
-  if (cardExpiry.value.length < 5) payErrors.value.cardExpiry = 'Data expirare invalidă'
-  if (cardCvv.value.length < 3) payErrors.value.cardCvv = 'CVV invalid'
+  if (digits.length < 13) payErrors.value.cardNumber = t('payment.errorCardNumber')
+  if (!cardName.value.trim()) payErrors.value.cardName = t('payment.errorRequired')
+  if (cardExpiry.value.length < 5) payErrors.value.cardExpiry = t('payment.errorExpiry')
+  if (cardCvv.value.length < 3) payErrors.value.cardCvv = t('payment.errorCvv')
   return Object.keys(payErrors.value).length === 0
 }
 
@@ -72,18 +79,18 @@ function formatExpiry(e: Event) {
       <!-- Card form -->
       <div class="bg-white rounded-2xl border border-gray-200 p-6">
         <div class="flex items-center gap-2 mb-6">
-          <span class="text-2xl">💳</span>
+          <span aria-hidden="true" class="text-2xl">💳</span>
           <h2 class="font-semibold text-gray-900">{{ t('payment.cardDetails') }}</h2>
           <span class="ml-auto text-xs bg-green-50 text-green-700 px-2 py-1 rounded-full font-medium">{{ t('payment.secure') }}</span>
         </div>
 
-        <!-- Card visual -->
-        <div class="bg-gradient-to-br from-brand-600 via-brand-700 to-brand-900 text-white rounded-2xl p-5 mb-6 h-44 flex flex-col justify-between shadow-xl relative overflow-hidden">
+        <!-- Card visual (decorative) -->
+        <div aria-hidden="true" class="bg-gradient-to-br from-brand-600 via-brand-700 to-brand-900 text-white rounded-2xl p-5 mb-6 h-44 flex flex-col justify-between shadow-xl relative overflow-hidden">
           <div class="absolute inset-0 opacity-10" style="background: radial-gradient(circle at 70% 30%, white 0%, transparent 60%)"></div>
           <div class="flex justify-between items-start relative z-10">
             <span class="text-sm font-medium opacity-80">YouFly</span>
             <span class="font-bold text-sm tracking-widest opacity-90">{{ cardNumber ? cardBrand(cardNumber) : '' }}</span>
-            <span class="text-3xl">✈</span>
+            <span aria-hidden="true" class="text-3xl">✈</span>
           </div>
           <div class="font-mono text-xl tracking-[0.2em] relative z-10">{{ cardNumber || '•••• •••• •••• ••••' }}</div>
           <div class="flex justify-between items-end relative z-10">
@@ -100,43 +107,55 @@ function formatExpiry(e: Event) {
 
         <div class="space-y-4">
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">{{ t('payment.cardNumber') }}</label>
-            <input :value="cardNumber" @input="formatCardNumber" type="text" maxlength="19"
-              placeholder="1234 5678 9012 3456"
+            <label for="pay-cardnumber" class="block text-sm font-medium text-gray-700 mb-1">{{ t('payment.cardNumber') }}</label>
+            <input id="pay-cardnumber" :value="cardNumber" @input="formatCardNumber" type="text" maxlength="19"
+              placeholder="1234 5678 9012 3456" :aria-invalid="!!payErrors.cardNumber"
+              :aria-describedby="payErrors.cardNumber ? 'pay-cardnumber-error' : undefined"
+              autocomplete="cc-number"
               class="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 font-mono tracking-wider"
               :class="payErrors.cardNumber ? 'border-red-400 bg-red-50' : 'border-gray-300'" />
-            <p v-if="payErrors.cardNumber" class="text-xs text-red-500 mt-1">{{ payErrors.cardNumber }}</p>
+            <p v-if="payErrors.cardNumber" id="pay-cardnumber-error" role="alert" class="text-xs text-red-500 mt-1">{{ payErrors.cardNumber }}</p>
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">{{ t('payment.nameOnCard') }}</label>
-            <input v-model="cardName" type="text" :placeholder="t('payment.nameOnCardPlaceholder')"
+            <label for="pay-cardname" class="block text-sm font-medium text-gray-700 mb-1">{{ t('payment.nameOnCard') }}</label>
+            <input id="pay-cardname" v-model="cardName" type="text" :placeholder="t('payment.nameOnCardPlaceholder')"
+              :aria-invalid="!!payErrors.cardName"
+              :aria-describedby="payErrors.cardName ? 'pay-cardname-error' : undefined"
+              autocomplete="cc-name"
               class="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500"
               :class="payErrors.cardName ? 'border-red-400 bg-red-50' : 'border-gray-300'" />
-            <p v-if="payErrors.cardName" class="text-xs text-red-500 mt-1">{{ payErrors.cardName }}</p>
+            <p v-if="payErrors.cardName" id="pay-cardname-error" role="alert" class="text-xs text-red-500 mt-1">{{ payErrors.cardName }}</p>
           </div>
           <div class="grid grid-cols-2 gap-4">
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">{{ t('payment.expiry') }}</label>
-              <input :value="cardExpiry" @input="formatExpiry" type="text" maxlength="5" placeholder="MM/YY"
+              <label for="pay-expiry" class="block text-sm font-medium text-gray-700 mb-1">{{ t('payment.expiry') }}</label>
+              <input id="pay-expiry" :value="cardExpiry" @input="formatExpiry" type="text" maxlength="5" placeholder="MM/YY"
+                :aria-invalid="!!payErrors.cardExpiry"
+                :aria-describedby="payErrors.cardExpiry ? 'pay-expiry-error' : undefined"
+                autocomplete="cc-exp"
                 class="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 font-mono"
                 :class="payErrors.cardExpiry ? 'border-red-400 bg-red-50' : 'border-gray-300'" />
-              <p v-if="payErrors.cardExpiry" class="text-xs text-red-500 mt-1">{{ payErrors.cardExpiry }}</p>
+              <p v-if="payErrors.cardExpiry" id="pay-expiry-error" role="alert" class="text-xs text-red-500 mt-1">{{ payErrors.cardExpiry }}</p>
             </div>
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">{{ t('payment.cvv') }}</label>
-              <input v-model="cardCvv" type="text" maxlength="4" placeholder="•••"
+              <label for="pay-cvv" class="block text-sm font-medium text-gray-700 mb-1">{{ t('payment.cvv') }}</label>
+              <input id="pay-cvv" v-model="cardCvv" type="text" maxlength="4" placeholder="•••"
+                :aria-invalid="!!payErrors.cardCvv"
+                :aria-describedby="payErrors.cardCvv ? 'pay-cvv-error' : undefined"
+                autocomplete="cc-csc"
                 class="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 font-mono"
                 :class="payErrors.cardCvv ? 'border-red-400 bg-red-50' : 'border-gray-300'" />
+              <p v-if="payErrors.cardCvv" id="pay-cvv-error" role="alert" class="text-xs text-red-500 mt-1">{{ payErrors.cardCvv }}</p>
             </div>
           </div>
         </div>
 
-        <p v-if="bookingStore.bookingError" class="mt-4 text-red-600 text-sm bg-red-50 p-3 rounded-xl">{{ bookingStore.bookingError }}</p>
+        <p v-if="bookingStore.bookingError" role="alert" class="mt-4 text-red-600 text-sm bg-red-50 p-3 rounded-xl">{{ bookingStore.bookingError }}</p>
 
         <button @click="pay" :disabled="isProcessing || !cardName.trim()"
           class="mt-6 w-full py-4 bg-brand-600 hover:bg-brand-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-semibold rounded-xl text-lg transition-colors shadow-lg">
           <span v-if="isProcessing" class="flex items-center justify-center gap-2">
-            <div class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+            <div role="status" :aria-label="t('common.loading')" class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
             {{ t('payment.processing') }}
           </span>
           <span v-else>
@@ -148,9 +167,9 @@ function formatExpiry(e: Event) {
         <!-- Trust seals -->
         <div class="mt-4 pt-4 border-t border-gray-100">
           <div class="flex items-center justify-center gap-4 text-xs text-gray-400">
-            <span class="flex items-center gap-1">🔒 SSL Securizat</span>
-            <span class="flex items-center gap-1">🛡️ PCI DSS</span>
-            <span class="flex items-center gap-1">✓ 3D Secure</span>
+            <span class="flex items-center gap-1"><span aria-hidden="true">🔒</span> {{ t('payment.trustSsl') }}</span>
+            <span class="flex items-center gap-1"><span aria-hidden="true">🛡️</span> {{ t('payment.trustPci') }}</span>
+            <span class="flex items-center gap-1"><span aria-hidden="true">✓</span> {{ t('payment.trust3d') }}</span>
           </div>
         </div>
       </div>
@@ -162,7 +181,7 @@ function formatExpiry(e: Event) {
           <div v-if="bookingStore.selectedOffer" class="space-y-3">
             <div v-for="slice in bookingStore.selectedOffer.slices" :key="slice.id" class="text-sm pb-3 border-b last:border-0">
               <div class="font-medium text-gray-900">
-                {{ slice.origin?.city_name }} ({{ slice.origin?.iata_code }}) → {{ slice.destination?.city_name }} ({{ slice.destination?.iata_code }})
+                {{ slice.origin?.city_name }} ({{ slice.origin?.iata_code }}) <span aria-hidden="true">→</span> {{ slice.destination?.city_name }} ({{ slice.destination?.iata_code }})
               </div>
               <div class="text-gray-500 mt-1 flex items-center gap-2">
                 <span>{{ formatTime(slice.departing_at) }} – {{ formatTime(slice.arriving_at) }}</span>
@@ -199,7 +218,7 @@ function formatExpiry(e: Event) {
                 {{ p.given_name?.[0]?.toUpperCase() || '?' }}
               </span>
               <span class="text-gray-900">{{ p.given_name }} {{ p.family_name }}</span>
-              <span class="text-gray-400 text-xs capitalize ml-auto">{{ p.type }}</span>
+              <span class="text-gray-400 text-xs ml-auto">{{ passengerTypeLabel(p.type) }}</span>
             </div>
           </div>
         </div>

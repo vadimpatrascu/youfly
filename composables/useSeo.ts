@@ -6,12 +6,13 @@ interface SeoOptions {
 }
 
 export function useSeo(options: SeoOptions) {
-  const { locale } = useI18n()
+  const { locale, t } = useI18n()
   const route = useRoute()
-  const siteUrl = 'https://youfly.vercel.app'
+  const config = useRuntimeConfig()
+  const siteUrl = config.public.siteUrl as string || 'https://youfly-xi.vercel.app'
 
   const title = `${options.title} — YouFly`
-  const description = options.description || 'Caută și rezervă zboruri la prețuri excelente. Comparăm sute de companii aeriene în timp real.'
+  const description = options.description || t('hero.subtitle')
   const image = options.image || `${siteUrl}/og-image.png`
   const url = `${siteUrl}${route.fullPath}`
 
@@ -25,6 +26,8 @@ export function useSeo(options: SeoOptions) {
       { property: 'og:url', content: url },
       { property: 'og:type', content: options.type || 'website' },
       { property: 'og:locale', content: locale.value === 'ro' ? 'ro_RO' : locale.value === 'ru' ? 'ru_RU' : 'en_US' },
+      { property: 'og:locale:alternate', content: locale.value === 'ro' ? 'ru_RU' : 'ro_RO' },
+      { property: 'og:locale:alternate', content: 'en_US' },
       { name: 'twitter:card', content: 'summary_large_image' },
       { name: 'twitter:title', content: title },
       { name: 'twitter:description', content: description },

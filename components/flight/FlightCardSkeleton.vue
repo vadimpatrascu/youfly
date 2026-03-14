@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-white rounded-2xl border border-gray-200 p-4 md:p-6 animate-pulse">
+  <div aria-hidden="true" class="bg-white rounded-2xl border border-gray-200 p-4 md:p-6 animate-pulse">
     <div class="flex items-center gap-3 md:gap-6">
       <!-- Logo skeleton -->
       <div class="w-10 h-10 rounded-full bg-gray-200 shrink-0"></div>

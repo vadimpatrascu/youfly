@@ -10,32 +10,78 @@ export function useStructuredData(data: Record<string, any>) {
 }
 
 export function useWebsiteStructuredData() {
+  const { t } = useI18n()
+  const config = useRuntimeConfig()
+  const siteUrl = config.public.siteUrl as string || 'https://youfly-xi.vercel.app'
   useStructuredData({
     '@context': 'https://schema.org',
     '@type': 'WebSite',
     name: 'YouFly',
-    url: 'https://youfly.vercel.app',
-    description: 'Caută și rezervă zboruri ieftine din Moldova. Prețuri în timp real, fără taxe ascunse.',
+    url: siteUrl,
+    description: t('hero.subtitle'),
     potentialAction: {
       '@type': 'SearchAction',
-      target: 'https://youfly.vercel.app/search?q={search_term_string}',
+      target: `${siteUrl}/search?q={search_term_string}`,
       'query-input': 'required name=search_term_string',
     },
   })
 }
 
 export function useOrganizationStructuredData() {
+  const config = useRuntimeConfig()
+  const siteUrl = config.public.siteUrl as string || 'https://youfly-xi.vercel.app'
   useStructuredData({
     '@context': 'https://schema.org',
     '@type': 'Organization',
     name: 'YouFly',
-    url: 'https://youfly.vercel.app',
-    logo: 'https://youfly.vercel.app/logo.png',
+    url: siteUrl,
+    logo: `${siteUrl}/logo.png`,
+    email: 'support@youfly.md',
+    telephone: '+37322000000',
+    address: {
+      '@type': 'PostalAddress',
+      addressCountry: 'MD',
+      addressLocality: 'Chișinău',
+    },
     contactPoint: {
       '@type': 'ContactPoint',
+      telephone: '+37322000000',
       contactType: 'customer service',
       availableLanguage: ['Romanian', 'Russian', 'English'],
     },
+  })
+}
+
+export function useBlogPostStructuredData(article: { title: string; excerpt: string; date: string; slug: string }) {
+  const config = useRuntimeConfig()
+  const siteUrl = config.public.siteUrl as string || 'https://youfly-xi.vercel.app'
+  useStructuredData({
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    headline: article.title,
+    description: article.excerpt,
+    datePublished: article.date,
+    url: `${siteUrl}/blog/${article.slug}`,
+    publisher: {
+      '@type': 'Organization',
+      name: 'YouFly',
+      logo: { '@type': 'ImageObject', url: `${siteUrl}/logo.png` },
+    },
+  })
+}
+
+export function useBreadcrumbStructuredData(items: { name: string; url: string }[]) {
+  const config = useRuntimeConfig()
+  const siteUrl = config.public.siteUrl as string || 'https://youfly-xi.vercel.app'
+  useStructuredData({
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: items.map((item, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      name: item.name,
+      item: item.url.startsWith('http') ? item.url : `${siteUrl}${item.url}`,
+    })),
   })
 }
 

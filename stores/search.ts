@@ -70,7 +70,8 @@ export const useSearchStore = defineStore('search', {
         }
         return true
       } catch (e: any) {
-        this.searchError = e?.data?.message || 'Căutarea a eșuat. Vă rugăm încercați din nou.'
+        const { $i18n } = useNuxtApp()
+        this.searchError = e?.data?.message || ($i18n as any).t('errors.searchFailed')
         return false
       } finally {
         this.isSearching = false

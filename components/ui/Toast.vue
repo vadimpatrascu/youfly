@@ -1,4 +1,5 @@
 <script setup lang="ts">
+const { t } = useI18n()
 const props = defineProps<{
   message: string
   type?: 'success' | 'error' | 'info' | 'warning'
@@ -43,14 +44,16 @@ onMounted(() => {
 <template>
   <Transition name="toast">
     <div v-if="visible"
+      role="alert"
+      aria-live="polite"
       class="flex items-start gap-3 px-4 py-3 rounded-xl border shadow-lg text-sm max-w-sm"
       :class="colors[type || 'info']">
-      <div class="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold shrink-0 mt-0.5"
+      <div aria-hidden="true" class="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold shrink-0 mt-0.5"
         :class="iconColors[type || 'info']">
         {{ icons[type || 'info'] }}
       </div>
       <span class="flex-1">{{ message }}</span>
-      <button @click="visible = false; $nextTick(() => emit('close'))" class="shrink-0 opacity-50 hover:opacity-100 text-lg leading-none mt-0.5">×</button>
+      <button @click="visible = false; $nextTick(() => emit('close'))" :aria-label="t('common.close')" class="shrink-0 opacity-50 hover:opacity-100 text-lg leading-none mt-0.5"><span aria-hidden="true">×</span></button>
     </div>
   </Transition>
 </template>
