@@ -89,7 +89,7 @@ const tips = computed(() => [
                     </span>
                   </td>
                   <td class="px-5 py-4">
-                    <a :href="a.url" target="_blank" rel="noopener"
+                    <a :href="a.url" target="_blank" rel="noopener noreferrer"
                       :aria-label="t('checkin.checkInBtnLabel', { airline: a.name })"
                       class="text-xs text-brand-600 hover:underline font-medium">{{ t('checkin.checkInBtn') }} <span aria-hidden="true">→</span></a>
                   </td>
