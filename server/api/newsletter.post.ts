@@ -19,10 +19,12 @@ export default defineEventHandler(async (event) => {
   // Store in dedicated newsletter_subscribers table (upsert to handle duplicates gracefully)
   const supabase = createServerSupabase()
   if (supabase) {
-    await supabase.from('newsletter_subscribers').upsert(
-      { email: email.substring(0, 255) },
-      { onConflict: 'email', ignoreDuplicates: true }
-    ).then(() => {}).catch(() => {})
+    try {
+      await supabase.from('newsletter_subscribers').upsert(
+        { email: email.substring(0, 255) },
+        { onConflict: 'email', ignoreDuplicates: true }
+      )
+    } catch {}
   }
 
   return { success: true }
