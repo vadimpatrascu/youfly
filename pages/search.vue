@@ -76,7 +76,7 @@ onMounted(async () => {
 })
 
 function selectOffer(offer: any) {
-  const airline = offer.slices?.[0]?.segments?.[0]?.marketing_carrier?.name || ''
+  const airline = offer.slices?.[0]?.segments?.[0]?.carrier_name || ''
   trackSelectOffer(offer.id, parseFloat(offer.total_amount), offer.total_currency, airline)
   bookingStore.selectOffer(offer)
   router.push('/ticket-order')
