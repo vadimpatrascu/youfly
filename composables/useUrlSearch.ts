@@ -5,7 +5,6 @@
 export function useUrlSearch() {
   const route = useRoute()
   const router = useRouter()
-  const searchStore = useNuxtApp().$pinia ? null : null // resolved via store below
 
   function encodeSearchToQuery(params: {
     from?: string
