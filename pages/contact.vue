@@ -17,13 +17,24 @@ const submitted = ref(false)
 const isSubmitting = ref(false)
 const { success } = useToast()
 
+const submitError = ref('')
+
 async function submitForm() {
   if (!form.name || !form.email || !form.message) return
   isSubmitting.value = true
-  await new Promise(r => setTimeout(r, 1000)) // Simulate submission
-  submitted.value = true
-  isSubmitting.value = false
-  success(t('contact.successMsg'))
+  submitError.value = ''
+  try {
+    await $fetch('/api/contact', {
+      method: 'POST',
+      body: { name: form.name, email: form.email, subject: form.subject, message: form.message },
+    })
+    submitted.value = true
+    success(t('contact.successMsg'))
+  } catch (e: any) {
+    submitError.value = e?.data?.message || t('contact.submitError')
+  } finally {
+    isSubmitting.value = false
+  }
 }
 </script>
 
@@ -108,6 +119,7 @@ async function submitForm() {
             </span>
             <span v-else>{{ t('contact.send') }} <span aria-hidden="true">→</span></span>
           </button>
+          <p v-if="submitError" role="alert" class="text-sm text-red-600 bg-red-50 p-3 rounded-xl">{{ submitError }}</p>
         </form>
       </div>
     </div>

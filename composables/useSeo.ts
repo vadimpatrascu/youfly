@@ -16,6 +16,10 @@ export function useSeo(options: SeoOptions) {
   const image = options.image || `${siteUrl}/og-image.svg`
   const url = `${siteUrl}${route.path}`
 
+  const ogLocale = locale.value === 'ro' ? 'ro_RO' : locale.value === 'ru' ? 'ru_RU' : 'en_US'
+  // All alternate locales excluding the current one
+  const allLocales = ['ro_RO', 'ru_RU', 'en_US'].filter(l => l !== ogLocale)
+
   useHead({
     title,
     meta: [
@@ -28,9 +32,8 @@ export function useSeo(options: SeoOptions) {
       { property: 'og:image:height', content: '630' },
       { property: 'og:url', content: url },
       { property: 'og:type', content: options.type || 'website' },
-      { property: 'og:locale', content: locale.value === 'ro' ? 'ro_RO' : locale.value === 'ru' ? 'ru_RU' : 'en_US' },
-      { property: 'og:locale:alternate', content: locale.value === 'ro' ? 'ru_RU' : 'ro_RO' },
-      { property: 'og:locale:alternate', content: 'en_US' },
+      { property: 'og:locale', content: ogLocale },
+      ...allLocales.map((l, i) => ({ key: `og:locale:alternate:${i}`, property: 'og:locale:alternate', content: l })),
       { name: 'twitter:card', content: 'summary_large_image' },
       { name: 'twitter:title', content: title },
       { name: 'twitter:description', content: description },

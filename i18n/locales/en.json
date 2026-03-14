@@ -494,7 +494,8 @@
     "successText": "Thank you for your message. We will contact you shortly.",
     "sendAnother": "Send another message",
     "seoDesc": "Contact the YouFly team for any question or issue. Support available Monday-Friday, 9:00-18:00.",
-    "successMsg": "Message sent successfully!"
+    "successMsg": "Message sent successfully!",
+    "submitError": "An error occurred. Please try again."
   },
   "deals": {
     "title": "Special offers",

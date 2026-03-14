@@ -494,7 +494,8 @@
     "successText": "Mulțumim pentru mesaj. Vă vom contacta în cel mai scurt timp.",
     "sendAnother": "Trimite alt mesaj",
     "seoDesc": "Contactați echipa YouFly pentru orice întrebare sau problemă. Suport disponibil luni-vineri, 9:00-18:00.",
-    "successMsg": "Mesajul a fost trimis cu succes!"
+    "successMsg": "Mesajul a fost trimis cu succes!",
+    "submitError": "A apărut o eroare. Vă rugăm să încercați din nou."
   },
   "deals": {
     "title": "Oferte speciale",
