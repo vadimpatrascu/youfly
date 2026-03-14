@@ -70,7 +70,7 @@ function layoverMins(arr: string, dep: string): number {
               :src="airlineLogo(slice.segments[0].carrier_iata)"
               :alt="slice.segments[0].carrier_name || slice.segments[0].carrier_iata"
               class="w-10 h-10 object-contain"
-              @error="($event.target).style.display = 'none'"
+              @error="($event.target as HTMLImageElement).style.display = 'none'"
             />
             <div v-else aria-hidden="true" class="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-gray-400 text-sm">&#9992;</div>
           </div>
@@ -170,7 +170,7 @@ function layoverMins(arr: string, dep: string): number {
           <div class="flex gap-4 items-start bg-white rounded-xl p-4 border border-gray-100 mb-2">
             <div class="shrink-0 w-8 h-8 flex items-center justify-center">
               <img v-if="seg.carrier_iata" :src="airlineLogo(seg.carrier_iata)"
-                :alt="seg.carrier_name || seg.carrier_iata" class="w-8 h-8 object-contain" @error="($event.target).style.display = 'none'" />
+                :alt="seg.carrier_name || seg.carrier_iata" class="w-8 h-8 object-contain" @error="($event.target as HTMLImageElement).style.display = 'none'" />
             </div>
             <div class="flex-1 text-sm">
               <div class="flex items-center gap-2 mb-2">
