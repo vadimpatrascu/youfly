@@ -78,6 +78,10 @@ function formatDate(iso: string) {
           <div class="text-3xl font-black text-orange-600">{{ stats.summary.totalLeads }}</div>
           <div class="text-xs text-gray-500 mt-1">{{ t('admin.searches') }}</div>
         </div>
+        <div class="bg-white rounded-2xl border border-gray-200 p-4 text-center">
+          <div class="text-3xl font-black text-teal-600">{{ stats.summary.newsletterSubscribers ?? 0 }}</div>
+          <div class="text-xs text-gray-500 mt-1">{{ t('admin.newsletterSubscribers') }}</div>
+        </div>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">

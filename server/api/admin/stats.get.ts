@@ -17,13 +17,15 @@ export default defineEventHandler(async (event) => {
   const supabase = createServerSupabase()
   if (!supabase) throw createError({ statusCode: 503, message: 'Database not configured' })
 
-  const [bookingsRes, leadsRes] = await Promise.all([
+  const [bookingsRes, leadsRes, subscribersRes] = await Promise.all([
     supabase.from('bookings').select('id, reference, status, total_amount, currency, created_at').order('created_at', { ascending: false }).limit(20),
     supabase.from('leads').select('id, from_iata, to_iata, depart_date, adults, cabin_class, created_at').order('created_at', { ascending: false }).limit(50),
+    supabase.from('newsletter_subscribers').select('id', { count: 'exact', head: true }),
   ])
 
   const bookings = bookingsRes.data || []
   const leads = leadsRes.data || []
+  const newsletterCount = subscribersRes.count || 0
 
   // Aggregate stats
   const totalRevenue = bookings.reduce((sum, b) => sum + (parseFloat(b.total_amount) || 0), 0)
@@ -43,6 +45,7 @@ export default defineEventHandler(async (event) => {
       confirmedBookings: confirmedCount,
       totalRevenue: Math.round(totalRevenue * 100) / 100,
       totalLeads: leads.length,
+      newsletterSubscribers: newsletterCount,
     },
     topDestinations,
     recentBookings: bookings.slice(0, 5),
