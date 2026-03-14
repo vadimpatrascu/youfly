@@ -56,7 +56,7 @@ export default defineNuxtConfig({
         { name: 'twitter:image', content: 'https://youfly-xi.vercel.app/og-image.svg' },
       ],
       link: [
-        { rel: 'dns-prefetch', href: 'https://assets.duffel.com' },
+        { rel: 'preconnect', href: 'https://assets.duffel.com' },
         { rel: 'dns-prefetch', href: 'https://www.googletagmanager.com' },
         { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
         { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
@@ -76,7 +76,7 @@ export default defineNuxtConfig({
           'X-Frame-Options': 'SAMEORIGIN',
           'X-Content-Type-Options': 'nosniff',
           'Referrer-Policy': 'strict-origin-when-cross-origin',
-          'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
+          'Permissions-Policy': 'camera=(), microphone=(), geolocation=(), payment=()',
           'Strict-Transport-Security': 'max-age=31536000; includeSubDomains',
           // CSP: allow Google Fonts, block all other external origins
           'Content-Security-Policy': [

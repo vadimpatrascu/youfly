@@ -22,11 +22,14 @@ const offer = computed(() => bookingStore.selectedOffer)
 const copied = ref(false)
 const isPrinting = ref(false)
 
-function copyRef() {
-  if (booking.value && booking.value.reference) {
-    navigator.clipboard.writeText(booking.value.reference)
+async function copyRef() {
+  if (!booking.value?.reference) return
+  try {
+    await navigator.clipboard.writeText(booking.value.reference)
     copied.value = true
     setTimeout(() => { copied.value = false }, 2000)
+  } catch {
+    // Clipboard API unavailable — silently ignore
   }
 }
 
