@@ -101,8 +101,8 @@ function typeLabel(type: string) {
               'bg-brand-50 border-brand-100 text-brand-700'">
       <span aria-hidden="true">&#9200;</span>
       <span v-if="isExpired">{{ t('ticketOrder.expired') }}</span>
-      <span v-else-if="isExpiringSoon" v-html="t('ticketOrder.expiringSoon', { time: '<strong>' + countdownFormatted + '</strong>' })"></span>
-      <span v-else v-html="t('ticketOrder.reserved', { time: '<strong>' + countdownFormatted + '</strong>' })"></span>
+      <span v-else-if="isExpiringSoon">{{ t('ticketOrder.expiringSoon', { time: countdownFormatted }) }}</span>
+      <span v-else>{{ t('ticketOrder.reserved', { time: countdownFormatted }) }}</span>
     </div>
 
     <div v-if="fullOffer && !offerError" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
