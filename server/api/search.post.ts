@@ -92,6 +92,9 @@ export default defineEventHandler(async (event) => {
   if (String(departureDate) < today) {
     throw createError({ statusCode: 400, message: 'Departure date cannot be in the past' })
   }
+  if (returnDate && String(returnDate) < String(departureDate)) {
+    throw createError({ statusCode: 400, message: 'Return date cannot be before departure date' })
+  }
 
   // Cap passenger counts to prevent oversized requests
   const adultsN = Math.min(9, Math.max(1, Number(adults) || 1))
