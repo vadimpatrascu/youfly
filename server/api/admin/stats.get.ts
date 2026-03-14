@@ -4,7 +4,7 @@ import { checkRateLimit } from '../../utils/rateLimit'
 export default defineEventHandler(async (event) => {
   const ip = getRequestIP(event, { xForwardedFor: true }) || 'unknown'
   const rl = checkRateLimit(`admin:${ip}`, 10, 60_000)
-  if (!rl.ok) throw createError({ statusCode: 429, message: 'Too many requests' })
+  if (!rl.allowed) throw createError({ statusCode: 429, message: 'Too many requests' })
 
   // Read secret from Authorization header: "Bearer <secret>"
   const authHeader = getHeader(event, 'authorization') || ''
