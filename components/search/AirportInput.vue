@@ -51,7 +51,7 @@ function onInput(e: Event) {
 function onFocus() {
   if (!props.modelValue) {
     query.value = ''
-    isOpen.value = suggestions.value.length > 0 || true
+    isOpen.value = true
     // Trigger popular airports to show
     if (!displayText.value) query.value = ' '
     setTimeout(() => { if (query.value === ' ') query.value = '' }, 10)
