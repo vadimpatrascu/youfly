@@ -1,9 +1,19 @@
 // Google Analytics 4 plugin — only loads when NUXT_PUBLIC_GA_ID is set
+// and user has accepted cookie consent (GDPR compliance)
+const CONSENT_KEY = 'youfly_cookie_consent'
+
+function hasConsent(): boolean {
+  try { return localStorage.getItem(CONSENT_KEY) === 'accepted' } catch { return false }
+}
+
 export default defineNuxtPlugin(() => {
   const config = useRuntimeConfig()
   const gaId = config.public.gaId as string
 
   if (!gaId || typeof window === 'undefined') return
+
+  // Only load GA if user has accepted cookies
+  if (!hasConsent()) return
 
   // Inject GA4 script
   const script = document.createElement('script')
