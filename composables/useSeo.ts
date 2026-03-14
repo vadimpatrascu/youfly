@@ -20,9 +20,12 @@ export function useSeo(options: SeoOptions) {
     title,
     meta: [
       { name: 'description', content: description },
+      { property: 'og:site_name', content: 'YouFly' },
       { property: 'og:title', content: title },
       { property: 'og:description', content: description },
       { property: 'og:image', content: image },
+      { property: 'og:image:width', content: '1200' },
+      { property: 'og:image:height', content: '630' },
       { property: 'og:url', content: url },
       { property: 'og:type', content: options.type || 'website' },
       { property: 'og:locale', content: locale.value === 'ro' ? 'ro_RO' : locale.value === 'ru' ? 'ru_RU' : 'en_US' },
