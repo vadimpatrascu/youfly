@@ -10,7 +10,7 @@ export default defineEventHandler(async (event) => {
   }
 
   const id = getRouterParam(event, 'id')
-  if (!id) throw createError({ statusCode: 400, message: 'ID required' })
+  if (!id || !/^[a-zA-Z0-9_-]{1,100}$/.test(id)) throw createError({ statusCode: 400, message: 'ID required' })
 
   try {
     const res = await duffelFetch<any>(`/air/offers/${id}`)

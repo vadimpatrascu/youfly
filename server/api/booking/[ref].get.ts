@@ -10,7 +10,7 @@ export default defineEventHandler(async (event) => {
   }
 
   const ref = getRouterParam(event, 'ref')
-  if (!ref) throw createError({ statusCode: 400, message: 'Reference required' })
+  if (!ref || !/^[A-Z0-9]{4,10}$/.test(ref.toUpperCase())) throw createError({ statusCode: 400, message: 'Reference required' })
 
   const supabase = createServerSupabase()
   if (!supabase) throw createError({ statusCode: 503, message: 'Database not configured' })
