@@ -164,7 +164,7 @@ const histogram = computed(() => {
     </div>
 
     <!-- Airlines -->
-    <div v-if="store.uniqueAirlines.length">
+    <div v-if="store.uniqueAirlinesWithCode.length">
       <h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">{{ t('filters.airlines') }}</h4>
       <div class="space-y-2 max-h-48 overflow-y-auto pr-1">
         <label v-for="a in store.uniqueAirlinesWithCode" :key="a.name" class="flex items-center gap-2 cursor-pointer group">

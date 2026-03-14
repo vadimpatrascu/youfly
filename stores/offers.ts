@@ -27,17 +27,6 @@ export const useOffersStore = defineStore('offers', {
     error: null as string | null,
   }),
   getters: {
-    uniqueAirlines: (state) => {
-      const airlines = new Set<string>()
-      state.all.forEach(offer => {
-        offer.slices?.forEach((slice: any) => {
-          slice.segments?.forEach((seg: any) => {
-            if (seg.carrier_name) airlines.add(seg.carrier_name)
-          })
-        })
-      })
-      return Array.from(airlines).sort()
-    },
     uniqueAirlinesWithCode: (state) => {
       const airlines = new Map<string, string>()
       state.all.forEach(offer => {
