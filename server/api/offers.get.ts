@@ -58,7 +58,7 @@ export default defineEventHandler(async (event) => {
 
   const query = getQuery(event)
   const offerRequestId = query.offer_request_id as string
-  if (!offerRequestId) throw createError({ statusCode: 400, message: 'offer_request_id required' })
+  if (!offerRequestId || !/^[a-zA-Z0-9_-]{1,100}$/.test(offerRequestId)) throw createError({ statusCode: 400, message: 'offer_request_id required' })
 
   try {
     let allOffers: any[] = []
