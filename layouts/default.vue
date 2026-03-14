@@ -56,6 +56,7 @@ async function switchLocale(code: string) {
 
 <template>
   <div class="min-h-screen flex flex-col bg-gray-50 font-sans">
+    <NuxtLoadingIndicator color="#0284c7" :height="2" />
     <!-- Skip navigation link for keyboard/screen reader users -->
     <a href="#main-content"
       class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[1000] focus:px-4 focus:py-2 focus:bg-brand-600 focus:text-white focus:rounded-lg focus:font-semibold focus:shadow-lg">

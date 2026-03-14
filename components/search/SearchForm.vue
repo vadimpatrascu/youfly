@@ -56,9 +56,8 @@ const canSearch = computed(() =>
   searchStore.origin &&
   searchStore.destination &&
   searchStore.departureDate &&
-  (!searchStore.origin || !searchStore.destination ||
-    (searchStore.origin.airport_iata || searchStore.origin.iata_code) !==
-    (searchStore.destination.airport_iata || searchStore.destination.iata_code))
+  (searchStore.origin.airport_iata || searchStore.origin.iata_code) !==
+  (searchStore.destination.airport_iata || searchStore.destination.iata_code)
 )
 
 const sameAirportError = computed(() =>
