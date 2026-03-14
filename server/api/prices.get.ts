@@ -1,3 +1,5 @@
+import { checkRateLimit } from '../utils/rateLimit'
+
 // Static price estimates for popular routes from Chisinau
 // Used for homepage display without hitting Duffel API
 
@@ -13,8 +15,12 @@ const routePrices: Record<string, { min: number; currency: string; updated: stri
 }
 
 export default defineEventHandler((event) => {
+  const ip = getRequestIP(event, { xForwardedFor: true }) || 'unknown'
+  const rl = checkRateLimit(`prices:${ip}`, 60, 60_000)
+  if (!rl.allowed) throw createError({ statusCode: 429, message: 'Too many requests' })
+
   const query = getQuery(event)
-  const route = (query.route as string || '').toUpperCase()
+  const route = (query.route as string || '').substring(0, 10).toUpperCase()
 
   if (route && routePrices[route]) {
     return routePrices[route]

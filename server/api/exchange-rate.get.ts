@@ -1,3 +1,5 @@
+import { checkRateLimit } from '../utils/rateLimit'
+
 // Exchange rate endpoint — returns EUR/MDL rate
 // In production: fetch from a real exchange rate API
 // For demo: use static rate (National Bank of Moldova approx rate)
@@ -16,8 +18,12 @@ let cacheTs = Date.now()
 const CACHE_TTL = 60 * 60 * 1000 // 1 hour
 
 export default defineEventHandler(async (event) => {
+  const ip = getRequestIP(event, { xForwardedFor: true }) || 'unknown'
+  const rl = checkRateLimit(`exchange:${ip}`, 60, 60_000)
+  if (!rl.allowed) throw createError({ statusCode: 429, message: 'Too many requests' })
+
   const query = getQuery(event)
-  const pair = (query.pair as string || 'EUR-MDL').toUpperCase()
+  const pair = (query.pair as string || 'EUR-MDL').substring(0, 10).toUpperCase()
 
   const rate = cachedRates[pair] ?? null
   return {

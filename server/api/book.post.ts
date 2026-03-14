@@ -22,8 +22,30 @@ export default defineEventHandler(async (event) => {
   const body = await readBody(event)
   const { offerId, passengers } = body
 
-  if (!offerId || !passengers?.length) {
+  if (!offerId || typeof offerId !== 'string' || offerId.length > 100) {
     throw createError({ statusCode: 400, message: 'offerId and passengers are required' })
+  }
+  if (!passengers?.length || !Array.isArray(passengers) || passengers.length > 9) {
+    throw createError({ statusCode: 400, message: 'offerId and passengers are required' })
+  }
+
+  const dateRe = /^\d{4}-\d{2}-\d{2}$/
+  const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  for (const p of passengers) {
+    const name = (p.given_name || '').trim()
+    const surname = (p.family_name || '').trim()
+    if (!name || name.length > 100 || !surname || surname.length > 100) {
+      throw createError({ statusCode: 400, message: 'Invalid passenger name' })
+    }
+    if (!p.born_on || !dateRe.test(p.born_on)) {
+      throw createError({ statusCode: 400, message: 'Invalid passenger date of birth' })
+    }
+    if (p.email && !emailRe.test(p.email)) {
+      throw createError({ statusCode: 400, message: 'Invalid passenger email' })
+    }
+    if (p.passport_expires && !dateRe.test(p.passport_expires)) {
+      throw createError({ statusCode: 400, message: 'Invalid passport expiry date' })
+    }
   }
 
   try {
