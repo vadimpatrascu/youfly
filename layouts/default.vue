@@ -34,9 +34,6 @@ async function switchLocale(code: string) {
 
 <template>
   <div class="min-h-screen flex flex-col bg-gray-50 font-sans">
-    <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[999] focus:px-4 focus:py-2 focus:bg-brand-600 focus:text-white focus:rounded-lg focus:font-semibold focus:shadow-lg">
-      {{ t('nav.skipToMain') }}
-    </a>
     <header role="banner" class="bg-white border-b border-gray-200 sticky top-0 z-50 transition-shadow duration-200"
       :class="scrolled ? 'shadow-md' : ''">
       <div class="max-w-6xl mx-auto px-4 flex items-center justify-between transition-all duration-200"

@@ -158,8 +158,8 @@ const cabinOptions = computed(() => [
               </div>
             </div>
             <div class="mt-3 pt-3 border-t">
-              <label class="text-sm font-medium text-gray-700 block mb-2">{{ t('search.cabinClass') }}</label>
-              <select v-model="searchStore.cabinClass" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+              <label for="search-cabin-class" class="text-sm font-medium text-gray-700 block mb-2">{{ t('search.cabinClass') }}</label>
+              <select id="search-cabin-class" v-model="searchStore.cabinClass" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
                 <option v-for="opt in cabinOptions" :key="opt.value" :value="opt.value">{{ opt.label }}</option>
               </select>
             </div>
