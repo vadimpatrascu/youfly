@@ -25,6 +25,7 @@ const takenSeats = new Set([
 // Seats selected by current passengers
 const selectedSeats = ref<Record<string, string>>({}) // passengerId -> seat
 const activePassengerIdx = ref(0)
+const seatAnnouncement = ref('')
 
 const passengers = computed(() => bookingStore.passengers)
 
@@ -49,6 +50,7 @@ function selectSeat(row: number, col: string) {
   // Deselect if already selected by this passenger
   if (selectedSeats.value[currentPassenger.duffelPassengerId] === seat) {
     delete selectedSeats.value[currentPassenger.duffelPassengerId]
+    seatAnnouncement.value = t('seatSelection.seatDeselected', { seat })
     return
   }
 
@@ -57,6 +59,7 @@ function selectSeat(row: number, col: string) {
   if (takenByOther) return
 
   selectedSeats.value[currentPassenger.duffelPassengerId] = seat
+  seatAnnouncement.value = t('seatSelection.seatSelected', { seat, name: `${currentPassenger.given_name} ${currentPassenger.family_name}` })
 
   // Auto-advance to next passenger
   if (activePassengerIdx.value < passengers.value.length - 1) {
@@ -94,6 +97,7 @@ function skip() {
 
 <template>
   <div class="max-w-5xl mx-auto px-4 py-6">
+    <div aria-live="polite" aria-atomic="true" class="sr-only">{{ seatAnnouncement }}</div>
     <div class="flex items-center gap-3 mb-6">
       <button @click="router.back()" :aria-label="t('seatSelection.back')" class="text-gray-500 hover:text-gray-700 text-sm">{{ t('seatSelection.back') }}</button>
       <h1 class="text-2xl font-bold text-gray-900">{{ t('seatSelection.title') }}</h1>

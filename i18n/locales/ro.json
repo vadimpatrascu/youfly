@@ -361,7 +361,9 @@
     "seat": "Loc",
     "taken": "Ocupat",
     "available": "Disponibil",
-    "selected": "Selectat"
+    "selected": "Selectat",
+    "seatSelected": "Locul {seat} selectat pentru {name}",
+    "seatDeselected": "Locul {seat} deselectat"
   },
   "footer": {
     "rights": "Toate drepturile rezervate.",
@@ -915,10 +917,13 @@
   },
   "help": {
     "title": "Comenzi rapide",
-    "search": "Cauta un zbor (focus pe cautare)",
-    "escape": "Inchide meniuri / overlay-uri",
-    "help": "Arata acest panou de ajutor",
-    "hint": "Apasa pentru a deschide/inchide"
+    "search": "Focusează câmpul de căutare",
+    "home": "Mergi la pagina principală",
+    "booking": "Mergi la rezervarea mea",
+    "deals": "Mergi la oferte",
+    "escape": "Închide meniuri / overlay-uri",
+    "help": "Arată acest panou de ajutor",
+    "hint": "Apasă pentru a deschide/închide"
   },
   "priceAlert": {
     "title": "Primesti alerta cand pretul scade",

@@ -20,6 +20,9 @@ watch(show, async (val) => {
 
 const shortcuts = computed(() => [
   { key: '/', desc: t('help.search') },
+  { key: 'h', desc: t('help.home') },
+  { key: 'b', desc: t('help.booking') },
+  { key: 'd', desc: t('help.deals') },
   { key: 'Escape', desc: t('help.escape') },
   { key: '?', desc: t('help.help') },
 ])

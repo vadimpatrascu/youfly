@@ -2,6 +2,7 @@
 const { locale, locales, setLocale, t } = useI18n()
 const { toasts, remove } = useToast()
 const { showMdl, toggleCurrency } = useCurrency()
+const router = useRouter()
 
 // Keep html lang attribute in sync with selected locale
 useHead(computed(() => ({ htmlAttrs: { lang: locale.value } })))
@@ -15,6 +16,26 @@ onClickOutside(langMenuRef, () => { showLangMenu.value = false })
 
 watch(showLangMenu, async (val) => {
   if (!val) { await nextTick(); langToggleBtn.value?.focus() }
+})
+
+// Global navigation keyboard shortcuts
+onMounted(() => {
+  function handler(e: KeyboardEvent) {
+    const tgt = e.target as HTMLElement
+    if (tgt.tagName === 'INPUT' || tgt.tagName === 'TEXTAREA' || tgt.tagName === 'SELECT' || tgt.isContentEditable) return
+    if (e.metaKey || e.ctrlKey || e.altKey) return
+    if (e.key === '/') {
+      e.preventDefault()
+      const searchInput = document.querySelector<HTMLInputElement>('input[type="text"][placeholder]')
+      if (searchInput) searchInput.focus()
+      else router.push('/')
+    }
+    if (e.key === 'h') { e.preventDefault(); router.push('/') }
+    if (e.key === 'b') { e.preventDefault(); router.push('/my-booking') }
+    if (e.key === 'd') { e.preventDefault(); router.push('/deals') }
+  }
+  window.addEventListener('keydown', handler)
+  onUnmounted(() => window.removeEventListener('keydown', handler))
 })
 
 function onLangKeydown(e: KeyboardEvent) {

@@ -361,7 +361,9 @@
     "seat": "Seat",
     "taken": "Taken",
     "available": "Available",
-    "selected": "Selected"
+    "selected": "Selected",
+    "seatSelected": "Seat {seat} selected for {name}",
+    "seatDeselected": "Seat {seat} deselected"
   },
   "footer": {
     "rights": "All rights reserved.",
@@ -915,7 +917,10 @@
   },
   "help": {
     "title": "Keyboard shortcuts",
-    "search": "Search a flight (focus on search)",
+    "search": "Focus search field",
+    "home": "Go to home page",
+    "booking": "Go to my booking",
+    "deals": "Go to deals",
     "escape": "Close menus / overlays",
     "help": "Show this help panel",
     "hint": "Press to open/close"
