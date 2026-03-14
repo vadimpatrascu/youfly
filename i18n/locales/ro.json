@@ -293,7 +293,8 @@
     "colSearchedAt": "Căutat la",
     "logout": "Delogare",
     "title": "Panou de administrare",
-    "demo": "DEMO"
+    "demo": "DEMO",
+    "contactMessages": "Mesaje de contact"
   },
   "error": {
     "notFoundTitle": "Pagina nu a fost găsită",

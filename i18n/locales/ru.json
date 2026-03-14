@@ -293,7 +293,8 @@
     "colSearchedAt": "Искали в",
     "logout": "Выйти",
     "title": "Панель администратора",
-    "demo": "ДЕМО"
+    "demo": "ДЕМО",
+    "contactMessages": "Контактные сообщения"
   },
   "error": {
     "notFoundTitle": "Страница не найдена",

@@ -293,7 +293,8 @@
     "colSearchedAt": "Searched at",
     "logout": "Logout",
     "title": "Admin Dashboard",
-    "demo": "DEMO"
+    "demo": "DEMO",
+    "contactMessages": "Contact Messages"
   },
   "error": {
     "notFoundTitle": "Page not found",

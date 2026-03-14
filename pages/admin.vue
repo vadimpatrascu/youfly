@@ -146,6 +146,23 @@ function formatDate(iso: string) {
         </div>
       </div>
 
+      <!-- Recent contact messages -->
+      <div v-if="stats.recentContactMessages?.length" class="bg-white rounded-2xl border border-gray-200 p-5">
+        <h3 class="font-semibold text-gray-900 mb-3">{{ t('admin.contactMessages') }}</h3>
+        <div class="space-y-2">
+          <div v-for="m in stats.recentContactMessages" :key="m.id"
+            class="bg-gray-50 rounded-xl px-3 py-2 text-sm">
+            <div class="flex items-center gap-2 mb-0.5">
+              <span class="font-semibold text-gray-900">{{ m.name }}</span>
+              <span class="text-gray-400">·</span>
+              <span class="text-gray-500 text-xs">{{ m.email }}</span>
+              <span class="ml-auto text-gray-400 text-xs">{{ formatDate(m.created_at) }}</span>
+            </div>
+            <div class="text-xs text-brand-600 font-medium">{{ m.subject }}</div>
+          </div>
+        </div>
+      </div>
+
       <button @click="stats = null; secretInput = ''"
         class="text-sm text-gray-500 hover:text-gray-700 underline">
         ← {{ t('admin.logout') }}
