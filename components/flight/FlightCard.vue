@@ -55,7 +55,7 @@ function layoverMins(arr: string, dep: string): number {
 </script>
 
 <template>
-  <div class="bg-white rounded-2xl border border-gray-200 hover:border-brand-300 hover:shadow-md transition-all">
+  <article class="bg-white rounded-2xl border border-gray-200 hover:border-brand-300 hover:shadow-md transition-all" :aria-label="offer.slices[0]?.origin?.iata_code + ' → ' + (offer.slices[offer.slices.length-1]?.destination?.iata_code || '') + ', ' + formatWithMdl(offer.total_amount, offer.total_currency)">
     <div class="p-4 md:p-6">
       <div v-for="(slice, i) in offer.slices" :key="slice.id || i"
         :class="i > 0 ? 'mt-4 pt-4 border-t border-gray-100' : ''">
@@ -208,5 +208,5 @@ function layoverMins(arr: string, dep: string): number {
         </template>
       </div>
     </div>
-  </div>
+  </article>
 </template>
