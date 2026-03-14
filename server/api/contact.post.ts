@@ -1,14 +1,10 @@
 import { createServerSupabase } from '../utils/supabase'
-import { checkRateLimit } from '../utils/rateLimit'
+import { enforceRateLimit } from '../utils/rateLimit'
 
 export default defineEventHandler(async (event) => {
   // Rate limit: 3 messages per 10 minutes per IP
   const ip = getRequestIP(event, { xForwardedFor: true }) || 'unknown'
-  const rl = checkRateLimit(`contact:${ip}`, 3, 10 * 60_000)
-  if (!rl.allowed) {
-    setHeader(event, 'Retry-After', String(Math.ceil((rl.resetAt - Date.now()) / 1000)))
-    throw createError({ statusCode: 429, message: 'Too many requests. Please try again later.' })
-  }
+  enforceRateLimit(event, `contact:${ip}`, 3, 10 * 60_000)
 
   const body = await readBody(event)
   const { name, email, subject, message } = body

@@ -1,5 +1,5 @@
 import { duffelFetch } from '../utils/duffel'
-import { checkRateLimit } from '../utils/rateLimit'
+import { enforceRateLimit } from '../utils/rateLimit'
 
 // Simple in-memory cache: query -> { results, ts }
 const airportCache = new Map<string, { results: any[]; ts: number }>()
@@ -21,11 +21,7 @@ function pruneCache() {
 
 export default defineEventHandler(async (event) => {
   const ip = getRequestIP(event, { xForwardedFor: true }) || 'unknown'
-  const rl = checkRateLimit(`airports:${ip}`, 30, 60_000)
-  if (!rl.allowed) {
-    setHeader(event, 'Retry-After', String(Math.ceil((rl.resetAt - Date.now()) / 1000)))
-    throw createError({ statusCode: 429, message: 'Too many requests' })
-  }
+  enforceRateLimit(event, `airports:${ip}`, 30, 60_000)
 
   const query = getQuery(event)
   const q = (query.q as string || '').trim().toLowerCase().substring(0, 50)

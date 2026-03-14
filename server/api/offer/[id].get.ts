@@ -1,14 +1,10 @@
 import { duffelFetch } from '../../utils/duffel'
-import { checkRateLimit } from '../../utils/rateLimit'
+import { enforceRateLimit } from '../../utils/rateLimit'
 
 export default defineEventHandler(async (event) => {
   // Rate limit: 30 offer lookups per minute per IP
   const ip = getRequestIP(event, { xForwardedFor: true }) || 'unknown'
-  const rl = checkRateLimit(`offer:${ip}`, 30, 60_000)
-  if (!rl.allowed) {
-    setHeader(event, 'Retry-After', String(Math.ceil((rl.resetAt - Date.now()) / 1000)))
-    throw createError({ statusCode: 429, message: 'Too many requests. Please wait.' })
-  }
+  enforceRateLimit(event, `offer:${ip}`, 30, 60_000)
 
   const id = getRouterParam(event, 'id')
   if (!id || !/^[a-zA-Z0-9_-]{1,100}$/.test(id)) throw createError({ statusCode: 400, message: 'ID required' })

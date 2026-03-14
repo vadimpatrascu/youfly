@@ -1,14 +1,10 @@
 import { createServerSupabase } from '../../utils/supabase'
-import { checkRateLimit } from '../../utils/rateLimit'
+import { enforceRateLimit } from '../../utils/rateLimit'
 
 export default defineEventHandler(async (event) => {
   // Rate limit: 10 lookups per minute per IP to prevent reference enumeration
   const ip = getRequestIP(event, { xForwardedFor: true }) || 'unknown'
-  const rl = checkRateLimit(`booking-lookup:${ip}`, 10, 60_000)
-  if (!rl.allowed) {
-    setHeader(event, 'Retry-After', String(Math.ceil((rl.resetAt - Date.now()) / 1000)))
-    throw createError({ statusCode: 429, message: 'Too many requests. Please wait.' })
-  }
+  enforceRateLimit(event, `booking-lookup:${ip}`, 10, 60_000)
 
   const ref = getRouterParam(event, 'ref')
   if (!ref || !/^[A-Z0-9]{4,10}$/.test(ref.toUpperCase())) throw createError({ statusCode: 400, message: 'Reference required' })

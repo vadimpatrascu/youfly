@@ -1,13 +1,9 @@
 import { createServerSupabase } from '../../utils/supabase'
-import { checkRateLimit } from '../../utils/rateLimit'
+import { enforceRateLimit } from '../../utils/rateLimit'
 
 export default defineEventHandler(async (event) => {
   const ip = getRequestIP(event, { xForwardedFor: true }) || 'unknown'
-  const rl = checkRateLimit(`admin:${ip}`, 10, 60_000)
-  if (!rl.allowed) {
-    setHeader(event, 'Retry-After', String(Math.ceil((rl.resetAt - Date.now()) / 1000)))
-    throw createError({ statusCode: 429, message: 'Too many requests' })
-  }
+  enforceRateLimit(event, `admin:${ip}`, 10, 60_000)
 
   // Read secret from Authorization header: "Bearer <secret>"
   const authHeader = getHeader(event, 'authorization') || ''

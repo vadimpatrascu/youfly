@@ -1,16 +1,12 @@
 import { duffelFetch } from '../utils/duffel'
 import { createServerSupabase } from '../utils/supabase'
-import { checkRateLimit } from '../utils/rateLimit'
+import { enforceRateLimit } from '../utils/rateLimit'
 import { mapOffer } from '../utils/mapOffer'
 
 export default defineEventHandler(async (event) => {
   // Rate limit: 20 searches per minute per IP
   const ip = getRequestIP(event, { xForwardedFor: true }) || 'unknown'
-  const rl = checkRateLimit(`search:${ip}`, 20, 60_000)
-  if (!rl.allowed) {
-    setHeader(event, 'Retry-After', String(Math.ceil((rl.resetAt - Date.now()) / 1000)))
-    throw createError({ statusCode: 429, message: 'Too many searches. Please wait a minute.' })
-  }
+  enforceRateLimit(event, `search:${ip}`, 20, 60_000, 'Too many searches. Please wait a minute.')
 
   const body = await readBody(event)
   const { origin, destination, departureDate, returnDate, adults = 1, children = 0, infants = 0, cabinClass = 'economy' } = body

@@ -1,14 +1,10 @@
 import { duffelFetch } from '../utils/duffel'
-import { checkRateLimit } from '../utils/rateLimit'
+import { enforceRateLimit } from '../utils/rateLimit'
 import { mapOffer } from '../utils/mapOffer'
 
 export default defineEventHandler(async (event) => {
   const ip = getRequestIP(event, { xForwardedFor: true }) || 'unknown'
-  const rl = checkRateLimit(`offers:${ip}`, 20, 60_000)
-  if (!rl.allowed) {
-    setHeader(event, 'Retry-After', String(Math.ceil((rl.resetAt - Date.now()) / 1000)))
-    throw createError({ statusCode: 429, message: 'Too many requests' })
-  }
+  enforceRateLimit(event, `offers:${ip}`, 20, 60_000)
 
   const query = getQuery(event)
   const offerRequestId = query.offer_request_id as string
