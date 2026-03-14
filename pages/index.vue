@@ -8,7 +8,7 @@ const { favorites, toggle: toggleFavorite, isFavorite } = useFavorites()
 useWebsiteStructuredData()
 useOrganizationStructuredData()
 
-useHead({ title: computed(() => 'YouFly — ' + t('hero.title')) })
+useSeo({ title: t('hero.title'), description: t('hero.subtitle') })
 
 const features = computed(() => [
   { icon: '✈️', title: t('features.airlines'), desc: t('features.airlinesDesc') },
