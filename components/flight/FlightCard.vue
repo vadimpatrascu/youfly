@@ -122,7 +122,7 @@ function layoverMins(arr: string, dep: string): number {
             <div class="text-2xl font-bold text-brand-600">{{ formatWithMdl(offer.total_amount, offer.total_currency) }}</div>
             <div class="text-xs text-gray-400">{{ t('flightCard.perPerson') }}</div>
           </div>
-          <button @click="expanded = !expanded" :aria-expanded="expanded" :aria-controls="`flight-details-${offer.id}`" class="text-xs text-brand-600 hover:underline hidden md:block">
+          <button @click="expanded = !expanded" :aria-expanded="expanded" :aria-controls="`flight-details-${offer.id}`" class="text-xs text-brand-600 hover:underline">
             <span v-if="expanded"><span aria-hidden="true">&#9650;</span> {{ t('flightCard.hideDetails') }}</span>
             <span v-else><span aria-hidden="true">&#9660;</span> {{ t('flightCard.details') }}</span>
           </button>
