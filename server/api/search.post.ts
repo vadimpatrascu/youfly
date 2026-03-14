@@ -87,6 +87,12 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, message: 'Invalid cabin class' })
   }
 
+  // Reject past dates (must be today or future)
+  const today = new Date().toISOString().split('T')[0]
+  if (String(departureDate) < today) {
+    throw createError({ statusCode: 400, message: 'Departure date cannot be in the past' })
+  }
+
   // Cap passenger counts to prevent oversized requests
   const adultsN = Math.min(9, Math.max(1, Number(adults) || 1))
   const childrenN = Math.min(9, Math.max(0, Number(children) || 0))
