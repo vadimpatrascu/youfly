@@ -102,8 +102,8 @@ watchEffect(() => {
       </header>
 
       <!-- Body -->
-      <div class="prose prose-gray max-w-none text-gray-700 leading-relaxed text-base">
-        <p>{{ article.body }}</p>
+      <div class="space-y-4 text-gray-700 leading-relaxed text-base">
+        <p v-for="(para, i) in article.body.split('\n\n').filter(Boolean)" :key="i">{{ para }}</p>
       </div>
 
       <!-- CTA -->
