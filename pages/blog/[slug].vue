@@ -4,12 +4,12 @@ const route = useRoute()
 const router = useRouter()
 
 const articleData = [
-  { slug: 'cum-sa-gasesti-bilete-ieftine', date: '2025-03-10', readTime: '5', category: 'tips', emoji: '💰', titleKey: 'blog.art1Title', excerptKey: 'blog.art1Excerpt', bodyKey: 'blog.art1Body' },
-  { slug: 'top-destinatii-moldova', date: '2025-03-05', readTime: '7', category: 'destinations', emoji: '🌍', titleKey: 'blog.art2Title', excerptKey: 'blog.art2Excerpt', bodyKey: 'blog.art2Body' },
-  { slug: 'bagaj-de-mana-ghid-complet', date: '2025-02-28', readTime: '8', category: 'preparation', emoji: '🎒', titleKey: 'blog.art3Title', excerptKey: 'blog.art3Excerpt', bodyKey: 'blog.art3Body' },
-  { slug: 'rezervare-cu-escala-vs-direct', date: '2025-02-20', readTime: '6', category: 'tips', emoji: '✈️', titleKey: 'blog.art4Title', excerptKey: 'blog.art4Excerpt', bodyKey: 'blog.art4Body' },
-  { slug: 'asigurare-calatorie-de-ce', date: '2025-02-15', readTime: '5', category: 'safety', emoji: '🛡️', titleKey: 'blog.art5Title', excerptKey: 'blog.art5Excerpt', bodyKey: 'blog.art5Body' },
-  { slug: 'istanbul-ghid-3-zile', date: '2025-02-10', readTime: '10', category: 'guides', emoji: '🕌', titleKey: 'blog.art6Title', excerptKey: 'blog.art6Excerpt', bodyKey: 'blog.art6Body' },
+  { slug: 'cum-sa-gasesti-bilete-ieftine', date: '2026-03-10', readTime: '5', category: 'tips', emoji: '💰', titleKey: 'blog.art1Title', excerptKey: 'blog.art1Excerpt', bodyKey: 'blog.art1Body' },
+  { slug: 'top-destinatii-moldova', date: '2026-03-05', readTime: '7', category: 'destinations', emoji: '🌍', titleKey: 'blog.art2Title', excerptKey: 'blog.art2Excerpt', bodyKey: 'blog.art2Body' },
+  { slug: 'bagaj-de-mana-ghid-complet', date: '2026-02-28', readTime: '8', category: 'preparation', emoji: '🎒', titleKey: 'blog.art3Title', excerptKey: 'blog.art3Excerpt', bodyKey: 'blog.art3Body' },
+  { slug: 'rezervare-cu-escala-vs-direct', date: '2026-02-20', readTime: '6', category: 'tips', emoji: '✈️', titleKey: 'blog.art4Title', excerptKey: 'blog.art4Excerpt', bodyKey: 'blog.art4Body' },
+  { slug: 'asigurare-calatorie-de-ce', date: '2026-02-15', readTime: '5', category: 'safety', emoji: '🛡️', titleKey: 'blog.art5Title', excerptKey: 'blog.art5Excerpt', bodyKey: 'blog.art5Body' },
+  { slug: 'istanbul-ghid-3-zile', date: '2026-02-10', readTime: '10', category: 'guides', emoji: '🕌', titleKey: 'blog.art6Title', excerptKey: 'blog.art6Excerpt', bodyKey: 'blog.art6Body' },
 ]
 
 const article = computed(() => {

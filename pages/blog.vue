@@ -7,12 +7,12 @@ useBreadcrumbStructuredData([
 ])
 
 const articleData = [
-  { slug: 'cum-sa-gasesti-bilete-ieftine', date: '2025-03-10', readTime: '5 min', category: 'tips', emoji: '💰', titleKey: 'blog.art1Title', excerptKey: 'blog.art1Excerpt' },
-  { slug: 'top-destinatii-moldova', date: '2025-03-05', readTime: '7 min', category: 'destinations', emoji: '🌍', titleKey: 'blog.art2Title', excerptKey: 'blog.art2Excerpt' },
-  { slug: 'bagaj-de-mana-ghid-complet', date: '2025-02-28', readTime: '8 min', category: 'preparation', emoji: '🎒', titleKey: 'blog.art3Title', excerptKey: 'blog.art3Excerpt' },
-  { slug: 'rezervare-cu-escala-vs-direct', date: '2025-02-20', readTime: '6 min', category: 'tips', emoji: '✈️', titleKey: 'blog.art4Title', excerptKey: 'blog.art4Excerpt' },
-  { slug: 'asigurare-calatorie-de-ce', date: '2025-02-15', readTime: '5 min', category: 'safety', emoji: '🛡️', titleKey: 'blog.art5Title', excerptKey: 'blog.art5Excerpt' },
-  { slug: 'istanbul-ghid-3-zile', date: '2025-02-10', readTime: '10 min', category: 'guides', emoji: '🕌', titleKey: 'blog.art6Title', excerptKey: 'blog.art6Excerpt' },
+  { slug: 'cum-sa-gasesti-bilete-ieftine', date: '2026-03-10', readTime: '5 min', category: 'tips', emoji: '💰', titleKey: 'blog.art1Title', excerptKey: 'blog.art1Excerpt' },
+  { slug: 'top-destinatii-moldova', date: '2026-03-05', readTime: '7 min', category: 'destinations', emoji: '🌍', titleKey: 'blog.art2Title', excerptKey: 'blog.art2Excerpt' },
+  { slug: 'bagaj-de-mana-ghid-complet', date: '2026-02-28', readTime: '8 min', category: 'preparation', emoji: '🎒', titleKey: 'blog.art3Title', excerptKey: 'blog.art3Excerpt' },
+  { slug: 'rezervare-cu-escala-vs-direct', date: '2026-02-20', readTime: '6 min', category: 'tips', emoji: '✈️', titleKey: 'blog.art4Title', excerptKey: 'blog.art4Excerpt' },
+  { slug: 'asigurare-calatorie-de-ce', date: '2026-02-15', readTime: '5 min', category: 'safety', emoji: '🛡️', titleKey: 'blog.art5Title', excerptKey: 'blog.art5Excerpt' },
+  { slug: 'istanbul-ghid-3-zile', date: '2026-02-10', readTime: '10 min', category: 'guides', emoji: '🕌', titleKey: 'blog.art6Title', excerptKey: 'blog.art6Excerpt' },
 ]
 
 const articles = computed(() => articleData.map(a => ({ ...a, title: t(a.titleKey), excerpt: t(a.excerptKey) })))
