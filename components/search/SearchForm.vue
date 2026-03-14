@@ -138,9 +138,9 @@ const cabinOptions = computed(() => [
           </button>
           <div v-if="showPassengers" class="absolute z-50 top-full mt-1 w-80 bg-white border border-gray-200 rounded-xl shadow-xl p-4">
             <div v-for="p in [
-              { key: 'adults', label: t('search.adults'), sub: t('search.adultsAge'), min: 1 },
-              { key: 'children', label: t('search.children'), sub: t('search.childrenAge'), min: 0 },
-              { key: 'infants', label: t('search.infants'), sub: t('search.infantsAge'), min: 0 }
+              { key: 'adults', label: t('search.adults'), sub: t('search.adultsAge'), min: 1, max: 9 },
+              { key: 'children', label: t('search.children'), sub: t('search.childrenAge'), min: 0, max: 9 },
+              { key: 'infants', label: t('search.infants'), sub: t('search.infantsAge'), min: 0, max: 4 }
             ]" :key="p.key" class="flex items-center justify-between py-3 border-b last:border-0">
               <div>
                 <div class="text-sm font-medium text-gray-900">{{ p.label }}</div>
@@ -148,12 +148,14 @@ const cabinOptions = computed(() => [
               </div>
               <div class="flex items-center gap-3">
                 <button @click="(searchStore as any)[p.key] = Math.max(p.min, (searchStore as any)[p.key] - 1)"
+                  :disabled="(searchStore as any)[p.key] <= p.min"
                   :aria-label="t('search.decrease') + ' ' + p.label"
-                  class="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100 text-gray-700 font-bold"><span aria-hidden="true">−</span></button>
+                  class="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed text-gray-700 font-bold"><span aria-hidden="true">−</span></button>
                 <span class="w-6 text-center text-sm font-semibold" aria-live="polite">{{ (searchStore as any)[p.key] }}</span>
-                <button @click="(searchStore as any)[p.key]++"
+                <button @click="(searchStore as any)[p.key] = Math.min(p.max, (searchStore as any)[p.key] + 1)"
+                  :disabled="(searchStore as any)[p.key] >= p.max"
                   :aria-label="t('search.increase') + ' ' + p.label"
-                  class="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100 text-gray-700 font-bold"><span aria-hidden="true">+</span></button>
+                  class="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed text-gray-700 font-bold"><span aria-hidden="true">+</span></button>
               </div>
             </div>
             <div class="mt-3 pt-3 border-t">
