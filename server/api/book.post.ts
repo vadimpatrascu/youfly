@@ -22,7 +22,7 @@ export default defineEventHandler(async (event) => {
   const body = await readBody(event)
   const { offerId, passengers } = body
 
-  if (!offerId || typeof offerId !== 'string' || offerId.length > 100) {
+  if (!offerId || typeof offerId !== 'string' || !/^[a-zA-Z0-9_-]{1,100}$/.test(offerId)) {
     throw createError({ statusCode: 400, message: 'offerId and passengers are required' })
   }
   if (!passengers?.length || !Array.isArray(passengers) || passengers.length > 9) {
@@ -45,6 +45,9 @@ export default defineEventHandler(async (event) => {
     }
     if (p.passport_expires && !dateRe.test(p.passport_expires)) {
       throw createError({ statusCode: 400, message: 'Invalid passport expiry date' })
+    }
+    if (!p.duffelPassengerId || !/^[a-zA-Z0-9_-]{1,100}$/.test(p.duffelPassengerId)) {
+      throw createError({ statusCode: 400, message: 'Invalid passenger ID' })
     }
   }
 
