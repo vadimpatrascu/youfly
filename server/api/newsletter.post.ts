@@ -1,6 +1,14 @@
 import { createServerSupabase } from '../utils/supabase'
+import { checkRateLimit } from '../utils/rateLimit'
 
 export default defineEventHandler(async (event) => {
+  // Rate limit: 3 newsletter signups per 5 minutes per IP
+  const ip = getHeader(event, 'x-forwarded-for')?.split(',')[0] || getHeader(event, 'x-real-ip') || 'unknown'
+  const rl = checkRateLimit(`newsletter:${ip}`, 3, 5 * 60_000)
+  if (!rl.allowed) {
+    throw createError({ statusCode: 429, message: 'Too many requests. Please try again later.' })
+  }
+
   const body = await readBody(event)
   const { email } = body
 
