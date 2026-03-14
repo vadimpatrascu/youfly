@@ -13,7 +13,7 @@ function normalizePhone(phone: string): string {
 
 export default defineEventHandler(async (event) => {
   // Rate limit: 5 bookings per minute per IP
-  const ip = getHeader(event, 'x-forwarded-for')?.split(',')[0] || getHeader(event, 'x-real-ip') || 'unknown'
+  const ip = getRequestIP(event, { xForwardedFor: true }) || 'unknown'
   const rl = checkRateLimit(`book:${ip}`, 5, 60_000)
   if (!rl.allowed) {
     throw createError({ statusCode: 429, message: 'Too many requests. Please wait.' })

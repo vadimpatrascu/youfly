@@ -56,8 +56,8 @@ function mapOffer(offer: any) {
 
 export default defineEventHandler(async (event) => {
   // Rate limit: 20 searches per minute per IP
-  const ip = getHeader(event, 'x-forwarded-for')?.split(',')[0] || getHeader(event, 'x-real-ip') || 'unknown'
-  const rl = checkRateLimit(ip, 20, 60_000)
+  const ip = getRequestIP(event, { xForwardedFor: true }) || 'unknown'
+  const rl = checkRateLimit(`search:${ip}`, 20, 60_000)
   if (!rl.allowed) {
     throw createError({ statusCode: 429, message: 'Too many searches. Please wait a minute.' })
   }
@@ -67,6 +67,23 @@ export default defineEventHandler(async (event) => {
 
   if (!origin || !destination || !departureDate) {
     throw createError({ statusCode: 400, message: 'Missing required fields: origin, destination, departureDate' })
+  }
+
+  // Validate IATA codes (3 uppercase letters/digits) and date format
+  const iataRe = /^[A-Z0-9]{3}$/
+  if (!iataRe.test(String(origin).toUpperCase()) || !iataRe.test(String(destination).toUpperCase())) {
+    throw createError({ statusCode: 400, message: 'Invalid airport IATA code' })
+  }
+  const dateRe = /^\d{4}-\d{2}-\d{2}$/
+  if (!dateRe.test(String(departureDate))) {
+    throw createError({ statusCode: 400, message: 'Invalid departure date format' })
+  }
+  if (returnDate && !dateRe.test(String(returnDate))) {
+    throw createError({ statusCode: 400, message: 'Invalid return date format' })
+  }
+  const validCabins = ['economy', 'premium_economy', 'business', 'first']
+  if (!validCabins.includes(cabinClass)) {
+    throw createError({ statusCode: 400, message: 'Invalid cabin class' })
   }
 
   const slices: any[] = [
