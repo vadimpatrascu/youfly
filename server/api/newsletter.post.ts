@@ -16,15 +16,13 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, message: 'Email invalid' })
   }
 
-  // Store in Supabase (leads table with a special flag)
+  // Store in dedicated newsletter_subscribers table (upsert to handle duplicates gracefully)
   const supabase = createServerSupabase()
   if (supabase) {
-    await supabase.from('leads').insert({
-      from_iata: 'NEWSLETTER',
-      to_iata: email.substring(0, 50),
-      depart_date: new Date().toISOString().split('T')[0],
-      adults: 0,
-    }).then(() => {}).catch(() => {})
+    await supabase.from('newsletter_subscribers').upsert(
+      { email: email.substring(0, 255) },
+      { onConflict: 'email', ignoreDuplicates: true }
+    ).then(() => {}).catch(() => {})
   }
 
   return { success: true }
