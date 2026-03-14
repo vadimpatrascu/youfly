@@ -74,7 +74,7 @@ async function submitForm() {
           <div aria-hidden="true" class="text-5xl mb-4">✅</div>
           <h2 class="text-xl font-bold text-gray-900 mb-2">{{ t('contact.successTitle') }}</h2>
           <p class="text-gray-600 mb-4">{{ t('contact.successText') }}</p>
-          <button @click="submitted = false; form.message = ''; form.name = ''; form.email = ''"
+          <button @click="submitted = false; form.message = ''; form.name = ''; form.email = ''; form.subject = ''"
             class="px-6 py-2 border border-gray-300 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
             {{ t('contact.sendAnother') }}
           </button>

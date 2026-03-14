@@ -9,7 +9,10 @@ export default defineEventHandler(async (event) => {
   enforceRateLimit(event, `search:${ip}`, 20, 60_000, 'Too many searches. Please wait a minute.')
 
   const body = await readBody(event)
-  const { origin, destination, departureDate, returnDate, adults = 1, children = 0, infants = 0, cabinClass = 'economy' } = body
+  const { departureDate, returnDate, adults = 1, children = 0, infants = 0, cabinClass = 'economy' } = body
+  // Normalize IATA codes to uppercase immediately so validation and Duffel call are consistent
+  const origin = String(body.origin || '').toUpperCase()
+  const destination = String(body.destination || '').toUpperCase()
 
   if (!origin || !destination || !departureDate) {
     throw createError({ statusCode: 400, message: 'Missing required fields: origin, destination, departureDate' })
@@ -17,7 +20,7 @@ export default defineEventHandler(async (event) => {
 
   // Validate IATA codes (3 uppercase letters/digits) and date format
   const iataRe = /^[A-Z0-9]{3}$/
-  if (!iataRe.test(String(origin).toUpperCase()) || !iataRe.test(String(destination).toUpperCase())) {
+  if (!iataRe.test(origin) || !iataRe.test(destination)) {
     throw createError({ statusCode: 400, message: 'Invalid airport IATA code' })
   }
   const dateRe = /^\d{4}-\d{2}-\d{2}$/
