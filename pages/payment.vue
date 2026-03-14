@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useBookingStore } from '~/stores/booking'
 const { t } = useI18n()
-useHead({ title: computed(() => `${t('payment.title')} — YouFly`) })
+useHead({ title: computed(() => `${t('payment.title')} — YouFly`), meta: [{ name: 'robots', content: 'noindex' }] })
 
 const bookingStore = useBookingStore()
 const router = useRouter()

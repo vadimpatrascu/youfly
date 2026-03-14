@@ -4,7 +4,7 @@ const { t } = useI18n()
 const bookingStore = useBookingStore()
 const router = useRouter()
 
-useHead({ title: computed(() => t('seatSelection.title') + ' — YouFly') })
+useHead({ title: computed(() => t('seatSelection.title') + ' — YouFly'), meta: [{ name: 'robots', content: 'noindex' }] })
 
 onMounted(() => {
   if (!bookingStore.selectedOffer || !bookingStore.passengers.length) router.push('/')
