@@ -13,6 +13,10 @@ const isLoading = ref(false)
 const error = ref('')
 const { formatPrice, formatDate, formatTime } = useFormatters()
 
+function printPage() {
+  if (typeof window !== 'undefined') window.print()
+}
+
 function passengerTypeLabel(type: string) {
   if (type === 'adult') return t('passengers.adult')
   if (type === 'child') return t('passengers.child')
@@ -135,7 +139,7 @@ if (route.query.ref) lookup()
       </div>
 
       <div class="flex gap-3">
-        <button @click="window.print()" class="flex-1 py-3 border border-gray-300 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors flex items-center justify-center gap-2">
+        <button @click="printPage" class="flex-1 py-3 border border-gray-300 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors flex items-center justify-center gap-2">
           <span aria-hidden="true">🖨</span> {{ t('myBooking.print') }}
         </button>
         <NuxtLink to="/" class="flex-1 py-3 border border-gray-300 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors text-center">

@@ -26,12 +26,46 @@ useHead({
   meta: [{ name: 'robots', content: 'noindex' }],
 })
 const router = useRouter()
+const route = useRoute()
 const { trackSearch, trackSelectOffer } = useAnalytics()
+const { replaceSearchInUrl } = useUrlSearch()
 
 onMounted(async () => {
+  // Restore search from URL query params (enables shareable links)
+  const q = route.query
+  if (q.from && q.to && q.dep && !searchStore.offerRequestId) {
+    const from = String(q.from).toUpperCase().substring(0, 3)
+    const to = String(q.to).toUpperCase().substring(0, 3)
+    const dep = String(q.dep)
+    searchStore.origin = { iata_code: '', airport_iata: from, name: from, city_name: from, country_code: '' }
+    searchStore.destination = { iata_code: '', airport_iata: to, name: to, city_name: to, country_code: '' }
+    searchStore.departureDate = dep
+    if (q.ret) searchStore.returnDate = String(q.ret)
+    if (q.adults) searchStore.adults = Math.min(9, Math.max(1, Number(q.adults) || 1))
+    if (q.children) searchStore.children = Math.min(9, Math.max(0, Number(q.children) || 0))
+    if (q.infants) searchStore.infants = Math.min(4, Math.max(0, Number(q.infants) || 0))
+    if (q.cabin) searchStore.cabinClass = String(q.cabin)
+    if (q.type) searchStore.tripType = q.type === 'return' ? 'return' : 'oneway'
+    await searchStore.submitSearch()
+  }
+
   if (!searchStore.offerRequestId) return router.push('/')
   if (offersStore.all.length === 0) {
     await offersStore.loadOffers(searchStore.offerRequestId)
+  }
+  // Sync current search to URL if not already there
+  if (!q.from && searchStore.origin && searchStore.destination) {
+    replaceSearchInUrl({
+      from: searchStore.origin.airport_iata || searchStore.origin.iata_code,
+      to: searchStore.destination.airport_iata || searchStore.destination.iata_code,
+      dep: searchStore.departureDate,
+      ret: searchStore.returnDate || undefined,
+      adults: searchStore.adults,
+      children: searchStore.children,
+      infants: searchStore.infants,
+      cabin: searchStore.cabinClass,
+      type: searchStore.tripType,
+    })
   }
   trackSearch(
     searchStore.origin?.city_name || '',

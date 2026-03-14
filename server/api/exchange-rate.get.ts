@@ -20,7 +20,10 @@ const CACHE_TTL = 60 * 60 * 1000 // 1 hour
 export default defineEventHandler(async (event) => {
   const ip = getRequestIP(event, { xForwardedFor: true }) || 'unknown'
   const rl = checkRateLimit(`exchange:${ip}`, 60, 60_000)
-  if (!rl.allowed) throw createError({ statusCode: 429, message: 'Too many requests' })
+  if (!rl.allowed) {
+    setHeader(event, 'Retry-After', String(Math.ceil((rl.resetAt - Date.now()) / 1000)))
+    throw createError({ statusCode: 429, message: 'Too many requests' })
+  }
 
   const query = getQuery(event)
   const pair = (query.pair as string || 'EUR-MDL').substring(0, 10).toUpperCase()

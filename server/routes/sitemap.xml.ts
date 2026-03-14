@@ -45,6 +45,7 @@ ${pages.map(p => `  <url>
   </url>`).join('\n')}
 </urlset>`
 
-  setHeader(event, 'Content-Type', 'application/xml')
+  setHeader(event, 'Content-Type', 'application/xml; charset=utf-8')
+  setHeader(event, 'Cache-Control', 'public, max-age=3600, s-maxage=86400')
   return xml
 })

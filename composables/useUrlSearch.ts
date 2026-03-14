@@ -34,5 +34,10 @@ export function useUrlSearch() {
     router.push({ path: '/search', query: encodeSearchToQuery(params) })
   }
 
-  return { pushSearchToUrl, encodeSearchToQuery }
+  /** Replace current URL params without adding a history entry (use when already on /search) */
+  function replaceSearchInUrl(params: Parameters<typeof encodeSearchToQuery>[0]) {
+    router.replace({ query: encodeSearchToQuery(params) })
+  }
+
+  return { pushSearchToUrl, replaceSearchInUrl, encodeSearchToQuery }
 }

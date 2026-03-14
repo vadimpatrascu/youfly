@@ -4,11 +4,28 @@ import { checkRateLimit } from '../utils/rateLimit'
 // Simple in-memory cache: query -> { results, ts }
 const airportCache = new Map<string, { results: any[]; ts: number }>()
 const CACHE_TTL = 10 * 60 * 1000 // 10 minutes
+const MAX_CACHE_SIZE = 500
+
+function pruneCache() {
+  if (airportCache.size < MAX_CACHE_SIZE) return
+  const now = Date.now()
+  for (const [key, entry] of airportCache) {
+    if (now - entry.ts > CACHE_TTL) airportCache.delete(key)
+  }
+  // If still too large, remove oldest entries
+  if (airportCache.size >= MAX_CACHE_SIZE) {
+    const firstKey = airportCache.keys().next().value
+    if (firstKey) airportCache.delete(firstKey)
+  }
+}
 
 export default defineEventHandler(async (event) => {
   const ip = getRequestIP(event, { xForwardedFor: true }) || 'unknown'
   const rl = checkRateLimit(`airports:${ip}`, 30, 60_000)
-  if (!rl.allowed) throw createError({ statusCode: 429, message: 'Too many requests' })
+  if (!rl.allowed) {
+    setHeader(event, 'Retry-After', String(Math.ceil((rl.resetAt - Date.now()) / 1000)))
+    throw createError({ statusCode: 429, message: 'Too many requests' })
+  }
 
   const query = getQuery(event)
   const q = (query.q as string || '').trim().toLowerCase().substring(0, 50)
@@ -73,6 +90,7 @@ export default defineEventHandler(async (event) => {
       if (results.length >= 8) break
     }
 
+    pruneCache()
     airportCache.set(q, { results, ts: Date.now() })
     return results
   } catch (e: any) {
