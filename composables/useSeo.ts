@@ -13,7 +13,7 @@ export function useSeo(options: SeoOptions) {
 
   const title = `${options.title} — YouFly`
   const description = options.description || t('hero.subtitle')
-  const image = options.image || `${siteUrl}/og-image.png`
+  const image = options.image || `${siteUrl}/og-image.svg`
   const url = `${siteUrl}${route.path}`
 
   useHead({

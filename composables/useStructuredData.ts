@@ -35,7 +35,7 @@ export function useOrganizationStructuredData() {
     '@type': 'Organization',
     name: 'YouFly',
     url: siteUrl,
-    logo: `${siteUrl}/logo.png`,
+    logo: `${siteUrl}/logo.svg`,
     email: 'support@youfly.md',
     telephone: '+37322000000',
     address: {
@@ -65,7 +65,7 @@ export function useBlogPostStructuredData(article: { title: string; excerpt: str
     publisher: {
       '@type': 'Organization',
       name: 'YouFly',
-      logo: { '@type': 'ImageObject', url: `${siteUrl}/logo.png` },
+      logo: { '@type': 'ImageObject', url: `${siteUrl}/logo.svg` },
     },
   })
 }
