@@ -61,11 +61,22 @@ export function useBlogPostStructuredData(article: { title: string; excerpt: str
     headline: article.title,
     description: article.excerpt,
     datePublished: article.date,
+    dateModified: article.date,
     url: `${siteUrl}/blog/${article.slug}`,
+    image: `${siteUrl}/og-image.svg`,
+    author: {
+      '@type': 'Organization',
+      name: 'YouFly',
+      url: siteUrl,
+    },
     publisher: {
       '@type': 'Organization',
       name: 'YouFly',
       logo: { '@type': 'ImageObject', url: `${siteUrl}/logo.svg` },
+    },
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': `${siteUrl}/blog/${article.slug}`,
     },
   })
 }
