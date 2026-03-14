@@ -21,19 +21,18 @@ function stops(offer: any): number {
 }
 
 function airline(offer: any): string {
-  return offer.slices?.[0]?.segments?.[0]?.marketing_carrier?.name || '—'
+  return offer.slices?.[0]?.segments?.[0]?.carrier_name || '—'
 }
 
 function depTime(offer: any): string {
-  const dep = offer.slices?.[0]?.segments?.[0]?.departing_at
+  const dep = offer.slices?.[0]?.departing_at || offer.slices?.[0]?.segments?.[0]?.departing_at
   if (!dep) return '—'
   return new Date(dep).toLocaleTimeString(locale.value, { hour: '2-digit', minute: '2-digit' })
 }
 
 function arrTime(offer: any): string {
-  const segs = offer.slices?.[0]?.segments
-  if (!segs?.length) return '—'
-  const arr = segs[segs.length - 1]?.arriving_at
+  const slice = offer.slices?.[0]
+  const arr = slice?.arriving_at || slice?.segments?.[slice?.segments?.length - 1]?.arriving_at
   if (!arr) return '—'
   return new Date(arr).toLocaleTimeString(locale.value, { hour: '2-digit', minute: '2-digit' })
 }
