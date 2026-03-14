@@ -86,6 +86,11 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, message: 'Invalid cabin class' })
   }
 
+  // Cap passenger counts to prevent oversized requests
+  const adultsN = Math.min(9, Math.max(1, Number(adults) || 1))
+  const childrenN = Math.min(9, Math.max(0, Number(children) || 0))
+  const infantsN = Math.min(4, Math.max(0, Number(infants) || 0))
+
   const slices: any[] = [
     { origin, destination, departure_date: departureDate }
   ]
@@ -94,9 +99,9 @@ export default defineEventHandler(async (event) => {
   }
 
   const passengers: any[] = [
-    ...Array(Math.max(1, Number(adults))).fill({ type: 'adult' }),
-    ...Array(Math.max(0, Number(children))).fill({ type: 'child' }),
-    ...Array(Math.max(0, Number(infants))).fill({ type: 'infant_without_seat' }),
+    ...Array(adultsN).fill({ type: 'adult' }),
+    ...Array(childrenN).fill({ type: 'child' }),
+    ...Array(infantsN).fill({ type: 'infant_without_seat' }),
   ]
 
   try {
@@ -134,9 +139,9 @@ export default defineEventHandler(async (event) => {
         to_iata: destination,
         depart_date: departureDate,
         return_date: returnDate || null,
-        adults: Number(adults),
-        children: Number(children),
-        infants: Number(infants),
+        adults: adultsN,
+        children: childrenN,
+        infants: infantsN,
         cabin_class: cabinClass,
       }).then(() => {}).catch((e: any) => console.error('Lead insert error:', e.message))
     }
