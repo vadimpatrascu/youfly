@@ -120,7 +120,7 @@ async function bookDeal(deal: (typeof deals.value)[0]) {
     <div class="bg-gradient-to-r from-red-600 to-rose-600 text-white py-3 px-4 text-center">
       <div class="flex items-center justify-center gap-3 flex-wrap text-sm font-semibold">
         <span><span aria-hidden="true">🔥</span> {{ t('deals.flashSale') }} — {{ t('deals.title') }}!</span>
-        <span aria-live="off" :aria-label="t('deals.flashCountdownLabel', { time: flashCountdown })" class="bg-white/20 px-3 py-1 rounded-full font-mono text-lg tracking-widest" aria-hidden="true">{{ flashCountdown }}</span>
+        <span aria-hidden="true" class="bg-white/20 px-3 py-1 rounded-full font-mono text-lg tracking-widest">{{ flashCountdown }}</span>
         <span class="text-red-200 text-xs">{{ t('deals.flashSaleEnds') }}</span>
       </div>
     </div>
