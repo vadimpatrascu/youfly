@@ -7,5 +7,6 @@ Disallow: /seat-selection
 Disallow: /ticket-order
 Disallow: /payment
 Disallow: /booking-confirm
+Disallow: /search
 
 Sitemap: https://youfly-xi.vercel.app/sitemap.xml
