@@ -2,6 +2,10 @@
 import { useBookingStore } from '~/stores/booking'
 const { t, locale } = useI18n()
 useSeo({ title: t('confirm.title'), description: t('confirm.seoDesc') })
+useBreadcrumbStructuredData([
+  { name: 'YouFly', url: '/' },
+  { name: t('confirm.title'), url: '/booking-confirm' },
+])
 
 const bookingStore = useBookingStore()
 const router = useRouter()
