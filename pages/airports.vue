@@ -61,7 +61,7 @@ const directCount = computed(() => airports.value.filter(a => a.direct).length)
 
 async function searchFrom(airport: (typeof airports.value)[0]) {
   searchStore.destination = {
-    iata_code: airport.country,
+    iata_code: airport.iata,
     airport_iata: airport.iata,
     name: `${airport.name}`,
     city_name: airport.city,

@@ -97,7 +97,7 @@ watchEffect(() => {
           <time :datetime="article.date">{{ formatDate(article.date) }}</time>
           <span aria-hidden="true">·</span>
           <span aria-hidden="true">⏱</span>
-          <span>{{ article.readTime }} {{ t('blog.readTimeLabel') }}</span>
+          <span>{{ article.readTime }} {{ t('blog.readTime') }}</span>
         </div>
       </header>
 
