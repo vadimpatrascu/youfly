@@ -3,7 +3,7 @@ import { checkRateLimit } from '../../utils/rateLimit'
 
 export default defineEventHandler(async (event) => {
   // Rate limit: 30 offer lookups per minute per IP
-  const ip = getHeader(event, 'x-forwarded-for')?.split(',')[0] || getHeader(event, 'x-real-ip') || 'unknown'
+  const ip = getRequestIP(event, { xForwardedFor: true }) || 'unknown'
   const rl = checkRateLimit(`offer:${ip}`, 30, 60_000)
   if (!rl.allowed) {
     throw createError({ statusCode: 429, message: 'Too many requests. Please wait.' })
