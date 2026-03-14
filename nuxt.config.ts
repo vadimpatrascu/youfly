@@ -49,8 +49,10 @@ export default defineNuxtConfig({
         { property: 'og:title', content: 'YouFly — Book flights fast' },
         { property: 'og:description', content: 'Search and book cheap flights worldwide.' },
         { property: 'og:url', content: 'https://youfly-xi.vercel.app' },
-        { name: 'twitter:card', content: 'summary' },
+        { property: 'og:image', content: 'https://youfly-xi.vercel.app/og-image.svg' },
+        { name: 'twitter:card', content: 'summary_large_image' },
         { name: 'twitter:title', content: 'YouFly — Book flights fast' },
+        { name: 'twitter:image', content: 'https://youfly-xi.vercel.app/og-image.svg' },
       ],
       link: [
         { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
