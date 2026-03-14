@@ -13,7 +13,9 @@ async function loadStats() {
   isLoading.value = true
   error.value = ''
   try {
-    stats.value = await $fetch(`/api/admin/stats?secret=${encodeURIComponent(secretInput.value.trim())}`)
+    stats.value = await $fetch('/api/admin/stats', {
+      headers: { Authorization: `Bearer ${secretInput.value.trim()}` },
+    })
   } catch (e: any) {
     error.value = e?.data?.message || t('admin.loadError')
     stats.value = null

@@ -42,10 +42,11 @@ function onLangKeydown(e: KeyboardEvent) {
   if (e.key === 'Escape') { showLangMenu.value = false }
 }
 
-if (typeof window !== 'undefined') {
+onMounted(() => {
   const onScroll = () => { scrolled.value = window.scrollY > 20 }
   window.addEventListener('scroll', onScroll, { passive: true })
-}
+  onUnmounted(() => window.removeEventListener('scroll', onScroll))
+})
 
 async function switchLocale(code: string) {
   await setLocale(code)

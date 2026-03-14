@@ -1,10 +1,16 @@
 import { createServerSupabase } from '../../utils/supabase'
+import { checkRateLimit } from '../../utils/rateLimit'
 
 export default defineEventHandler(async (event) => {
-  // Simple secret check via query param (not production-grade, just for demo)
-  const query = getQuery(event)
+  const ip = getRequestIP(event, { xForwardedFor: true }) || 'unknown'
+  const rl = checkRateLimit(`admin:${ip}`, 10, 60_000)
+  if (!rl.ok) throw createError({ statusCode: 429, message: 'Too many requests' })
+
+  // Read secret from Authorization header: "Bearer <secret>"
+  const authHeader = getHeader(event, 'authorization') || ''
   const secret = useRuntimeConfig().adminSecret || 'youfly-admin-2026'
-  if (query.secret !== secret) {
+  const provided = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : ''
+  if (provided !== secret) {
     throw createError({ statusCode: 401, message: 'Unauthorized' })
   }
 
