@@ -12,23 +12,16 @@ const STATIC_RATES: Record<string, number> = {
   'TRY-MDL': 0.58,
 }
 
-// Cache the rate for 1 hour (in production)
-let cachedRates = { ...STATIC_RATES }
-let cacheTs = Date.now()
-const CACHE_TTL = 60 * 60 * 1000 // 1 hour
-
-export default defineEventHandler(async (event) => {
+export default defineEventHandler((event) => {
   const ip = getRequestIP(event, { xForwardedFor: true }) || 'unknown'
   enforceRateLimit(event, `exchange:${ip}`, 60, 60_000)
 
   const query = getQuery(event)
   const pair = (query.pair as string || 'EUR-MDL').substring(0, 10).toUpperCase()
 
-  const rate = cachedRates[pair] ?? null
   return {
     pair,
-    rate,
-    timestamp: new Date(cacheTs).toISOString(),
+    rate: STATIC_RATES[pair] ?? null,
     source: 'static',
   }
 })
