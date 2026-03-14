@@ -38,11 +38,6 @@ function printBoardingPass() {
   }, 100)
 }
 
-function shortDate(iso: string) {
-  if (!iso) return ''
-  return new Date(iso).toLocaleDateString(locale.value, { weekday: 'short', day: 'numeric', month: 'long' })
-}
-
 function shortDateCompact(iso: string) {
   if (!iso) return ''
   return new Date(iso).toLocaleDateString(locale.value, { day: 'numeric', month: 'short', year: 'numeric' })
