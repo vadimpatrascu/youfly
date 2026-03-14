@@ -1,0 +1,24 @@
+{
+  "name": "YouFly",
+  "short_name": "YouFly",
+  "description": "Search and book cheap flights worldwide",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f9fafb",
+  "theme_color": "#0284c7",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ],
+  "categories": ["travel"],
+  "lang": "ro"
+}

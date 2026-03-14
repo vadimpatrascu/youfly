@@ -3,6 +3,11 @@ const props = defineProps<{ error: { statusCode: number; message: string } }>()
 const { t } = useI18n()
 const handleError = () => clearError({ redirect: '/' })
 const is404 = computed(() => props.error.statusCode === 404)
+
+useHead(computed(() => ({
+  title: `${props.error.statusCode} — YouFly`,
+  meta: [{ name: 'robots', content: 'noindex' }],
+})))
 </script>
 
 <template>
