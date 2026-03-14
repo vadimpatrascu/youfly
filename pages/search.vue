@@ -4,7 +4,6 @@ import { useOffersStore } from '~/stores/offers'
 import { useBookingStore } from '~/stores/booking'
 
 const { t } = useI18n()
-useHead({ title: computed(() => `${t('results.title')} — YouFly`) })
 
 const cabinLabels = computed<Record<string, string>>(() => ({
   economy: t('search.economy'),
@@ -16,6 +15,13 @@ const cabinLabels = computed<Record<string, string>>(() => ({
 const searchStore = useSearchStore()
 const offersStore = useOffersStore()
 const bookingStore = useBookingStore()
+
+useHead({ title: computed(() => {
+  const from = searchStore.origin?.city_name
+  const to = searchStore.destination?.city_name
+  if (from && to) return `${from} → ${to} — YouFly`
+  return `${t('results.title')} — YouFly`
+}) })
 const router = useRouter()
 const { trackSearch, trackSelectOffer } = useAnalytics()
 
