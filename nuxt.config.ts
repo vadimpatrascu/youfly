@@ -32,6 +32,7 @@ export default defineNuxtConfig({
     adminSecret: 'youfly-admin-2026',
     public: {
       siteUrl: 'https://youfly-xi.vercel.app',
+      gaId: '', // Set NUXT_PUBLIC_GA_ID env var to enable Google Analytics
     },
   },
 
@@ -75,11 +76,11 @@ export default defineNuxtConfig({
           // CSP: allow Google Fonts, block all other external origins
           'Content-Security-Policy': [
             "default-src 'self'",
-            "script-src 'self' 'unsafe-inline'",
+            "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com",
             "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
             "font-src 'self' https://fonts.gstatic.com",
             "img-src 'self' data: blob: https://assets.duffel.com",
-            "connect-src 'self'",
+            "connect-src 'self' https://www.google-analytics.com https://analytics.google.com",
             "frame-ancestors 'self'",
             "object-src 'none'",
             "base-uri 'self'",
