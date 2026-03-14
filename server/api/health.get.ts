@@ -1,11 +1,6 @@
-export default defineEventHandler(async () => {
-  const config = useRuntimeConfig()
+export default defineEventHandler(() => {
   return {
     status: 'ok',
     timestamp: new Date().toISOString(),
-    services: {
-      duffel: config.duffelApiToken ? 'configured' : 'missing',
-      supabase: config.supabaseUrl ? 'configured' : 'missing',
-    }
   }
 })
