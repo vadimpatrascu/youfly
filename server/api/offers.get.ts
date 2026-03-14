@@ -45,6 +45,8 @@ function mapOffer(offer: any) {
           carrier_name: seg.marketing_carrier?.name || seg.operating_carrier?.name || '',
           carrier_iata: seg.marketing_carrier?.iata_code || seg.operating_carrier?.iata_code || '',
           flight_number: `${seg.marketing_carrier?.iata_code || ''}${seg.marketing_carrier_flight_number || ''}`,
+          duration: parseDurationMins(seg.duration || ''),
+          aircraft: seg.aircraft ? { name: seg.aircraft.name, iata_code: seg.aircraft.iata_code } : null,
         })),
       }
     }),

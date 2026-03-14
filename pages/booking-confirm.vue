@@ -141,7 +141,7 @@ function shortDateCompact(iso: string) {
               {{ booking ? formatWithMdl(booking.totalAmount, booking.currency) : '' }}
             </div>
             <div v-if="showMdl && booking" class="text-xs text-gray-400">≈ {{ formatPrice(booking.totalAmount, booking.currency) }}</div>
-            <div class="text-xs text-gray-400 mt-1 font-mono">{{ booking?.duffelOrderId?.substring(0, 20) }}...</div>
+            <div v-if="booking?.duffelOrderId" class="text-xs text-gray-400 mt-1 font-mono">{{ booking.duffelOrderId.substring(0, 20) }}...</div>
           </div>
         </div>
       </div>
