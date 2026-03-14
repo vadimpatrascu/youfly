@@ -105,13 +105,13 @@ function formatExpiry(e: Event) {
           </div>
         </div>
 
-        <div class="space-y-4">
+        <form @submit.prevent="pay" novalidate class="space-y-4">
           <div>
             <label for="pay-cardnumber" class="block text-sm font-medium text-gray-700 mb-1">{{ t('payment.cardNumber') }}</label>
-            <input id="pay-cardnumber" :value="cardNumber" @input="formatCardNumber" type="text" maxlength="19"
+            <input id="pay-cardnumber" :value="cardNumber" @input="formatCardNumber" type="text" inputmode="numeric" maxlength="19"
               placeholder="1234 5678 9012 3456" :aria-invalid="!!payErrors.cardNumber"
               :aria-describedby="payErrors.cardNumber ? 'pay-cardnumber-error' : undefined"
-              autocomplete="cc-number"
+              autocomplete="cc-number" required
               class="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 font-mono tracking-wider"
               :class="payErrors.cardNumber ? 'border-red-400 bg-red-50' : 'border-gray-300'" />
             <p v-if="payErrors.cardNumber" id="pay-cardnumber-error" role="alert" class="text-xs text-red-500 mt-1">{{ payErrors.cardNumber }}</p>
@@ -121,7 +121,7 @@ function formatExpiry(e: Event) {
             <input id="pay-cardname" v-model="cardName" type="text" :placeholder="t('payment.nameOnCardPlaceholder')"
               :aria-invalid="!!payErrors.cardName"
               :aria-describedby="payErrors.cardName ? 'pay-cardname-error' : undefined"
-              autocomplete="cc-name"
+              autocomplete="cc-name" required
               class="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500"
               :class="payErrors.cardName ? 'border-red-400 bg-red-50' : 'border-gray-300'" />
             <p v-if="payErrors.cardName" id="pay-cardname-error" role="alert" class="text-xs text-red-500 mt-1">{{ payErrors.cardName }}</p>
@@ -129,30 +129,29 @@ function formatExpiry(e: Event) {
           <div class="grid grid-cols-2 gap-4">
             <div>
               <label for="pay-expiry" class="block text-sm font-medium text-gray-700 mb-1">{{ t('payment.expiry') }}</label>
-              <input id="pay-expiry" :value="cardExpiry" @input="formatExpiry" type="text" maxlength="5" placeholder="MM/YY"
+              <input id="pay-expiry" :value="cardExpiry" @input="formatExpiry" type="text" inputmode="numeric" maxlength="5" placeholder="MM/YY"
                 :aria-invalid="!!payErrors.cardExpiry"
                 :aria-describedby="payErrors.cardExpiry ? 'pay-expiry-error' : undefined"
-                autocomplete="cc-exp"
+                autocomplete="cc-exp" required
                 class="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 font-mono"
                 :class="payErrors.cardExpiry ? 'border-red-400 bg-red-50' : 'border-gray-300'" />
               <p v-if="payErrors.cardExpiry" id="pay-expiry-error" role="alert" class="text-xs text-red-500 mt-1">{{ payErrors.cardExpiry }}</p>
             </div>
             <div>
               <label for="pay-cvv" class="block text-sm font-medium text-gray-700 mb-1">{{ t('payment.cvv') }}</label>
-              <input id="pay-cvv" v-model="cardCvv" type="text" maxlength="4" placeholder="•••"
+              <input id="pay-cvv" v-model="cardCvv" type="text" inputmode="numeric" maxlength="4" placeholder="•••"
                 :aria-invalid="!!payErrors.cardCvv"
                 :aria-describedby="payErrors.cardCvv ? 'pay-cvv-error' : undefined"
-                autocomplete="cc-csc"
+                autocomplete="cc-csc" required
                 class="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 font-mono"
                 :class="payErrors.cardCvv ? 'border-red-400 bg-red-50' : 'border-gray-300'" />
               <p v-if="payErrors.cardCvv" id="pay-cvv-error" role="alert" class="text-xs text-red-500 mt-1">{{ payErrors.cardCvv }}</p>
             </div>
           </div>
-        </div>
 
         <p v-if="bookingStore.bookingError" role="alert" class="mt-4 text-red-600 text-sm bg-red-50 p-3 rounded-xl">{{ bookingStore.bookingError }}</p>
 
-        <button @click="pay" :disabled="isProcessing || !cardName.trim()"
+        <button type="submit" :disabled="isProcessing || !cardName.trim()"
           class="mt-6 w-full py-4 bg-brand-600 hover:bg-brand-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-semibold rounded-xl text-lg transition-colors shadow-lg">
           <span v-if="isProcessing" class="flex items-center justify-center gap-2">
             <div role="status" :aria-label="t('common.loading')" class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
@@ -172,6 +171,7 @@ function formatExpiry(e: Event) {
             <span class="flex items-center gap-1"><span aria-hidden="true">✓</span> {{ t('payment.trust3d') }}</span>
           </div>
         </div>
+        </form>
       </div>
 
       <!-- Summary -->

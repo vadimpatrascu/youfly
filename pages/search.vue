@@ -248,7 +248,7 @@ watch(() => offersStore.filtered.length, () => { visibleCount.value = PAGE_SIZE 
               <p class="text-sm text-gray-500 mb-3">{{ t('results.tryDates') }}:</p>
               <div class="flex gap-2 justify-center flex-wrap">
                 <button v-for="d in [1, 2, 3, 7, 14]" :key="d"
-                  @click="() => { const dd = new Date(searchStore.departureDate || Date.now()); dd.setDate(dd.getDate() + d); searchStore.departureDate = dd.toISOString().split('T')[0] }"
+                  @click="() => { const dd = new Date(searchStore.departureDate || Date.now()); dd.setDate(dd.getDate() + d); searchStore.departureDate = dd.toISOString().split('T')[0]; searchStore.submitSearch() }"
                   class="px-3 py-1.5 text-xs border border-gray-200 rounded-full hover:border-brand-400 text-gray-600 transition-colors">
                   +{{ d }} {{ d === 1 ? t('results.day') : t('results.days') }}
                 </button>
