@@ -106,7 +106,7 @@ function typeLabel(type: string) {
       <span v-else>{{ t('ticketOrder.reserved', { time: countdownFormatted }) }}</span>
     </div>
 
-    <div v-if="fullOffer && !offerError" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <form v-if="fullOffer && !offerError" class="grid grid-cols-1 lg:grid-cols-3 gap-6" @submit.prevent="onSubmit" novalidate>
       <!-- Forms -->
       <div class="lg:col-span-2 space-y-5">
         <div v-for="(passenger, i) in passengerForms" :key="i" role="group" :aria-labelledby="`pax-heading-${i}`" class="bg-white rounded-2xl border border-gray-200 p-6">
@@ -197,7 +197,7 @@ function typeLabel(type: string) {
           {{ t('passengers.requiredFields') }}
         </div>
 
-        <button @click="onSubmit"
+        <button type="submit"
           class="w-full py-4 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-xl text-lg transition-colors shadow-lg">
           {{ t('passengers.continue') }}
         </button>
@@ -227,7 +227,7 @@ function typeLabel(type: string) {
           </div>
         </div>
       </div>
-    </div>
+    </form>
   </div>
   </div>
 </template>
