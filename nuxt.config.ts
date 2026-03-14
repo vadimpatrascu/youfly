@@ -52,6 +52,7 @@ export default defineNuxtConfig({
         { property: 'og:image', content: 'https://youfly-xi.vercel.app/og-image.svg' },
         { name: 'twitter:card', content: 'summary_large_image' },
         { name: 'twitter:title', content: 'YouFly — Book flights fast' },
+        { name: 'twitter:description', content: 'Search and book cheap flights worldwide.' },
         { name: 'twitter:image', content: 'https://youfly-xi.vercel.app/og-image.svg' },
       ],
       link: [
