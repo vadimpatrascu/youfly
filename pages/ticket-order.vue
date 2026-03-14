@@ -135,6 +135,7 @@ function typeLabel(type: string) {
               <label :for="`pax-${i}-given-name`" class="block text-sm font-medium text-gray-700 mb-1">{{ t('passengers.firstName') }}</label>
               <input :id="`pax-${i}-given-name`" v-model="passenger.given_name" type="text" :placeholder="t('passengers.firstNamePlaceholder')"
                 :aria-invalid="!!errors[`${i}_given_name`]"
+                required
                 :autocomplete="i === 0 ? 'given-name' : 'off'"
                 class="w-full px-3 py-2.5 border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500"
                 :class="errors[`${i}_given_name`] ? 'border-red-400 bg-red-50' : 'border-gray-300'" />
@@ -143,6 +144,7 @@ function typeLabel(type: string) {
               <label :for="`pax-${i}-family-name`" class="block text-sm font-medium text-gray-700 mb-1">{{ t('passengers.lastName') }}</label>
               <input :id="`pax-${i}-family-name`" v-model="passenger.family_name" type="text" :placeholder="t('passengers.lastNamePlaceholder')"
                 :aria-invalid="!!errors[`${i}_family_name`]"
+                required
                 :autocomplete="i === 0 ? 'family-name' : 'off'"
                 class="w-full px-3 py-2.5 border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500"
                 :class="errors[`${i}_family_name`] ? 'border-red-400 bg-red-50' : 'border-gray-300'" />
@@ -151,6 +153,7 @@ function typeLabel(type: string) {
               <label :for="`pax-${i}-born-on`" class="block text-sm font-medium text-gray-700 mb-1">{{ t('passengers.dob') }}</label>
               <input :id="`pax-${i}-born-on`" v-model="passenger.born_on" type="date"
                 :aria-invalid="!!errors[`${i}_born_on`]"
+                required
                 :max="today"
                 autocomplete="bday"
                 class="w-full px-3 py-2.5 border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500"
@@ -161,6 +164,7 @@ function typeLabel(type: string) {
                 <label :for="`pax-${i}-email`" class="block text-sm font-medium text-gray-700 mb-1">{{ t('passengers.email') }}</label>
                 <input :id="`pax-${i}-email`" v-model="passenger.email" type="email" :placeholder="t('passengers.emailPlaceholder')"
                   :aria-invalid="!!errors[`${i}_email`]"
+                  required
                   autocomplete="email"
                   class="w-full px-3 py-2.5 border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500"
                   :class="errors[`${i}_email`] ? 'border-red-400 bg-red-50' : 'border-gray-300'" />
@@ -169,6 +173,7 @@ function typeLabel(type: string) {
                 <label :for="`pax-${i}-phone`" class="block text-sm font-medium text-gray-700 mb-1">{{ t('passengers.phone') }}</label>
                 <input :id="`pax-${i}-phone`" v-model="passenger.phone" type="tel" :placeholder="t('passengers.phonePlaceholder')"
                   :aria-invalid="!!errors[`${i}_phone`]"
+                  required
                   autocomplete="tel"
                   class="w-full px-3 py-2.5 border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500"
                   :class="errors[`${i}_phone`] ? 'border-red-400 bg-red-50' : 'border-gray-300'" />
