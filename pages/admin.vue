@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const { t, locale } = useI18n()
-useHead({ title: 'Admin — YouFly' })
+useHead({ title: 'Admin — YouFly', meta: [{ name: 'robots', content: 'noindex, nofollow' }] })
 
 const secretInput = ref('')
 const stats = ref<any>(null)

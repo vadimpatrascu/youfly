@@ -16,12 +16,15 @@ const searchStore = useSearchStore()
 const offersStore = useOffersStore()
 const bookingStore = useBookingStore()
 
-useHead({ title: computed(() => {
-  const from = searchStore.origin?.city_name
-  const to = searchStore.destination?.city_name
-  if (from && to) return `${from} → ${to} — YouFly`
-  return `${t('results.title')} — YouFly`
-}) })
+useHead({
+  title: computed(() => {
+    const from = searchStore.origin?.city_name
+    const to = searchStore.destination?.city_name
+    if (from && to) return `${from} → ${to} — YouFly`
+    return `${t('results.title')} — YouFly`
+  }),
+  meta: [{ name: 'robots', content: 'noindex' }],
+})
 const router = useRouter()
 const { trackSearch, trackSelectOffer } = useAnalytics()
 
