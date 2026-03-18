@@ -15,13 +15,29 @@ const passengerDropdownRef = ref<HTMLElement>()
 
 onClickOutside(passengerDropdownRef, () => { showPassengers.value = false })
 
+// Auto-fill Chișinău as origin if empty (most users are from Moldova)
+onMounted(() => {
+  if (!searchStore.origin) {
+    searchStore.origin = {
+      iata_code: 'MD',
+      airport_iata: 'RMO',
+      name: t('airports.chisinauAirportName'),
+      city_name: t('airports.city_RMO'),
+      country_code: 'MD',
+    }
+  }
+})
+
+const swapRotation = ref(0)
 function swapAirports() {
   const tmp = searchStore.origin
   searchStore.origin = searchStore.destination
   searchStore.destination = tmp
+  swapRotation.value += 180
 }
 
 async function onSubmit() {
+  if (navigator.vibrate) navigator.vibrate(30)
   const ok = await searchStore.submitSearch()
   if (ok) {
     router.push('/search')
@@ -83,7 +99,7 @@ const cabinOptions = computed(() => [
 </script>
 
 <template>
-  <div role="search" :aria-label="t('search.formLabel')" class="bg-white rounded-2xl shadow-xl p-6 w-full max-w-4xl mx-auto">
+  <div role="search" :aria-label="t('search.formLabel')" class="bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl shadow-black/10 p-5 md:p-6 w-full max-w-4xl mx-auto border border-white/30 ring-1 ring-black/5">
     <!-- Trip type -->
     <div class="flex gap-2 mb-6">
       <button
@@ -99,8 +115,8 @@ const cabinOptions = computed(() => [
     <!-- Airport row -->
     <div class="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] gap-3 mb-4 items-end">
       <AirportInput v-model="searchStore.origin" :label="t('search.from')" :placeholder="t('search.fromPlaceholder')" />
-      <button @click="swapAirports" :aria-label="t('search.swap')" class="mb-1 p-3 rounded-full hover:bg-gray-100 transition-colors text-gray-500 text-lg self-end border border-gray-200">
-        <span aria-hidden="true">⇄</span>
+      <button @click="swapAirports" :aria-label="t('search.swap')" class="mb-1 p-3 rounded-full hover:bg-gray-100 transition-all text-gray-500 text-lg self-end border border-gray-200">
+        <span aria-hidden="true" class="inline-block transition-transform duration-300" :style="`transform: rotate(${swapRotation}deg)`">⇄</span>
       </button>
       <AirportInput v-model="searchStore.destination" :label="t('search.to')" :placeholder="t('search.toPlaceholder')" />
     </div>
@@ -175,12 +191,15 @@ const cabinOptions = computed(() => [
 
     <button @click="onSubmit"
       :disabled="searchStore.isSearching || !canSearch"
-      class="w-full py-4 bg-brand-600 hover:bg-brand-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-semibold rounded-xl text-lg transition-colors shadow-lg">
+      class="w-full py-4 bg-gradient-to-r from-brand-600 to-brand-500 hover:from-brand-500 hover:to-brand-400 disabled:from-gray-300 disabled:to-gray-300 disabled:cursor-not-allowed text-white font-bold rounded-xl text-lg transition-all shadow-lg hover:shadow-xl hover:shadow-brand-500/25 hover:scale-[1.01] active:scale-[0.99]">
       <span v-if="searchStore.isSearching" class="flex items-center justify-center gap-2">
         <div role="status" :aria-label="t('common.loading')" class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
         {{ t('search.searching') }}
       </span>
-      <span v-else><span aria-hidden="true">🔍</span> {{ t('search.searchButton') }}</span>
+      <span v-else class="flex items-center justify-center gap-2">
+        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+        {{ t('search.searchButton') }}
+      </span>
     </button>
     <LoadingOverlay v-if="searchStore.isSearching" />
   </div>

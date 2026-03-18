@@ -9,7 +9,9 @@
     "tomorrow": "Tomorrow",
     "clear": "Clear",
     "close": "Close",
-    "loading": "Loading..."
+    "loading": "Loading...",
+    "updateAvailable": "New version available",
+    "reload": "Reload"
   },
   "nav": {
     "skipToMain": "Skip to main content",
@@ -30,7 +32,9 @@
     "skipToContent": "Skip to content",
     "switchLanguage": "Switch language",
     "mainNav": "Main navigation",
-    "mobileNav": "Mobile navigation"
+    "mobileNav": "Mobile navigation",
+    "support247": "24/7 Support",
+    "groupTravel": "Group travel"
   },
   "hero": {
     "title": "Find Your Perfect Flight",
@@ -56,7 +60,7 @@
     "economy": "Economy",
     "premiumEconomy": "Premium Economy",
     "business": "Business",
-    "first": "First",
+    "first": "First Class",
     "done": "Done",
     "decrease": "Decrease",
     "increase": "Increase",
@@ -92,7 +96,10 @@
     "day": "day",
     "days": "days",
     "available": "flights available — try adjusting filters",
-    "sortGroupLabel": "Sort results by"
+    "sortGroupLabel": "Sort results by",
+    "dateTip": "Prices can vary by ±30% depending on the day",
+    "dateTipTuesday": "Try Tuesday for cheapest",
+    "dateTipAvoid": "Avoid Friday/Sunday"
   },
   "filters": {
     "title": "Filters",
@@ -249,7 +256,13 @@
     "shareBooking": "Share booking",
     "printSave": "Print / Save PDF",
     "stopsLabel": "stop(s)",
-    "seoDesc": "Your booking has been confirmed successfully. Check your YouFly ticket details."
+    "seoDesc": "Your booking has been confirmed successfully. Check your YouFly ticket details.",
+    "transferTitle": "Airport Transfer",
+    "transferDesc": "Book a taxi from airport to city center",
+    "hotelTitle": "Hotel Booking",
+    "hotelDesc": "Find accommodation at your destination",
+    "checkinTitle": "Online Check-in",
+    "checkinDesc": "Check in early — save €20-55"
   },
   "myBooking": {
     "title": "My Booking",
@@ -269,7 +282,8 @@
     "print": "Print booking",
     "searchAnother": "← Search another flight",
     "flightBooked": "Booked flight",
-    "seoDesc": "Check the status of your YouFly booking using the reference code you received by email."
+    "seoDesc": "Check the status of your YouFly booking using the reference code you received by email.",
+    "needHelp": "Need help?"
   },
   "admin": {
     "auth": "Authentication",
@@ -377,7 +391,8 @@
     "terms": "Terms & Conditions",
     "privacy": "Privacy Policy",
     "myBooking": "Check my booking",
-    "powered": "Powered by Duffel"
+    "powered": "Powered by Duffel",
+    "accepted": "Accepted:"
   },
   "errors": {
     "searchFailed": "Search failed. Please try again.",
@@ -440,7 +455,35 @@
     "city_CDG": "Paris",
     "city_MXP": "Milan",
     "city_TLV": "Tel Aviv",
-    "starsLabel": "{n} out of 5 stars"
+    "starsLabel": "{n} out of 5 stars",
+    "whyTitle": "Why YouFly?",
+    "whyCombineTitle": "Combine Airlines",
+    "whyCombineDesc": "Mix flights from different airlines in one booking for the best price",
+    "whyFeesTitle": "No Hidden Fees",
+    "whyFeesDesc": "Price you see is what you pay — all taxes included",
+    "whyInsuranceTitle": "Travel Insurance",
+    "whyInsuranceDesc": "Add travel insurance from €5 for full peace of mind",
+    "whySupportTitle": "24/7 Support",
+    "whySupportDesc": "Real humans available around the clock, not just chatbots",
+    "exchangeRates": "Exchange Rates (MDL)",
+    "guaranteeTitle": "Book with confidence",
+    "guaranteeSubtitle": "Complete protection for your journey",
+    "guarantee1Title": "Price guarantee",
+    "guarantee1Desc": "Found a lower price within 24h? We'll refund the difference",
+    "guarantee2Title": "Secure payment",
+    "guarantee2Desc": "Transactions protected with 256-bit SSL encryption and 3D Secure",
+    "guarantee3Title": "Flexible cancellation",
+    "guarantee3Desc": "Free cancellation within the first 24h of booking",
+    "guarantee4Title": "24/7 support",
+    "guarantee4Desc": "Our team is available around the clock by phone, email and chat",
+    "flexTitle": "Total flexibility",
+    "flexSubtitle": "Travel worry-free with YouFly protections",
+    "flex1Title": "Free modification",
+    "flex1Desc": "Change your flight dates at no extra cost",
+    "flex2Title": "Fast refund",
+    "flex2Desc": "Money back in your account within 7 business days",
+    "flex3Title": "Full protection",
+    "flex3Desc": "Travel insurance included with every booking"
   },
   "about": {
     "title": "About YouFly",
@@ -465,7 +508,12 @@
     "stat3Val": "5 min",
     "stat3Label": "Fast booking",
     "stat4Val": "24/7",
-    "stat4Label": "Support"
+    "stat4Label": "Support",
+    "airlinesTitle": "Airlines from Chișinău",
+    "airlinesNote": "25+ airlines with direct flights from Chișinău International Airport (RMO)",
+    "airlinesFromRMO": "Airlines from RMO",
+    "madeInMoldova": "Made in Moldova",
+    "madeInMoldovaDesc": "YouFly was born in Chișinău with one goal: make affordable air travel accessible to every Moldovan. We know our airports, our airlines, and what matters most to travelers from the Republic of Moldova."
   },
   "contact": {
     "title": "Contact Us",
@@ -536,7 +584,26 @@
     "flashCountdownLabel": "Flash sale ends in: {time}",
     "discountLabel": "{n}% discount",
     "bookBtnLabel": "Book flight from {from} to {to} for €{price}",
-    "originalPriceLabel": "Original price €{price}"
+    "originalPriceLabel": "Original price €{price}",
+    "groupTitle": "Group Booking",
+    "groupDesc": "10+ passengers? Get special group rates with fixed pricing and flexible payment options. Contact us for a custom quote.",
+    "groupCta": "Contact us",
+    "bestMonths": "Best Months to Fly",
+    "bestMonthsDesc": "Average prices from Chișinău — lower is better",
+    "bestLabel": "Best",
+    "nowLabel": "Now",
+    "deal7Tag": "Hot Deal",
+    "deal7Desc": "Naples — pizza, Vesuvius, and the Amalfi Coast nearby.",
+    "deal8Tag": "New Route",
+    "deal8Desc": "Berlin — history, nightlife, and the Brandenburg Gate.",
+    "deal9Tag": "Summer",
+    "deal9Desc": "Athens — the Acropolis, Mediterranean sun, and Greek cuisine.",
+    "deal10Tag": "Weekend",
+    "deal10Desc": "Prague — fairy-tale architecture, beer, and Charles Bridge.",
+    "deal11Tag": "New Route",
+    "deal11Desc": "Copenhagen — Scandinavian design, Tivoli Gardens, and hygge.",
+    "deal12Tag": "Popular",
+    "deal12Desc": "Lisbon — colorful trams, pastéis de nata, and Atlantic views."
   },
   "destinations": {
     "title": "Popular destinations",
@@ -588,7 +655,7 @@
     "country_BEG": "Serbia",
     "country_WAW": "Poland",
     "country_AMS": "Netherlands",
-    "country_DXB": "UAE",
+    "country_DXB": "United Arab Emirates",
     "popularityLabel": "Popularity: {n} out of 5",
     "filterGroupLabel": "Filter destinations by region"
   },
@@ -621,12 +688,12 @@
     "art6Title": "Istanbul in 3 days: the complete traveler's guide",
     "art6Excerpt": "The optimal route, local restaurants, must-see attractions and practical tips for the most vibrant metropolis on the Bosphorus.",
     "filterGroupLabel": "Filter articles by category",
-    "art1Body": "Finding cheap flight tickets requires a combination of timing, flexibility, and the right tools. The best strategy is to book 6-8 weeks in advance for European destinations and 3-4 months for long-haul flights. Always clear your browser cookies or use incognito mode when searching repeatedly — some booking sites track your visits and may increase prices. Set price alerts for your desired routes so you are notified when fares drop. Flying on Tuesdays and Wednesdays is typically 20-30% cheaper than weekend flights. Consider nearby airports — flying into a secondary airport and taking a train can save significant money. Budget airlines like Wizz Air and Ryanair offer incredible deals if you book early and pack light. Connecting flights are often 40-60% cheaper than direct routes. Apps like Google Flights offer calendar views to spot the cheapest travel dates at a glance.",
-    "art2Body": "Moldova is a small but surprisingly vibrant country with a wealth of travel possibilities. Istanbul remains the top destination from Chișinău, offering a stunning blend of European and Asian culture, world-class cuisine, and iconic landmarks like the Hagia Sophia and Grand Bazaar. Barcelona draws travelers seeking beach and city culture, with direct Wizz Air connections making it very accessible. Vienna is perfect for a weekend cultural escape — the opera, museums, and coffee houses are second to none. London continues to be a top destination for the diaspora and tourists alike. Paris, Rome, and Amsterdam complete the top European destinations. For budget travelers, Bucharest and Kyiv offer vibrant city breaks within a few hours by flight. Seasonal deals to the Mediterranean — Malta, Greece, and Cyprus — are available spring through autumn.",
-    "art3Body": "Understanding carry-on baggage rules can save you significant money and stress at the airport. Each airline has different size and weight limits. Wizz Air allows one small bag (40x30x20 cm, max 10 kg) for free, but charges for a cabin bag. Ryanair permits one small bag (40x20x25 cm) under the seat at no cost, but charges for bags in the overhead bin. Turkish Airlines and Austrian Airlines include a cabin bag for free. Key tips: weigh your bag at home before leaving; use compression packing cubes to maximize space; wear your heaviest items on board; pack toiletries in 100ml containers in a clear bag; remove prohibited items such as liquids over 100ml, sharp objects, and large batteries. Arrive early to avoid being forced to check your bag at the gate, where fees are highest.",
-    "art4Body": "The choice between a connecting flight and a direct flight is one of the most common dilemmas travelers face. Direct flights cost more but save time and reduce stress — there is no risk of missing a connection, no waiting in transit, and your luggage travels with you seamlessly. Connecting flights can be 40-70% cheaper and are sometimes the only option for certain routes. When booking a connecting flight, allow at least 2 hours of transit time at European hubs and 3 hours at Middle Eastern airports. Check whether both legs are on the same booking — separate tickets mean the airline is not responsible if you miss your connection. Self-connecting through budget airline hubs can yield dramatic savings, but requires careful planning and adequate transit visas if applicable.",
-    "art5Body": "Travel insurance is one of the most overlooked yet important aspects of planning a trip. For a modest premium — often 10-30 EUR for a week in Europe — you get protection against medical emergencies, trip cancellation, lost luggage, and flight delays. The most critical coverage is medical, especially when traveling outside the EU where your EHIC card may not be accepted. Look for policies that include emergency medical evacuation, as hospital bills in the US, UAE, or Southeast Asia can reach tens of thousands of euros. Trip cancellation insurance is valuable if you have non-refundable bookings and something unexpected happens. Always read the exclusions carefully, particularly for extreme sports and pre-existing conditions, and check the excess before purchasing.",
-    "art6Body": "Istanbul is one of the world's most captivating cities and easy to explore in 3 days from Chișinău on a direct Wizz Air flight. Day 1: Start in Sultanahmet — visit the Hagia Sophia (free entry), the Blue Mosque, and Topkapi Palace. In the evening, take a sunset Bosphorus cruise and dine on grilled fish at the Galata Bridge. Day 2: Explore Beyoglu — walk the bustling Istiklal Avenue, visit the Galata Tower for panoramic views, and shop at the Grand Bazaar with over 4,000 shops. Day 3: Discover Uskudar on the Asian side for authentic Istanbul away from tourist crowds, then visit the Spice Bazaar. Budget tip: the Istanbul Museum Pass covers all major attractions. A 3-day trip including flights and accommodation can be done for under 200 EUR per person if booked in advance.",
+    "art1Body": "Finding cheap flight tickets requires a combination of timing, flexibility, and the right tools. The best strategy is to book 6-8 weeks in advance for European destinations and 3-4 months for long-haul flights. Always clear your browser cookies or use incognito mode when searching repeatedly — some booking sites track your visits and may increase prices.\n\nSet price alerts for your desired routes so you are notified when fares drop. Flying on Tuesdays and Wednesdays is typically 20-30% cheaper than weekend flights. Consider nearby airports — flying into a secondary airport and taking a train can save significant money.\n\nBudget airlines like Wizz Air and Ryanair offer incredible deals if you book early and pack light. Connecting flights are often 40-60% cheaper than direct routes. Apps like Google Flights offer calendar views to spot the cheapest travel dates at a glance.",
+    "art2Body": "Moldova is a small but surprisingly vibrant country with a wealth of travel possibilities. Istanbul remains the top destination from Chișinău, offering a stunning blend of European and Asian culture, world-class cuisine, and iconic landmarks like the Hagia Sophia and Grand Bazaar.\n\nBarcelona draws travelers seeking beach and city culture, with direct Wizz Air connections making it very accessible. Vienna is perfect for a weekend cultural escape — the opera, museums, and coffee houses are second to none. London continues to be a top destination for the diaspora and tourists alike.\n\nParis, Rome, and Amsterdam complete the top European destinations. For budget travelers, Bucharest and Kyiv offer vibrant city breaks within a few hours by flight. Seasonal deals to the Mediterranean — Malta, Greece, and Cyprus — are available spring through autumn.",
+    "art3Body": "Understanding carry-on baggage rules can save you significant money and stress at the airport. Each airline has different size and weight limits.\n\nWizz Air allows one small bag (40x30x20 cm, max 10 kg) for free, but charges for a cabin bag. Ryanair permits one small bag (40x20x25 cm) under the seat at no cost, but charges for bags in the overhead bin. Turkish Airlines and Austrian Airlines include a cabin bag for free.\n\nKey tips: weigh your bag at home before leaving; use compression packing cubes to maximize space; wear your heaviest items on board; pack toiletries in 100ml containers in a clear bag; remove prohibited items such as liquids over 100ml, sharp objects, and large batteries. Arrive early to avoid being forced to check your bag at the gate, where fees are highest.",
+    "art4Body": "The choice between a connecting flight and a direct flight is one of the most common dilemmas travelers face. Direct flights cost more but save time and reduce stress — there is no risk of missing a connection, no waiting in transit, and your luggage travels with you seamlessly.\n\nConnecting flights can be 40-70% cheaper and are sometimes the only option for certain routes. When booking a connecting flight, allow at least 2 hours of transit time at European hubs and 3 hours at Middle Eastern airports.\n\nCheck whether both legs are on the same booking — separate tickets mean the airline is not responsible if you miss your connection. Self-connecting through budget airline hubs can yield dramatic savings, but requires careful planning and adequate transit visas if applicable.",
+    "art5Body": "Travel insurance is one of the most overlooked yet important aspects of planning a trip. For a modest premium — often 10-30 EUR for a week in Europe — you get protection against medical emergencies, trip cancellation, lost luggage, and flight delays.\n\nThe most critical coverage is medical, especially when traveling outside the EU where your EHIC card may not be accepted. Look for policies that include emergency medical evacuation, as hospital bills in the US, UAE, or Southeast Asia can reach tens of thousands of euros.\n\nTrip cancellation insurance is valuable if you have non-refundable bookings and something unexpected happens. Always read the exclusions carefully, particularly for extreme sports and pre-existing conditions, and check the excess before purchasing.",
+    "art6Body": "Istanbul is one of the world's most captivating cities and easy to explore in 3 days from Chișinău on a direct Wizz Air flight.\n\nDay 1: Start in Sultanahmet — visit the Hagia Sophia (free entry), the Blue Mosque, and Topkapi Palace. In the evening, take a sunset Bosphorus cruise and dine on grilled fish at the Galata Bridge.\n\nDay 2: Explore Beyoglu — walk the bustling Istiklal Avenue, visit the Galata Tower for panoramic views, and shop at the Grand Bazaar with over 4,000 shops.\n\nDay 3: Discover Uskudar on the Asian side for authentic Istanbul away from tourist crowds, then visit the Spice Bazaar. Budget tip: the Istanbul Museum Pass covers all major attractions. A 3-day trip including flights and accommodation can be done for under 200 EUR per person if booked in advance.",
     "backToBlog": "Back to Blog",
     "notFound": "Article not found",
     "notFoundSub": "This page does not exist.",
@@ -681,7 +748,16 @@
     "notFound": "Flight {flight} was not found for the selected date.",
     "demoNote": "Demo data — in production connects to real-time data sources",
     "dateLabel": "Flight date",
-    "checkFlight": "Check flight {flight}"
+    "checkFlight": "Check flight {flight}",
+    "boardTitle": "Today's Flights",
+    "departures": "Departures",
+    "arrivals": "Arrivals",
+    "flight": "Flight",
+    "destination": "Destination",
+    "time": "Time",
+    "status": "Status",
+    "boardAirline": "Airline",
+    "allFlights": "flights today from Chișinău"
   },
   "luggage": {
     "title": "Baggage Rules",
@@ -727,7 +803,14 @@
     "prohib_Explosives": "Explosives",
     "prohib_ExplosivesRule": "Fireworks, ammunition, flammable substances — completely prohibited",
     "prohib_Magnets": "Strong magnets",
-    "prohib_MagnetsRule": "Strong magnets that can disrupt navigation — prohibited"
+    "prohib_MagnetsRule": "Strong magnets that can disrupt navigation — prohibited",
+    "packingTitle": "Smart Packing Tips",
+    "pack1": "Roll clothes instead of folding — saves 30% space",
+    "pack2": "Wear your heaviest shoes and jacket on the plane",
+    "pack3": "Use compression cubes to organize and maximize space",
+    "pack4": "Pack a portable charger in your carry-on (not checked bag)",
+    "pack5": "Place liquids (100ml max) in a clear plastic bag",
+    "pack6": "Take a photo of your luggage contents for insurance"
   },
   "checkin": {
     "title": "Online Check-in",
@@ -767,7 +850,11 @@
     "tip3": "At Ryanair, the penalty for airport check-in can be €55 per passenger!",
     "tip4": "A phone boarding pass is accepted at all major European airports.",
     "tip5": "Watch your baggage weight — check before leaving home.",
-    "checkInBtnLabel": "Check in online with {airline} (opens in new tab)"
+    "checkInBtnLabel": "Check in online with {airline} (opens in new tab)",
+    "promoTitle": "Free online check-in!",
+    "promoDesc": "Avoid the €20-55 airport check-in fee. Check in online up to 30 days before departure.",
+    "promoFree": "Free",
+    "promoVs": "vs €20-55"
   },
   "visa": {
     "title": "Visa Requirements",
@@ -879,7 +966,7 @@
     "city_VIE": "Vienna",
     "country_VIE": "Austria",
     "city_LTN": "London",
-    "country_LTN": "UK",
+    "country_LTN": "United Kingdom",
     "city_BCN": "Barcelona",
     "country_BCN": "Spain",
     "city_CDG": "Paris",
@@ -893,7 +980,7 @@
     "city_FRA": "Frankfurt",
     "country_FRA": "Germany",
     "city_DXB": "Dubai",
-    "country_DXB": "UAE",
+    "country_DXB": "United Arab Emirates",
     "city_WAW": "Warsaw",
     "country_WAW": "Poland",
     "city_BUD": "Budapest",
@@ -903,12 +990,35 @@
     "city_MUC": "Munich",
     "country_MUC": "Germany",
     "city_LHR": "London",
-    "country_LHR": "UK",
+    "country_LHR": "United Kingdom",
     "city_MAD": "Madrid",
     "country_MAD": "Spain",
     "city_CMN": "Casablanca",
     "country_CMN": "Morocco",
-    "chisinauAirportName": "Chișinău International Airport"
+    "chisinauAirportName": "Chișinău International Airport",
+    "city_BER": "Berlin",
+    "country_BER": "Germany",
+    "city_STN": "London",
+    "country_STN": "United Kingdom",
+    "city_DUS": "Düsseldorf",
+    "country_DUS": "Germany",
+    "city_CPH": "Copenhagen",
+    "country_CPH": "Denmark",
+    "city_DUB": "Dublin",
+    "country_DUB": "Ireland",
+    "city_LIS": "Lisbon",
+    "country_LIS": "Portugal",
+    "city_NAP": "Naples",
+    "country_NAP": "Italy",
+    "city_PRG": "Prague",
+    "country_PRG": "Czech Republic",
+    "city_SOF": "Sofia",
+    "country_SOF": "Bulgaria",
+    "city_TBS": "Tbilisi",
+    "country_TBS": "Georgia",
+    "city_EVN": "Yerevan",
+    "country_EVN": "Armenia",
+    "topDestLabel": "Top destinations from Chișinău"
   },
   "cookie": {
     "text": "We use cookies to improve your experience and for anonymous statistics.",
@@ -927,6 +1037,17 @@
     "escape": "Close menus / overlays",
     "help": "Show this help panel",
     "hint": "Press to open/close"
+  },
+  "install": {
+    "title": "Install YouFly",
+    "descAndroid": "Add YouFly to your home screen for quick access",
+    "descIos1": "Tap the share button",
+    "descIos2": "then \"Add to Home Screen\"",
+    "button": "Install",
+    "dismiss": "Not now"
+  },
+  "offline": {
+    "message": "You are offline. Some features may be unavailable."
   },
   "priceAlert": {
     "title": "Get alerted when the price drops",
