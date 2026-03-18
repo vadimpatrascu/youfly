@@ -1,34 +1,244 @@
-/* Page transitions */
+/* ── Page transitions ────────────────────── */
 .page-enter-active,
 .page-leave-active {
   transition: all 0.2s ease-out;
 }
-
 .page-enter-from,
 .page-leave-to {
   opacity: 0;
   transform: translateY(4px);
 }
 
-/* Smooth scroll */
+/* ── Base ────────────────────── */
 html {
   scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
+  overscroll-behavior-y: contain;
+  color-scheme: light;
 }
 
-/* Better focus styles */
 :focus-visible {
   outline: 2px solid #0284c7;
   outline-offset: 2px;
   border-radius: 4px;
 }
 
-/* Custom scrollbar */
+/* ── Mobile PWA optimizations ────────────────────── */
+* { -webkit-tap-highlight-color: transparent; }
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+/* iOS safe area padding utilities */
+.pt-safe { padding-top: env(safe-area-inset-top); }
+.pb-safe { padding-bottom: env(safe-area-inset-bottom); }
+.pl-safe { padding-left: env(safe-area-inset-left); }
+.pr-safe { padding-right: env(safe-area-inset-right); }
+
+@media (display-mode: standalone) {
+  header[role="banner"] { padding-top: env(safe-area-inset-top); }
+}
+@media (display-mode: standalone) {
+  a, button, img { -webkit-touch-callout: none; user-select: none; }
+  p, span, h1, h2, h3, h4, h5, h6, li, td, th, label, div { user-select: text; }
+}
+
+button, a, [role="button"], select, input[type="checkbox"], input[type="radio"] {
+  min-height: 44px;
+  min-width: 44px;
+}
+input, select, textarea { font-size: 1rem; }
+.overflow-x-auto, .overflow-y-auto { -webkit-overflow-scrolling: touch; }
+
+/* ── Hero cinematic particles ────────────────────── */
+.particle {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: white;
+  border-radius: 50%;
+  opacity: 0;
+}
+.particle-1 { top: 20%; left: 15%; animation: float-particle 8s ease-in-out infinite 0s; }
+.particle-2 { top: 40%; left: 70%; animation: float-particle 10s ease-in-out infinite 1s; }
+.particle-3 { top: 60%; left: 30%; animation: float-particle 7s ease-in-out infinite 2s; width: 3px; height: 3px; }
+.particle-4 { top: 15%; left: 80%; animation: float-particle 9s ease-in-out infinite 3s; }
+.particle-5 { top: 70%; left: 50%; animation: float-particle 11s ease-in-out infinite 4s; width: 1px; height: 1px; }
+
+@keyframes float-particle {
+  0%, 100% { opacity: 0; transform: translateY(0) translateX(0); }
+  25% { opacity: 0.6; transform: translateY(-30px) translateX(10px); }
+  50% { opacity: 0.3; transform: translateY(-60px) translateX(-5px); }
+  75% { opacity: 0.5; transform: translateY(-40px) translateX(15px); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.8s ease forwards;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Flight path animation ────────────────────── */
+@keyframes dash {
+  to { stroke-dashoffset: 0; }
+}
+.flight-path {
+  stroke-dasharray: 8 6;
+  stroke-dashoffset: 500;
+  animation: dash 20s linear infinite;
+}
+
+/* ── Scroll reveal animation ────────────────────── */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── Touch feedback ────────────────────── */
+button:active:not(:disabled), a:active { transform: scale(0.98); }
+
+/* ── Glow effect for primary CTA ────────────────────── */
+.glow-brand {
+  box-shadow: 0 4px 20px rgba(2, 132, 199, 0.3);
+  transition: box-shadow 0.3s ease;
+}
+.glow-brand:hover { box-shadow: 0 6px 30px rgba(14, 165, 233, 0.45); }
+
+/* ── Skeleton shimmer ────────────────────── */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.animate-pulse > div {
+  background: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+
+/* ── Hero title shimmer ────────────────────── */
+@keyframes textShimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+.text-shimmer {
+  background: linear-gradient(90deg, #fff 0%, #fff 40%, #38bdf8 50%, #fff 60%, #fff 100%);
+  background-size: 200% auto;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: textShimmer 6s linear infinite;
+}
+
+/* ── Premium glassmorphism ────────────────────── */
+.glass {
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+.glass-white {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+}
+.glass-dark {
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* ── Premium gradient text ────────────────────── */
+.text-gradient-brand {
+  background: linear-gradient(135deg, #0ea5e9, #38bdf8, #7dd3fc);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.text-gradient-warm {
+  background: linear-gradient(135deg, #f97316, #fb923c, #fbbf24);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.text-gradient-hero {
+  background: linear-gradient(135deg, #ffffff 0%, #e0f2fe 50%, #7dd3fc 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* ── Premium card hover ────────────────────── */
+.card-premium {
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.card-premium:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+}
+
+/* ── Gradient border effect ────────────────────── */
+.gradient-border {
+  position: relative;
+}
+.gradient-border::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(14, 165, 233, 0.4), rgba(217, 70, 239, 0.2), rgba(14, 165, 233, 0.1));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* ── Animated background orbs ────────────────────── */
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.15;
+  animation: orbFloat 12s ease-in-out infinite;
+}
+@keyframes orbFloat {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(30px, -20px) scale(1.05); }
+  66% { transform: translate(-20px, 15px) scale(0.95); }
+}
+
+/* ── Section divider wave ────────────────────── */
+.wave-divider {
+  position: relative;
+}
+.wave-divider::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 48px;
+  background: url("data:image/svg+xml,%3Csvg viewBox='0 0 1200 48' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 48h1200V24C1050 0 900 48 600 24S150 0 0 24z' fill='%23f8fafc'/%3E%3C/svg%3E") no-repeat center;
+  background-size: cover;
+}
+
+/* ── Custom scrollbar ────────────────────── */
 ::-webkit-scrollbar { width: 8px; height: 8px; }
 ::-webkit-scrollbar-track { background: #f1f5f9; }
 ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
 ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 
-/* Respect reduced motion preference */
+/* ── Reduced motion ────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
@@ -36,10 +246,18 @@ html {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+  .reveal { opacity: 1 !important; transform: none !important; }
 }
 
-/* Print styles */
+/* ── Print ────────────────────── */
 @media print {
   .no-print { display: none !important; }
   header, footer, nav { display: none !important; }
 }
+
+/* ── Scroll indicator dot ────────────────────── */
+@keyframes scrollDot {
+  0%, 100% { transform: translateY(0); opacity: 1; }
+  50% { transform: translateY(12px); opacity: 0.3; }
+}
+.scroll-dot { animation: scrollDot 2s ease-in-out infinite; }
