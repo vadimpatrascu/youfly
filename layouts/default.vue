@@ -248,7 +248,7 @@ const airlineLogos = [
           <p class="text-xs text-gray-500 text-center mb-6 uppercase tracking-[0.2em] font-medium">{{ t('index.trustedPartner') }}</p>
           <div :aria-label="t('index.airlinesLabel')" class="flex items-center justify-center gap-4 md:gap-6 flex-wrap">
             <div v-for="airline in airlineLogos" :key="airline.iata" class="group">
-              <img :src="`https://assets.duffel.com/img/airlines/for-dark-background/${airline.iata}.svg`"
+              <img :src="`https://www.gstatic.com/flights/airline_logos/70px/${airline.iata}.png`"
                 :alt="airline.name"
                 class="h-6 md:h-7 w-auto opacity-30 group-hover:opacity-70 transition-all duration-300 grayscale group-hover:grayscale-0"
                 loading="lazy"

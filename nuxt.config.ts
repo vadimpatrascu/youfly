@@ -74,7 +74,7 @@ export default defineNuxtConfig({
         { innerHTML: 'YouFly requires JavaScript to search and book flights. Please enable JavaScript in your browser settings.' },
       ],
       link: [
-        { rel: 'preconnect', href: 'https://assets.duffel.com' },
+        { rel: 'preconnect', href: 'https://www.gstatic.com' },
         { rel: 'preconnect', href: 'https://images.unsplash.com' },
         { rel: 'preload', as: 'image', href: 'https://images.unsplash.com/photo-1464037866556-6812c9d1c72e?auto=format&fit=crop&w=1400&q=80' },
         { rel: 'dns-prefetch', href: 'https://images.unsplash.com' },
@@ -102,7 +102,7 @@ export default defineNuxtConfig({
           'Permissions-Policy': 'camera=(), microphone=(), geolocation=(), payment=(), usb=(), bluetooth=()',
           'Strict-Transport-Security': 'max-age=63072000; includeSubDomains; preload',
           'Cross-Origin-Opener-Policy': 'same-origin',
-          'Cross-Origin-Resource-Policy': 'same-origin',
+          'Cross-Origin-Resource-Policy': 'cross-origin',
           'X-DNS-Prefetch-Control': 'on',
           'X-Permitted-Cross-Domain-Policies': 'none',
           // CSP: allow Google Fonts, block all other external origins
@@ -111,7 +111,7 @@ export default defineNuxtConfig({
             "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com",
             "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
             "font-src 'self' https://fonts.gstatic.com",
-            "img-src 'self' data: blob: https://assets.duffel.com https://images.unsplash.com",
+            "img-src 'self' data: blob: https://images.unsplash.com https://www.gstatic.com",
             "connect-src 'self' https://www.google-analytics.com https://analytics.google.com https://www.googletagmanager.com https://region1.google-analytics.com",
             "frame-ancestors 'self'",
             "object-src 'none'",

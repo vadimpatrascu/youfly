@@ -175,7 +175,7 @@ const histogram = computed(() => {
         <label v-for="a in store.uniqueAirlinesWithCode" :key="a.name" class="flex items-center gap-2 cursor-pointer group">
           <input type="checkbox" :checked="store.filters.airlines.includes(a.name)" @change="toggleAirline(a.name)"
             class="rounded border-gray-300 text-brand-600 focus:ring-brand-500" />
-          <img v-if="a.iata" :src="`https://assets.duffel.com/img/airlines/for-light-background/${a.iata}.svg`"
+          <img v-if="a.iata" :src="`https://www.gstatic.com/flights/airline_logos/70px/${a.iata}.png`"
             :alt="a.name" class="w-5 h-5 object-contain shrink-0" @error="($event.target as HTMLElement).style.display='none'" />
           <span class="text-sm group-hover:text-white truncate">{{ a.name }}</span>
         </label>

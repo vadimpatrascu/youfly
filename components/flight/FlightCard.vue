@@ -30,7 +30,7 @@ async function copyLink() {
 
 function airlineLogo(iata: string) {
   if (!iata) return ''
-  return 'https://assets.duffel.com/img/airlines/for-light-background/' + iata + '.svg'
+  return 'https://www.gstatic.com/flights/airline_logos/70px/' + iata + '.png'
 }
 
 function stopsLabel(stops: number) {

@@ -361,7 +361,7 @@ const { current: countCountries, el: countCountriesEl } = useCountUp(32)
           { iata: 'H4', name: 'HiSky' },
           { iata: 'FZ', name: 'flydubai' },
         ]" :key="al.iata" class="group">
-          <img :src="`https://assets.duffel.com/img/airlines/for-light-background/${al.iata}.svg`"
+          <img :src="`https://www.gstatic.com/flights/airline_logos/70px/${al.iata}.png`"
             :alt="al.name"
             class="h-7 md:h-9 w-auto opacity-25 group-hover:opacity-70 transition-all duration-300 grayscale group-hover:grayscale-0 group-hover:scale-110"
             loading="lazy"
