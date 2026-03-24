@@ -24,6 +24,22 @@ function passengerTypeLabel(type: string) {
   return type
 }
 
+// Remember successful booking lookups in localStorage
+const recentRefs = ref<string[]>([])
+
+onMounted(() => {
+  try {
+    recentRefs.value = JSON.parse(localStorage.getItem('youfly_recent_refs') || '[]')
+  } catch { recentRefs.value = [] }
+})
+
+function saveRef(ref: string) {
+  const upper = ref.toUpperCase()
+  const updated = [upper, ...recentRefs.value.filter(r => r !== upper)].slice(0, 5)
+  recentRefs.value = updated
+  try { localStorage.setItem('youfly_recent_refs', JSON.stringify(updated)) } catch {}
+}
+
 async function lookup() {
   if (!refInput.value.trim()) return
   isLoading.value = true
@@ -31,11 +47,17 @@ async function lookup() {
   booking.value = null
   try {
     booking.value = await $fetch<any>('/api/booking/' + refInput.value.trim().toUpperCase())
+    saveRef(refInput.value.trim())
   } catch (e: any) {
     error.value = e?.data?.message === 'Booking not found' ? t('myBooking.notFound') : t('myBooking.error')
   } finally {
     isLoading.value = false
   }
+}
+
+function lookupRef(ref: string) {
+  refInput.value = ref
+  lookup()
 }
 
 function shortDate(iso: string) {
@@ -47,17 +69,27 @@ if (route.query.ref) lookup()
 </script>
 
 <template>
-  <div class="max-w-2xl mx-auto px-4 py-12">
-    <div class="text-center mb-8">
-      <div aria-hidden="true" class="text-5xl mb-4">&#128196;</div>
-      <h1 class="text-3xl font-bold text-gray-900 mb-2">{{ t('myBooking.title') }}</h1>
-      <p class="text-gray-500">{{ t('myBooking.subtitle') }}</p>
+  <div>
+    <div class="bg-gray-950 text-white py-14 px-4 text-center relative overflow-hidden">
+      <div class="absolute inset-0 opacity-5" aria-hidden="true">
+        <svg viewBox="0 0 1200 300" class="w-full h-full" preserveAspectRatio="none">
+          <path d="M-50,200 Q300,50 600,150 Q900,250 1250,50" fill="none" stroke="white" stroke-width="1" class="flight-path"/>
+        </svg>
+      </div>
+      <div class="relative z-10">
+        <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-brand-500/20 flex items-center justify-center">
+          <svg class="w-8 h-8 text-brand-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+        </div>
+        <h1 class="text-3xl font-black mb-2">{{ t('myBooking.title') }}</h1>
+        <p class="text-gray-400">{{ t('myBooking.subtitle') }}</p>
+      </div>
     </div>
+  <div class="max-w-2xl mx-auto px-4 py-12">
 
     <div class="bg-white rounded-2xl border border-gray-200 p-6 mb-6">
       <div class="flex gap-3">
         <input v-model="refInput" type="text" :placeholder="t('myBooking.placeholder')"
-          :aria-label="t('myBooking.placeholder')"
+          :aria-label="t('myBooking.placeholder')" autocapitalize="characters" autocomplete="off" spellcheck="false"
           class="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 font-mono uppercase tracking-widest text-center text-xl"
           @keyup.enter="lookup" maxlength="10" />
         <button @click="lookup" :disabled="isLoading || !refInput.trim()"
@@ -69,6 +101,15 @@ if (route.query.ref) lookup()
         </button>
       </div>
       <p v-if="error" role="alert" class="mt-3 text-red-600 text-sm bg-red-50 p-3 rounded-xl text-center">{{ error }}</p>
+
+      <!-- Recent booking references -->
+      <div v-if="recentRefs.length && !booking" class="mt-4 flex items-center gap-2 flex-wrap">
+        <span class="text-xs text-gray-400 shrink-0">{{ t('index.recentSearches').replace(':', '') }}:</span>
+        <button v-for="ref in recentRefs" :key="ref" @click="lookupRef(ref)"
+          class="px-3 py-1 text-xs font-mono font-bold border border-gray-200 rounded-full hover:border-brand-400 text-gray-600 tracking-widest transition-colors">
+          {{ ref }}
+        </button>
+      </div>
     </div>
 
     <div v-if="booking" class="space-y-4">
@@ -140,12 +181,38 @@ if (route.query.ref) lookup()
 
       <div class="flex gap-3">
         <button @click="printPage" class="flex-1 py-3 border border-gray-300 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors flex items-center justify-center gap-2">
-          <span aria-hidden="true">🖨</span> {{ t('myBooking.print') }}
+          <svg aria-hidden="true" class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+          {{ t('myBooking.print') }}
         </button>
         <NuxtLink to="/" class="flex-1 py-3 border border-gray-300 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors text-center">
           {{ t('myBooking.searchAnother') }}
         </NuxtLink>
       </div>
     </div>
+
+    <!-- Help section when no booking loaded -->
+    <div v-if="!booking && !isLoading" class="mt-8 bg-gray-50 rounded-2xl border border-gray-200 p-6">
+      <h3 class="font-bold text-gray-900 mb-3 flex items-center gap-2">
+        <span aria-hidden="true" class="w-5 h-5 rounded-md bg-amber-100 flex items-center justify-center shrink-0">
+          <svg class="w-3 h-3 text-amber-600" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2a7 7 0 00-3.5 13.06V17a1 1 0 001 1h5a1 1 0 001-1v-1.94A7 7 0 0012 2zm1 14h-2v-1h2v1zm0-3h-2V9h2v4z"/></svg>
+        </span>
+        {{ t('myBooking.needHelp') }}
+      </h3>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
+        <NuxtLink to="/faq" class="flex items-center gap-2 bg-white p-3 rounded-xl border border-gray-200 hover:border-brand-400 transition-colors">
+          <svg aria-hidden="true" class="w-4 h-4 text-brand-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          <span class="text-gray-700">FAQ</span>
+        </NuxtLink>
+        <NuxtLink to="/contact" class="flex items-center gap-2 bg-white p-3 rounded-xl border border-gray-200 hover:border-brand-400 transition-colors">
+          <svg aria-hidden="true" class="w-4 h-4 text-green-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+          <span class="text-gray-700">{{ t('nav.contact') }}</span>
+        </NuxtLink>
+        <a href="tel:+37322000000" class="flex items-center gap-2 bg-white p-3 rounded-xl border border-gray-200 hover:border-brand-400 transition-colors">
+          <svg aria-hidden="true" class="w-4 h-4 text-brand-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+          <span class="text-gray-700">+373 22 000 000</span>
+        </a>
+      </div>
+    </div>
+  </div>
   </div>
 </template>

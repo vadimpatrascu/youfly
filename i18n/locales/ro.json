@@ -38,7 +38,9 @@
   },
   "hero": {
     "title": "Găsește zborul perfect",
-    "subtitle": "Caută sute de companii aeriene. Compară prețurile. Rezervă în câteva minute."
+    "subtitle": "Caută sute de companii aeriene. Compară prețurile. Rezervă în câteva minute.",
+    "badge": "Chișinău (KIV) — 25+ companii aeriene",
+    "reviews": "recenzii"
   },
   "search": {
     "oneWay": "Dus",
@@ -87,6 +89,9 @@
     "clearFilters": "Șterge filtrele",
     "loading": "Se încarcă zborurile...",
     "priceGuarantee": "✓ Prețuri în timp real · Fără taxe ascunse · Rezervare instantă",
+    "buyNowTitle": "Rezervă acum — prețurile sunt la minim",
+    "buyNowDesc": "Conform datelor istorice, prețurile pentru această rută cresc de obicei cu 15% în următoarele 7 zile",
+    "confidence": "încredere",
     "fromPrice": "De la",
     "toPrice": "la",
     "cheapestBadge": "Cel mai ieftin",
@@ -204,7 +209,9 @@
     "offerExpired": "Această ofertă a expirat. Căutați din nou.",
     "loadError": "Eroare la încărcarea detaliilor.",
     "searchAgain": "Caută din nou",
-    "requiredFields": "Vă rugăm completați toate câmpurile obligatorii (*)."
+    "requiredFields": "Vă rugăm completați toate câmpurile obligatorii (*).",
+    "insuranceTitle": "Asigurare de călătorie — de la €5",
+    "insuranceDesc": "Acoperă urgențe medicale, anulări, bagaje pierdute și întârzieri de zbor în toată Europa."
   },
   "payment": {
     "title": "Plată",
@@ -219,6 +226,7 @@
     "pay": "Plătește",
     "processing": "Se procesează...",
     "demo": "Demo. Nu se procesează plăți reale.",
+    "processor": "Duffel Technologies Ltd — Procesor de plăți autorizat",
     "orderSummary": "Sumar comandă",
     "passengers": "Pasageri",
     "baseFare": "Tarif de bază",
@@ -420,6 +428,7 @@
     "review2": "Rezervarea a durat mai puțin de 5 minute. Interfața e clară și ușor de folosit. Recomand cu încredere!",
     "review3": "Am rezervat bilete pentru întreaga familie la prețuri foarte bune. Filtrele de căutare sunt foarte utile.",
     "howItWorksTitle": "Cum funcționează",
+    "step": "Pasul",
     "step1Title": "Caută zboruri",
     "step1Desc": "Introdu aeroportul de plecare, destinația și datele de călătorie.",
     "step2Title": "Compară prețurile",
@@ -619,6 +628,7 @@
     "withStops": "Cu escală",
     "searchButton": "Caută zboruri",
     "searchBtnLabel": "Caută zboruri spre {city}",
+    "destinationsCount": "destinații disponibile",
     "seoDesc": "Descoperă cele mai populare destinații de zbor din Chișinău cu prețuri în timp real. Europa, Asia, Orientul Mijlociu.",
     "dest_OTP": "Capitala României, plină de istorie, cultură și viață de noapte vibrantă.",
     "dest_IST": "Metropola care unește Europa cu Asia, cu bazaruri, moschei și Bosfor.",
@@ -697,11 +707,14 @@
     "backToBlog": "Înapoi la Blog",
     "notFound": "Articolul nu a fost găsit",
     "notFoundSub": "Această pagină nu există.",
-    "ctaMoreArticles": "Mai multe articole"
+    "ctaMoreArticles": "Mai multe articole",
+    "prevArticle": "← Anterior",
+    "nextArticle": "Următor →"
   },
   "faq": {
     "title": "Întrebări frecvente",
     "subtitle": "Răspunsuri la cele mai comune întrebări despre rezervările YouFly.",
+    "searchPlaceholder": "Caută întrebări...",
     "stillHelp": "Aveți nevoie de ajutor?",
     "stillHelpText": "Nu ați găsit răspunsul căutat? Echipa noastră este disponibilă să vă ajute.",
     "contactUs": "Contactează-ne",
@@ -757,7 +770,8 @@
     "time": "Ora",
     "status": "Status",
     "boardAirline": "Companie",
-    "allFlights": "zboruri azi din Chișinău"
+    "allFlights": "zboruri azi din Chișinău",
+    "active": "activ"
   },
   "luggage": {
     "title": "Reguli Bagaj",
@@ -854,7 +868,16 @@
     "promoTitle": "Check-in online gratuit!",
     "promoDesc": "Evită taxa de €20-55 pentru check-in la aeroport. Fă check-in online cu 30 de zile înainte.",
     "promoFree": "€0",
-    "promoVs": "vs €20-55"
+    "promoVs": "vs €20-55",
+    "preflightTitle": "Checklist pre-zbor",
+    "checklist1": "Pașaport/buletin valid pentru 6+ luni",
+    "checklist2": "Boarding pass descărcat",
+    "checklist3": "Bagajele în limitele de greutate",
+    "checklist4": "Lichide în pungă transparentă (100ml)",
+    "checklist5": "Telefon/laptop complet încărcat",
+    "checklist6": "Asigurare de călătorie achiziționată",
+    "checklist7": "Transfer la aeroport rezervat",
+    "checklist8": "Monedă schimbată (MDL → EUR)"
   },
   "visa": {
     "title": "Cerințe Viză",

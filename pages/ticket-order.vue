@@ -89,9 +89,11 @@ function typeLabel(type: string) {
     </div>
 
     <div v-else-if="offerError" role="alert" class="bg-red-50 border border-red-200 rounded-2xl p-6 text-center">
-      <div aria-hidden="true" class="text-5xl mb-4">⏱️</div>
+      <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-red-100 flex items-center justify-center">
+        <svg class="w-8 h-8 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      </div>
       <p class="text-red-600 font-medium mb-4">{{ offerError }}</p>
-      <button @click="router.push('/')" class="px-6 py-3 bg-brand-600 text-white rounded-xl font-medium">{{ t('passengers.searchAgain') }}</button>
+      <button @click="router.push('/')" class="px-6 py-3 bg-brand-600 text-white rounded-xl font-medium hover:bg-brand-700 transition-colors">{{ t('passengers.searchAgain') }}</button>
     </div>
 
     <!-- Expiry countdown banner -->
@@ -100,7 +102,7 @@ function typeLabel(type: string) {
       :class="isExpired ? 'bg-red-50 border-red-200 text-red-700' :
               isExpiringSoon ? 'bg-orange-50 border-orange-200 text-orange-700' :
               'bg-brand-50 border-brand-100 text-brand-700'">
-      <span aria-hidden="true">&#9200;</span>
+      <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
       <span v-if="isExpired">{{ t('ticketOrder.expired') }}</span>
       <span v-else-if="isExpiringSoon">{{ t('ticketOrder.expiringSoon', { time: countdownFormatted }) }}</span>
       <span v-else>{{ t('ticketOrder.reserved', { time: countdownFormatted }) }}</span>
@@ -197,16 +199,39 @@ function typeLabel(type: string) {
           {{ t('passengers.requiredFields') }}
         </div>
 
+        <!-- Travel insurance promo -->
+        <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 flex items-start gap-3">
+          <div class="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center shrink-0">
+            <svg class="w-5 h-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+          </div>
+          <div class="flex-1">
+            <p class="font-semibold text-gray-900 text-sm mb-1">{{ t('passengers.insuranceTitle') }}</p>
+            <p class="text-xs text-gray-500 leading-relaxed">{{ t('passengers.insuranceDesc') }}</p>
+          </div>
+        </div>
+
         <button type="submit"
-          class="w-full py-4 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-xl text-lg transition-colors shadow-lg">
+          class="w-full py-4 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-xl text-lg transition-colors shadow-lg glow-cta">
           {{ t('passengers.continue') }}
         </button>
       </div>
 
       <!-- Order summary sidebar -->
       <div class="lg:col-span-1">
-        <div class="bg-white rounded-2xl border border-gray-200 p-5 sticky top-24">
-          <h3 class="font-semibold text-gray-900 mb-4">{{ t('passengers.yourFlight') }}</h3>
+        <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden sticky top-24">
+          <!-- Destination photo header -->
+          <DestinationPhoto v-if="bookingStore.selectedOffer" :code="bookingStore.selectedOffer.slices?.[bookingStore.selectedOffer.slices.length - 1]?.destination?.iata_code || ''" height-class="h-28">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+            <div class="absolute bottom-3 left-4 right-4 text-white">
+              <div class="text-xs font-medium opacity-80">{{ t('passengers.yourFlight') }}</div>
+              <div class="font-black text-lg">
+                {{ bookingStore.selectedOffer.slices?.[0]?.origin?.iata_code }}
+                <span class="mx-1 opacity-60">→</span>
+                {{ bookingStore.selectedOffer.slices?.[bookingStore.selectedOffer.slices.length - 1]?.destination?.iata_code }}
+              </div>
+            </div>
+          </DestinationPhoto>
+          <div class="p-5">
           <div v-if="bookingStore.selectedOffer" class="space-y-4">
             <div v-for="(slice, i) in bookingStore.selectedOffer.slices" :key="i" class="text-sm">
               <div class="font-semibold text-gray-800">
@@ -224,6 +249,7 @@ function typeLabel(type: string) {
               </div>
               <p class="text-xs text-gray-400 mt-1">{{ t('passengers.taxesIncluded') }}</p>
             </div>
+          </div>
           </div>
         </div>
       </div>

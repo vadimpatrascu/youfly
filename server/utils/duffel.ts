@@ -1,3 +1,15 @@
+/**
+ * Duffel API client with automatic retry for transient errors.
+ * Retries on 429 (rate limit) and 5xx (server errors), up to 2 retries.
+ */
+
+const MAX_RETRIES = 2
+const RETRY_DELAY_MS = 1000
+
+async function sleep(ms: number) {
+  return new Promise(resolve => setTimeout(resolve, ms))
+}
+
 export async function duffelFetch<T>(
   path: string,
   options: Parameters<typeof $fetch>[1] = {}
@@ -9,27 +21,49 @@ export async function duffelFetch<T>(
     throw createError({ statusCode: 503, message: 'Duffel API not configured' })
   }
 
-  try {
-    return await $fetch<T>(`https://api.duffel.com${path}`, {
-      ...options,
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Duffel-Version': 'v2',
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-        ...(options.headers as Record<string, string> || {}),
-      },
-    })
-  } catch (e: any) {
-    // Re-throw with useful message
-    const duffelError = e?.data?.errors?.[0]
-    if (duffelError) {
-      throw createError({
-        statusCode: e.statusCode || 500,
-        message: duffelError.message || duffelError.title || 'Duffel API error',
-        data: e.data,
+  let lastError: any = null
+
+  for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+    try {
+      return await $fetch<T>(`https://api.duffel.com${path}`, {
+        ...options,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Duffel-Version': 'v2',
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+          ...(options.headers as Record<string, string> || {}),
+        },
       })
+    } catch (e: any) {
+      lastError = e
+      const status = e?.statusCode || e?.status || 0
+
+      // Don't retry client errors (4xx) except 429 (rate limit)
+      if (status >= 400 && status < 500 && status !== 429) {
+        break
+      }
+
+      // Retry on 429 or 5xx
+      if (attempt < MAX_RETRIES && (status === 429 || status >= 500)) {
+        const delay = RETRY_DELAY_MS * (attempt + 1) // Linear backoff
+        console.warn(`[Duffel] Retry ${attempt + 1}/${MAX_RETRIES} for ${path} (status ${status}), waiting ${delay}ms`)
+        await sleep(delay)
+        continue
+      }
+
+      break
     }
-    throw e
   }
+
+  // Re-throw with useful message
+  const duffelError = lastError?.data?.errors?.[0]
+  if (duffelError) {
+    throw createError({
+      statusCode: lastError.statusCode || 500,
+      message: duffelError.message || duffelError.title || 'Duffel API error',
+      data: lastError.data,
+    })
+  }
+  throw lastError
 }

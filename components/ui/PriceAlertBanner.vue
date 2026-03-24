@@ -33,13 +33,15 @@ async function subscribe() {
 
 <template>
   <div v-if="!subscribed" class="bg-amber-50 border border-amber-200 rounded-xl p-3 flex items-center gap-3">
-    <span aria-hidden="true" class="text-xl">🔔</span>
+    <span aria-hidden="true" class="w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center shrink-0">
+      <svg class="w-4 h-4 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+    </span>
     <div class="flex-1 min-w-0">
       <p class="text-sm font-medium text-amber-900">{{ t('priceAlert.title') }}</p>
       <p v-if="!showAlert" class="text-xs text-amber-700">{{ t('priceAlert.subtitle') }}</p>
       <div v-if="showAlert" class="flex gap-2 mt-2">
         <input v-model="email" type="email" :placeholder="t('priceAlert.placeholder')"
-          :aria-label="t('priceAlert.placeholder')"
+          :aria-label="t('priceAlert.placeholder')" autocomplete="email"
           class="flex-1 min-w-0 px-3 py-1.5 text-sm border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-400 bg-white"
           @keyup.enter="subscribe" />
         <button @click="subscribe" :disabled="isSubmitting || !email"

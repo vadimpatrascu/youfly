@@ -79,7 +79,9 @@ function formatExpiry(e: Event) {
       <!-- Card form -->
       <div class="bg-white rounded-2xl border border-gray-200 p-6">
         <div class="flex items-center gap-2 mb-6">
-          <span aria-hidden="true" class="text-2xl">💳</span>
+          <div class="w-8 h-8 rounded-lg bg-brand-50 flex items-center justify-center">
+            <svg class="w-4 h-4 text-brand-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+          </div>
           <h2 class="font-semibold text-gray-900">{{ t('payment.cardDetails') }}</h2>
           <span class="ml-auto text-xs bg-green-50 text-green-700 px-2 py-1 rounded-full font-medium">{{ t('payment.secure') }}</span>
         </div>
@@ -152,7 +154,7 @@ function formatExpiry(e: Event) {
         <p v-if="bookingStore.bookingError" role="alert" class="mt-4 text-red-600 text-sm bg-red-50 p-3 rounded-xl">{{ bookingStore.bookingError }}</p>
 
         <button type="submit" :disabled="isProcessing || !cardName.trim()"
-          class="mt-6 w-full py-4 bg-brand-600 hover:bg-brand-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-semibold rounded-xl text-lg transition-colors shadow-lg">
+          class="mt-6 w-full py-4 bg-brand-600 hover:bg-brand-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-semibold rounded-xl text-lg transition-all shadow-lg hover:shadow-brand-500/30 hover:shadow-xl glow-cta">
           <span v-if="isProcessing" class="flex items-center justify-center gap-2">
             <div role="status" :aria-label="t('common.loading')" class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
             {{ t('payment.processing') }}
@@ -165,17 +167,38 @@ function formatExpiry(e: Event) {
 
         <!-- Trust seals -->
         <div class="mt-4 pt-4 border-t border-gray-100">
-          <div class="flex items-center justify-center gap-4 text-xs text-gray-400">
-            <span class="flex items-center gap-1"><span aria-hidden="true">🔒</span> {{ t('payment.trustSsl') }}</span>
-            <span class="flex items-center gap-1"><span aria-hidden="true">🛡️</span> {{ t('payment.trustPci') }}</span>
-            <span class="flex items-center gap-1"><span aria-hidden="true">✓</span> {{ t('payment.trust3d') }}</span>
+          <div class="flex items-center justify-center gap-4 text-xs text-gray-400 mb-3">
+            <span class="flex items-center gap-1.5">
+              <svg class="w-4 h-4 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+              {{ t('payment.trustSsl') }}
+            </span>
+            <span class="flex items-center gap-1.5">
+              <svg class="w-4 h-4 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+              {{ t('payment.trustPci') }}
+            </span>
+            <span class="flex items-center gap-1.5">
+              <svg class="w-4 h-4 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              {{ t('payment.trust3d') }}
+            </span>
           </div>
+          <p class="text-[10px] text-gray-300 text-center">{{ t('payment.processor') }}</p>
         </div>
         </form>
       </div>
 
       <!-- Summary -->
       <div class="space-y-4">
+        <!-- Destination banner -->
+        <DestinationPhoto v-if="bookingStore.selectedOffer" :code="bookingStore.selectedOffer.slices?.[bookingStore.selectedOffer.slices.length - 1]?.destination?.iata_code || ''" height-class="h-28 rounded-2xl">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
+          <div class="absolute bottom-3 left-4 right-4 text-white">
+            <div class="font-black text-lg">
+              {{ bookingStore.selectedOffer.slices?.[0]?.origin?.iata_code }}
+              <span aria-hidden="true" class="mx-1 opacity-60">✈</span>
+              {{ bookingStore.selectedOffer.slices?.[bookingStore.selectedOffer.slices.length - 1]?.destination?.iata_code }}
+            </div>
+          </div>
+        </DestinationPhoto>
         <div class="bg-white rounded-2xl border border-gray-200 p-5">
           <h3 class="font-semibold text-gray-900 mb-4">{{ t('payment.orderSummary') }}</h3>
           <div v-if="bookingStore.selectedOffer" class="space-y-3">

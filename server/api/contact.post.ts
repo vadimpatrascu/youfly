@@ -1,5 +1,6 @@
 import { createServerSupabase } from '../utils/supabase'
 import { enforceRateLimit } from '../utils/rateLimit'
+import { sanitizeInput } from '../utils/sanitize'
 
 export default defineEventHandler(async (event) => {
   // Rate limit: 3 messages per 10 minutes per IP
@@ -10,10 +11,10 @@ export default defineEventHandler(async (event) => {
   const { name, email, subject, message } = body
 
   // Validate required fields
-  const nameStr = (name || '').trim().substring(0, 200)
-  const emailStr = (email || '').trim().substring(0, 255)
-  const subjectStr = (subject || '').trim().substring(0, 200)
-  const messageStr = (message || '').trim().substring(0, 5000)
+  const nameStr = sanitizeInput(name, 200)
+  const emailStr = (email || '').trim().substring(0, 255) // Don't escape email — validated by regex
+  const subjectStr = sanitizeInput(subject, 200)
+  const messageStr = sanitizeInput(message, 5000)
 
   if (!nameStr || nameStr.length < 2) {
     throw createError({ statusCode: 400, message: 'Name is required' })

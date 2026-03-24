@@ -23,6 +23,7 @@ async function copyLink() {
   try {
     await navigator.clipboard.writeText(text)
     linkCopied.value = true
+    if (navigator.vibrate) navigator.vibrate(50)
     setTimeout(() => { linkCopied.value = false }, 2000)
   } catch {}
 }
@@ -56,7 +57,7 @@ function layoverMins(arr: string, dep: string): number {
 </script>
 
 <template>
-  <article class="bg-white rounded-2xl border border-gray-200 hover:border-brand-300 hover:shadow-md transition-all" :aria-label="offer.slices[0]?.origin?.iata_code + ' → ' + (offer.slices[offer.slices.length-1]?.destination?.iata_code || '') + ', ' + formatWithMdl(offer.total_amount, offer.total_currency)">
+  <article class="bg-white rounded-2xl border border-gray-200 hover:border-brand-300 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-200" :aria-label="offer.slices[0]?.origin?.iata_code + ' → ' + (offer.slices[offer.slices.length-1]?.destination?.iata_code || '') + ', ' + formatWithMdl(offer.total_amount, offer.total_currency)">
     <div class="p-4 md:p-6">
       <div v-for="(slice, i) in offer.slices" :key="slice.id || i"
         :class="i > 0 ? 'mt-4 pt-4 border-t border-gray-100' : ''">
@@ -67,9 +68,15 @@ function layoverMins(arr: string, dep: string): number {
         </div>
         <div class="flex items-center gap-3 md:gap-6">
           <div class="shrink-0 w-10 h-10 flex items-center justify-center">
-            <img v-if="slice.segments && slice.segments[0] && slice.segments[0].carrier_iata"
-              :src="airlineLogo(slice.segments[0].carrier_iata)"
-              :alt="slice.segments[0].carrier_name || slice.segments[0].carrier_iata"
+            <div v-if="slice.segments && slice.segments[0] && slice.segments[0].carrier_iata"
+              class="w-10 h-10 rounded-full bg-brand-50 text-brand-700 flex items-center justify-center text-xs font-black border border-brand-100"
+              :title="slice.segments[0].carrier_name || slice.segments[0].carrier_iata">
+              {{ slice.segments[0].carrier_iata }}
+            </div>
+            <!-- Hidden img for logo attempt -->
+            <img v-if="false"
+              :src="airlineLogo(slice.segments?.[0]?.carrier_iata || '')"
+              alt=""
               class="w-10 h-10 object-contain"
               @error="($event.target as HTMLImageElement).style.display = 'none'"
             />
@@ -112,7 +119,7 @@ function layoverMins(arr: string, dep: string): number {
             {{ slice.segments[0].carrier_name }}
           </span>
           <span class="font-mono">
-            {{ (slice.segments || []).map(s => s.flight_number).filter(Boolean).join(' · ') }}
+            {{ (slice.segments || []).map((s: any) => s.flight_number).filter(Boolean).join(' · ') }}
           </span>
         </div>
       </div>
@@ -133,8 +140,8 @@ function layoverMins(arr: string, dep: string): number {
             :title="linkCopied ? t('flightCard.copied') : t('flightCard.copyLink')"
             :aria-label="linkCopied ? t('flightCard.copied') : t('flightCard.copyLink')"
             class="p-2.5 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors text-gray-400 hover:text-gray-600">
-            <span aria-hidden="true" v-if="linkCopied" class="text-green-500">✓</span>
-            <span aria-hidden="true" v-else>🔗</span>
+            <svg v-if="linkCopied" class="w-4 h-4 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+            <svg v-else class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>
           </button>
           <button @click.stop="toggleCompare(offer)"
             :disabled="!isCompareSelected(offer.id) && compareList.length >= 2"
@@ -145,17 +152,18 @@ function layoverMins(arr: string, dep: string): number {
             :class="isCompareSelected(offer.id)
               ? 'bg-purple-100 border-purple-400 text-purple-700'
               : 'border-gray-200 text-gray-400 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed'">
-            <span aria-hidden="true">⚖</span>
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"/></svg>
           </button>
           <button @click="emit('select')"
             :aria-label="t('flightCard.selectFlight', { from: offer.slices[0]?.origin?.iata_code || '', to: offer.slices[offer.slices.length-1]?.destination?.iata_code || '', price: formatWithMdl(offer.total_amount, offer.total_currency) })"
-            class="px-6 py-3 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-xl transition-colors shadow-sm">
+            class="px-6 py-3 bg-brand-600 hover:bg-brand-500 text-white font-bold rounded-xl transition-all shadow-md hover:shadow-brand-500/30 hover:shadow-xl hover:scale-[1.02] glow-cta">
             {{ t('flightCard.select') }}
           </button>
         </div>
       </div>
     </div>
 
+    <Transition name="expand">
     <div v-if="expanded" :id="`flight-details-${offer.id}`" class="border-t border-gray-100 bg-gray-50 rounded-b-2xl px-6 py-5">
       <div v-for="(slice, si) in offer.slices" :key="'exp'+si"
         :class="si > 0 ? 'mt-5 pt-5 border-t border-gray-200' : ''">
@@ -163,9 +171,10 @@ function layoverMins(arr: string, dep: string): number {
           {{ si === 0 ? t('flightCard.outbound') : t('flightCard.return') }}
         </div>
         <template v-for="(seg, idx) in (slice.segments || [])" :key="seg.id || idx">
-          <div v-if="idx > 0"
+          <div v-if="(idx as number) > 0"
             class="flex items-center gap-2 my-3 text-xs text-orange-600 bg-orange-50 rounded-lg px-3 py-2">
-            <span aria-hidden="true">&#9200;</span> {{ t('flightCard.layover') }} {{ formatDuration(layoverMins(slice.segments[idx-1].arriving_at, seg.departing_at)) }}
+            <svg class="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            {{ t('flightCard.layover') }} {{ formatDuration(layoverMins(slice.segments[(idx as number)-1].arriving_at, seg.departing_at)) }}
             {{ t('flightCard.layoverIn') }} {{ (seg.origin && seg.origin.name) || (seg.origin && seg.origin.iata_code) }}
           </div>
           <div class="flex gap-4 items-start bg-white rounded-xl p-4 border border-gray-100 mb-2">
@@ -200,7 +209,8 @@ function layoverMins(arr: string, dep: string): number {
                 <span v-for="bag in offer.passengers[0].baggages" :key="bag.type"
                   class="text-xs px-2 py-1 rounded-full"
                   :class="bag.type === 'checked' ? 'bg-blue-50 text-blue-700' : 'bg-gray-100 text-gray-600'">
-                  <span aria-hidden="true">{{ bag.type === 'checked' ? '🧳' : '💼' }}</span>
+                  <svg v-if="bag.type === 'checked'" class="w-3 h-3 inline-block mr-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                  <svg v-else class="w-3 h-3 inline-block mr-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
                   {{ bag.quantity }}× {{ bag.type === 'checked' ? t('flightCard.checkedBag') : t('flightCard.cabinBag') }}
                 </span>
               </div>
@@ -209,5 +219,12 @@ function layoverMins(arr: string, dep: string): number {
         </template>
       </div>
     </div>
+    </Transition>
   </article>
 </template>
+
+<style scoped>
+.expand-enter-active, .expand-leave-active { transition: all 0.25s ease; overflow: hidden; }
+.expand-enter-from, .expand-leave-to { opacity: 0; max-height: 0; padding-top: 0; padding-bottom: 0; }
+.expand-enter-to, .expand-leave-from { opacity: 1; max-height: 600px; }
+</style>

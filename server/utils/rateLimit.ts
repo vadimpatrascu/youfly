@@ -55,7 +55,7 @@ export function enforceRateLimit(
   const rl = checkRateLimit(key, maxRequests, windowMs)
   if (!rl.allowed) {
     const retryAfter = Math.ceil((rl.resetAt - Date.now()) / 1000)
-    setHeader(event, 'Retry-After', String(retryAfter))
+    setHeader(event, 'Retry-After', retryAfter)
     throw createError({ statusCode: 429, message })
   }
 }

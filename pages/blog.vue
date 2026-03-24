@@ -7,12 +7,12 @@ useBreadcrumbStructuredData([
 ])
 
 const articleData = [
-  { slug: 'cum-sa-gasesti-bilete-ieftine', date: '2026-03-10', readTime: '5 min', category: 'tips', emoji: '💰', titleKey: 'blog.art1Title', excerptKey: 'blog.art1Excerpt' },
-  { slug: 'top-destinatii-moldova', date: '2026-03-05', readTime: '7 min', category: 'destinations', emoji: '🌍', titleKey: 'blog.art2Title', excerptKey: 'blog.art2Excerpt' },
-  { slug: 'bagaj-de-mana-ghid-complet', date: '2026-02-28', readTime: '8 min', category: 'preparation', emoji: '🎒', titleKey: 'blog.art3Title', excerptKey: 'blog.art3Excerpt' },
-  { slug: 'rezervare-cu-escala-vs-direct', date: '2026-02-20', readTime: '6 min', category: 'tips', emoji: '✈️', titleKey: 'blog.art4Title', excerptKey: 'blog.art4Excerpt' },
-  { slug: 'asigurare-calatorie-de-ce', date: '2026-02-15', readTime: '5 min', category: 'safety', emoji: '🛡️', titleKey: 'blog.art5Title', excerptKey: 'blog.art5Excerpt' },
-  { slug: 'istanbul-ghid-3-zile', date: '2026-02-10', readTime: '10 min', category: 'guides', emoji: '🕌', titleKey: 'blog.art6Title', excerptKey: 'blog.art6Excerpt' },
+  { slug: 'cum-sa-gasesti-bilete-ieftine', date: '2026-03-10', readTime: '5', category: 'tips', emoji: '💰', titleKey: 'blog.art1Title', excerptKey: 'blog.art1Excerpt' },
+  { slug: 'top-destinatii-moldova', date: '2026-03-05', readTime: '7', category: 'destinations', emoji: '🌍', titleKey: 'blog.art2Title', excerptKey: 'blog.art2Excerpt' },
+  { slug: 'bagaj-de-mana-ghid-complet', date: '2026-02-28', readTime: '8', category: 'preparation', emoji: '🎒', titleKey: 'blog.art3Title', excerptKey: 'blog.art3Excerpt' },
+  { slug: 'rezervare-cu-escala-vs-direct', date: '2026-02-20', readTime: '6', category: 'tips', emoji: '✈️', titleKey: 'blog.art4Title', excerptKey: 'blog.art4Excerpt' },
+  { slug: 'asigurare-calatorie-de-ce', date: '2026-02-15', readTime: '5', category: 'safety', emoji: '🛡️', titleKey: 'blog.art5Title', excerptKey: 'blog.art5Excerpt' },
+  { slug: 'istanbul-ghid-3-zile', date: '2026-02-10', readTime: '10', category: 'guides', emoji: '🕌', titleKey: 'blog.art6Title', excerptKey: 'blog.art6Excerpt' },
 ]
 
 const articles = computed(() => articleData.map(a => ({ ...a, title: t(a.titleKey), excerpt: t(a.excerptKey) })))
@@ -56,17 +56,19 @@ function formatDate(iso: string) {
     </div>
 
     <!-- Featured article -->
-    <article v-if="activeCategory === 'all'" class="bg-gradient-to-br from-brand-600 to-brand-800 text-white rounded-2xl mb-8 overflow-hidden">
-      <NuxtLink :to="`/blog/${articles[0].slug}`" class="block p-8 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-brand-700 rounded-2xl">
-        <span class="text-xs bg-white/20 px-3 py-1 rounded-full font-semibold">{{ t('blog.featured').toUpperCase() }}</span>
+    <article v-if="activeCategory === 'all'" class="relative text-white rounded-2xl mb-8 overflow-hidden">
+      <DestinationPhoto code="IST" :width="1200" height-class="absolute inset-0" />
+      <div class="absolute inset-0 bg-gradient-to-t from-gray-950 via-gray-950/70 to-transparent"></div>
+      <NuxtLink :to="`/blog/${articles[0].slug}`" class="block p-8 relative z-10 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-950 rounded-2xl">
+        <span class="text-xs bg-brand-600 px-3 py-1 rounded-full font-bold tracking-wider">{{ t('blog.featured').toUpperCase() }}</span>
         <div aria-hidden="true" class="text-5xl my-4">{{ articles[0].emoji }}</div>
-        <h2 class="text-2xl font-bold mb-3 hover:underline">{{ articles[0].title }}</h2>
-        <p class="text-brand-200 mb-5 leading-relaxed">{{ articles[0].excerpt }}</p>
-        <div class="flex items-center gap-4 text-sm text-brand-300">
+        <h2 class="text-2xl font-black mb-3 hover:underline">{{ articles[0].title }}</h2>
+        <p class="text-gray-400 mb-5 leading-relaxed">{{ articles[0].excerpt }}</p>
+        <div class="flex items-center gap-4 text-sm text-gray-500">
           <span><time :datetime="articles[0].date">{{ formatDate(articles[0].date) }}</time></span>
           <span aria-hidden="true">·</span>
-          <span>{{ articles[0].readTime }} {{ t('blog.readSuffix') }}</span>
-          <span class="ml-auto font-semibold">{{ t('blog.readMore') }} <span aria-hidden="true">→</span></span>
+          <span>{{ articles[0].readTime }} {{ t('blog.readTime') }}</span>
+          <span class="ml-auto font-bold text-brand-400">{{ t('blog.readMore') }} <span aria-hidden="true">→</span></span>
         </div>
       </NuxtLink>
     </article>
@@ -93,8 +95,10 @@ function formatDate(iso: string) {
     </div>
 
     <!-- CTA -->
-    <div class="mt-12 text-center bg-gray-50 rounded-2xl p-8 border border-gray-200">
-      <div aria-hidden="true" class="text-4xl mb-3">✈️</div>
+    <div class="mt-12 text-center bg-gradient-to-br from-brand-50 to-brand-100/50 rounded-2xl p-8 border border-brand-100">
+      <div class="w-14 h-14 mx-auto mb-4 rounded-2xl bg-brand-100 flex items-center justify-center">
+        <svg class="w-7 h-7 text-brand-600" fill="currentColor" viewBox="0 0 24 24"><path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg>
+      </div>
       <h3 class="text-xl font-bold text-gray-900 mb-2">{{ t('blog.ctaTitle') }}</h3>
       <p class="text-gray-500 text-sm mb-5">{{ t('blog.ctaSubtitle') }}</p>
       <NuxtLink to="/" class="inline-block px-8 py-3 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-xl transition-colors">

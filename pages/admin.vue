@@ -31,11 +31,15 @@ function formatDate(iso: string) {
 </script>
 
 <template>
-  <div class="max-w-5xl mx-auto px-4 py-8">
-    <div class="flex items-center gap-3 mb-8">
-      <h1 class="text-2xl font-bold text-gray-900">{{ t('admin.title') }}</h1>
-      <span class="px-2 py-1 bg-red-100 text-red-700 text-xs font-bold rounded-full">{{ t('admin.demo') }}</span>
+  <div>
+    <div class="bg-gray-950 text-white py-10 px-4">
+      <div class="max-w-5xl mx-auto flex items-center gap-3">
+        <h1 class="text-2xl font-black">{{ t('admin.title') }}</h1>
+        <span class="px-2 py-1 bg-red-500/20 text-red-400 text-xs font-bold rounded-full border border-red-500/30">{{ t('admin.demo') }}</span>
+        <button v-if="stats" @click="stats = null; secretInput = ''" class="ml-auto text-xs text-gray-500 hover:text-white transition-colors">{{ t('admin.logout') }}</button>
+      </div>
     </div>
+  <div class="max-w-5xl mx-auto px-4 py-8">
 
     <!-- Auth -->
     <div v-if="!stats" class="max-w-md mx-auto">
@@ -91,7 +95,7 @@ function formatDate(iso: string) {
           <div v-if="!stats.topDestinations.length" class="text-gray-400 text-sm">{{ t('admin.noData') }}</div>
           <div v-else class="space-y-2">
             <div v-for="(d, i) in stats.topDestinations" :key="d.iata" class="flex items-center gap-3">
-              <span class="text-xs font-bold text-gray-400 w-4">{{ i + 1 }}</span>
+              <span class="text-xs font-bold text-gray-400 w-4">{{ Number(i) + 1 }}</span>
               <span class="font-mono text-sm font-bold text-brand-600 bg-brand-50 px-2 py-0.5 rounded">{{ d.iata }}</span>
               <div aria-hidden="true" class="flex-1 bg-gray-100 rounded-full h-2">
                 <div class="bg-brand-500 rounded-full h-2" :style="`width: ${(d.count / stats.topDestinations[0].count) * 100}%`"></div>
@@ -163,10 +167,7 @@ function formatDate(iso: string) {
         </div>
       </div>
 
-      <button @click="stats = null; secretInput = ''"
-        class="text-sm text-gray-500 hover:text-gray-700 underline">
-        ← {{ t('admin.logout') }}
-      </button>
     </div>
+  </div>
   </div>
 </template>

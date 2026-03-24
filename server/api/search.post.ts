@@ -101,7 +101,7 @@ export default defineEventHandler(async (event) => {
         children: childrenN,
         infants: infantsN,
         cabin_class: cabinClass,
-      }).then(() => {}).catch((e: any) => console.error('Lead insert error:', e.message))
+      }).then(() => {}, (e: any) => console.error('Lead insert error:', e?.message))
     }
 
     return { offerRequestId, offers }

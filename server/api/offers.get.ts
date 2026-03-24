@@ -18,8 +18,8 @@ export default defineEventHandler(async (event) => {
 
     // Paginate through results
     do {
-      const url = `/air/offer_requests/${offerRequestId}/offers?sort=total_amount&limit=50${after ? `&after=${after}` : ''}`
-      const res = await duffelFetch<any>(url)
+      const url: string = `/air/offer_requests/${offerRequestId}/offers?sort=total_amount&limit=50${after ? `&after=${after}` : ''}`
+      const res: any = await duffelFetch<any>(url)
       const offers = res.data || []
       allOffers = allOffers.concat(offers)
       after = res.meta?.after || null

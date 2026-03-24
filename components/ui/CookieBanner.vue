@@ -39,18 +39,18 @@ function decline() {
       <div v-if="show"
         role="dialog" :aria-label="t('cookie.bannerLabel')" aria-modal="true"
         aria-describedby="cookie-banner-desc"
-        class="fixed bottom-16 md:bottom-4 left-4 right-4 md:left-auto md:right-4 md:max-w-sm z-[100] bg-white border border-gray-200 rounded-2xl shadow-2xl p-4">
-        <p id="cookie-banner-desc" class="text-sm text-gray-700 mb-3 leading-relaxed">
+        class="fixed bottom-16 md:bottom-4 left-4 right-4 md:left-auto md:right-4 md:max-w-sm z-[100] bg-gray-900 border border-gray-700/50 rounded-2xl shadow-2xl shadow-black/40 p-4">
+        <p id="cookie-banner-desc" class="text-sm text-gray-300 mb-3 leading-relaxed">
           {{ t('cookie.textBefore') }}
-          <NuxtLink to="/privacy" class="text-brand-600 underline">{{ t('cookie.linkText') }}</NuxtLink>.
+          <NuxtLink to="/privacy" class="text-brand-400 underline">{{ t('cookie.linkText') }}</NuxtLink>.
         </p>
         <div class="flex gap-2">
           <button ref="acceptBtn" @click="accept"
-            class="flex-1 py-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold rounded-xl transition-colors">
+            class="flex-1 py-2 bg-brand-600 hover:bg-brand-500 text-white text-sm font-semibold rounded-xl transition-colors">
             {{ t('cookie.accept') }}
           </button>
           <button @click="decline"
-            class="px-4 py-2 border border-gray-300 text-gray-600 text-sm rounded-xl hover:bg-gray-50 transition-colors">
+            class="px-4 py-2 border border-gray-700 text-gray-400 text-sm rounded-xl hover:bg-gray-800 transition-colors">
             {{ t('cookie.decline') }}
           </button>
         </div>

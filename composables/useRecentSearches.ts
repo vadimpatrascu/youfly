@@ -33,7 +33,7 @@ export function useRecentSearches() {
     )
     const updated = [search, ...filtered].slice(0, MAX_RECENT)
     searches.value = updated
-    localStorage.setItem('youfly_recent_searches', JSON.stringify(updated))
+    try { localStorage.setItem('youfly_recent_searches', JSON.stringify(updated)) } catch {}
   }
 
   function clear() {

@@ -116,14 +116,14 @@ const airlineLogos = [
           </span>
         </NuxtLink>
         <nav :aria-label="t('nav.mainNav')" class="flex items-center gap-1 md:gap-2">
-          <NuxtLink to="/" class="nav-link text-sm font-medium text-gray-400 hover:text-white transition-colors hidden sm:flex items-center gap-1 px-3 py-2 rounded-lg hover:bg-white/5">{{ t('nav.search') }}</NuxtLink>
-          <NuxtLink to="/destinations" class="nav-link text-sm font-medium text-gray-400 hover:text-white transition-colors hidden md:flex items-center gap-1 px-3 py-2 rounded-lg hover:bg-white/5">{{ t('nav.destinations') }}</NuxtLink>
+          <NuxtLink to="/" class="nav-link nav-underline text-sm font-medium text-gray-400 hover:text-white transition-colors hidden sm:flex items-center gap-1 px-3 py-2 rounded-lg hover:bg-white/5">{{ t('nav.search') }}</NuxtLink>
+          <NuxtLink to="/destinations" class="nav-link nav-underline text-sm font-medium text-gray-400 hover:text-white transition-colors hidden md:flex items-center gap-1 px-3 py-2 rounded-lg hover:bg-white/5">{{ t('nav.destinations') }}</NuxtLink>
           <NuxtLink to="/deals" class="nav-link text-sm font-medium text-red-400 hover:text-red-300 transition-colors hidden md:flex items-center gap-1.5 px-3 py-2 rounded-lg hover:bg-red-500/10 font-semibold">
             <span class="relative flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span></span>
             {{ t('nav.deals') }}
           </NuxtLink>
-          <NuxtLink to="/blog" class="nav-link text-sm font-medium text-gray-400 hover:text-white transition-colors hidden lg:flex items-center gap-1 px-3 py-2 rounded-lg hover:bg-white/5">{{ t('nav.blog') }}</NuxtLink>
-          <NuxtLink to="/faq" class="nav-link text-sm font-medium text-gray-400 hover:text-white transition-colors hidden lg:flex items-center gap-1 px-3 py-2 rounded-lg hover:bg-white/5">FAQ</NuxtLink>
+          <NuxtLink to="/blog" class="nav-link nav-underline text-sm font-medium text-gray-400 hover:text-white transition-colors hidden lg:flex items-center gap-1 px-3 py-2 rounded-lg hover:bg-white/5">{{ t('nav.blog') }}</NuxtLink>
+          <NuxtLink to="/faq" class="nav-link nav-underline text-sm font-medium text-gray-400 hover:text-white transition-colors hidden lg:flex items-center gap-1 px-3 py-2 rounded-lg hover:bg-white/5">FAQ</NuxtLink>
 
           <div class="w-px h-5 bg-white/10 mx-1 hidden sm:block"></div>
 
@@ -211,20 +211,23 @@ const airlineLogos = [
     <!-- Mobile bottom nav -->
     <nav :aria-label="t('nav.mobileNav')" class="fixed bottom-0 left-0 right-0 bg-surface-950/95 backdrop-blur-xl border-t border-white/5 z-40 md:hidden pb-safe">
       <div class="flex">
-        <NuxtLink to="/" class="mobile-nav-item flex-1 flex flex-col items-center py-2.5 text-gray-500 hover:text-white transition-colors active:scale-95">
-          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+        <NuxtLink to="/" class="mobile-nav-item flex-1 flex flex-col items-center py-2.5 text-gray-500 hover:text-white transition-all duration-200 active:scale-95 relative">
+          <svg class="w-5 h-5 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
           <span class="text-[10px] mt-0.5 font-medium">{{ t('nav.search') }}</span>
         </NuxtLink>
-        <NuxtLink to="/deals" class="mobile-nav-item flex-1 flex flex-col items-center py-2.5 text-gray-500 hover:text-white transition-colors active:scale-95">
-          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z"/></svg>
+        <NuxtLink to="/deals" class="mobile-nav-item flex-1 flex flex-col items-center py-2.5 text-gray-500 hover:text-white transition-all duration-200 active:scale-95 relative">
+          <div class="relative">
+            <svg class="w-5 h-5 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z"/></svg>
+            <span class="absolute -top-1 -right-1.5 w-2 h-2 bg-red-500 rounded-full"></span>
+          </div>
           <span class="text-[10px] mt-0.5 font-medium">{{ t('nav.deals') }}</span>
         </NuxtLink>
-        <NuxtLink to="/my-booking" class="mobile-nav-item flex-1 flex flex-col items-center py-2.5 text-gray-500 hover:text-white transition-colors active:scale-95">
-          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+        <NuxtLink to="/my-booking" class="mobile-nav-item flex-1 flex flex-col items-center py-2.5 text-gray-500 hover:text-white transition-all duration-200 active:scale-95 relative">
+          <svg class="w-5 h-5 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
           <span class="text-[10px] mt-0.5 font-medium">{{ t('nav.myBooking') }}</span>
         </NuxtLink>
-        <NuxtLink to="/destinations" class="mobile-nav-item flex-1 flex flex-col items-center py-2.5 text-gray-500 hover:text-white transition-colors active:scale-95">
-          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        <NuxtLink to="/destinations" class="mobile-nav-item flex-1 flex flex-col items-center py-2.5 text-gray-500 hover:text-white transition-all duration-200 active:scale-95 relative">
+          <svg class="w-5 h-5 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
           <span class="text-[10px] mt-0.5 font-medium">{{ t('nav.destinations') }}</span>
         </NuxtLink>
       </div>
@@ -362,6 +365,20 @@ const airlineLogos = [
 .mobile-nav-item.router-link-exact-active {
   color: #38bdf8;
   font-weight: 600;
+}
+.mobile-nav-item.router-link-exact-active svg {
+  transform: scale(1.1);
+}
+.mobile-nav-item.router-link-exact-active::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 24px;
+  height: 2px;
+  background: linear-gradient(90deg, #0ea5e9, #38bdf8);
+  border-radius: 0 0 2px 2px;
 }
 /* Active state for desktop nav */
 .nav-link.router-link-exact-active {

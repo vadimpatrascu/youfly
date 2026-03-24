@@ -1,10 +1,21 @@
 <script setup lang="ts">
 const { t } = useI18n()
 useSeo({ title: t('luggage.title'), description: t('luggage.seoDesc') })
+useReveal()
 useBreadcrumbStructuredData([
   { name: 'YouFly', url: '/' },
   { name: t('luggage.title'), url: '/luggage' },
 ])
+
+// Article structured data for baggage guide
+useStructuredData({
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: t('luggage.title'),
+  description: t('luggage.seoDesc'),
+  author: { '@type': 'Organization', name: 'YouFly' },
+  publisher: { '@type': 'Organization', name: 'YouFly', url: 'https://youfly-xi.vercel.app' },
+})
 
 const airlines = computed(() => [
   {
@@ -15,11 +26,11 @@ const airlines = computed(() => [
     checked: { weight: '20 kg', fee: '€20–50', note: t('luggage.perFlight') },
   },
   {
-    name: 'Ryanair',
-    code: 'FR',
-    personal: { size: '40×20×25 cm', weight: t('luggage.noWeight'), note: t('luggage.underSeat') },
-    cabin: { size: '55×40×20 cm', weight: 'max 10 kg', fee: '€10–30', note: t('luggage.priorityOrBags') },
-    checked: { weight: '20 kg / 15 kg', fee: '€12–40', note: t('luggage.bookedOnline') },
+    name: 'FlyOne',
+    code: '5F',
+    personal: { size: '40×30×20 cm', weight: t('luggage.noWeight'), note: t('luggage.underSeat') },
+    cabin: { size: '55×40×20 cm', weight: 'max 8 kg', fee: t('luggage.dependsOnFare'), note: t('luggage.dependsOnFare') },
+    checked: { weight: '20 kg', fee: '€20–35', note: t('luggage.bookedOnline') },
   },
   {
     name: 'Turkish Airlines',
@@ -42,6 +53,20 @@ const airlines = computed(() => [
     cabin: { size: '55×40×23 cm', weight: 'max 8 kg', fee: t('luggage.included'), note: t('luggage.included') },
     checked: { weight: '23 kg', fee: t('luggage.inclOrFee20'), note: t('luggage.econLightFee') },
   },
+  {
+    name: 'HiSky',
+    code: 'H4',
+    personal: { size: '40×30×20 cm', weight: 'max 5 kg', note: t('luggage.underSeat') },
+    cabin: { size: '55×40×20 cm', weight: 'max 10 kg', fee: t('luggage.dependsOnFare'), note: t('luggage.dependsOnFare') },
+    checked: { weight: '23 kg', fee: '€15–30', note: t('luggage.bookedOnline') },
+  },
+  {
+    name: 'Lufthansa',
+    code: 'LH',
+    personal: { size: '40×30×10 cm', weight: t('luggage.noWeight'), note: t('luggage.underSeat') },
+    cabin: { size: '55×40×23 cm', weight: 'max 8 kg', fee: t('luggage.included'), note: t('luggage.allFares') },
+    checked: { weight: '23 kg', fee: t('luggage.inclOrFee'), note: t('luggage.dependsOnFare') },
+  },
 ])
 
 const prohibitedItems = computed(() => [
@@ -56,11 +81,16 @@ const prohibitedItems = computed(() => [
 
 <template>
   <div>
-    <div class="bg-gradient-to-br from-brand-600 to-brand-900 text-white py-14 px-4 text-center">
-      <div aria-hidden="true" class="text-5xl mb-4">🧳</div>
-      <h1 class="text-4xl font-extrabold mb-3">{{ t('luggage.title') }}</h1>
-      <p class="text-brand-200 text-lg max-w-xl mx-auto">{{ t('luggage.subtitle') }}</p>
-    </div>
+    <DestinationPhoto code="MXP" :width="1200" height-class="relative text-white py-16 px-4 text-center">
+      <div class="absolute inset-0 bg-gradient-to-t from-gray-950 via-gray-950/70 to-gray-950/80"></div>
+      <div class="relative z-10">
+        <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-brand-500/20 flex items-center justify-center">
+          <svg class="w-8 h-8 text-brand-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+        </div>
+        <h1 class="text-4xl font-black mb-3">{{ t('luggage.title') }}</h1>
+        <p class="text-gray-400 text-lg max-w-xl mx-auto">{{ t('luggage.subtitle') }}</p>
+      </div>
+    </DestinationPhoto>
 
     <div class="max-w-5xl mx-auto px-4 py-10 space-y-10">
       <!-- Quick tips -->
@@ -127,8 +157,24 @@ const prohibitedItems = computed(() => [
         </div>
       </section>
 
+      <!-- Packing tips -->
+      <div class="bg-gradient-to-br from-brand-50 to-blue-50 rounded-2xl border border-brand-100 p-6 reveal">
+        <h3 class="font-bold text-gray-900 mb-3 flex items-center gap-2">
+          <span aria-hidden="true" class="w-6 h-6 rounded-lg bg-brand-100 flex items-center justify-center shrink-0">
+            <svg class="w-3.5 h-3.5 text-brand-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+          </span>
+          {{ t('luggage.packingTitle') }}
+        </h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-gray-700">
+          <div v-for="i in 6" :key="i" class="flex items-start gap-2">
+            <svg aria-hidden="true" class="w-4 h-4 text-green-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+            {{ t('luggage.pack' + i) }}
+          </div>
+        </div>
+      </div>
+
       <div class="text-center">
-        <NuxtLink to="/" class="inline-block px-8 py-3 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-xl transition-colors">
+        <NuxtLink to="/" class="inline-block px-8 py-3 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-xl transition-colors glow-cta">
           <span aria-hidden="true">✈</span> {{ t('luggage.cta') }}
         </NuxtLink>
       </div>

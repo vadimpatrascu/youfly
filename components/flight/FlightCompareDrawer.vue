@@ -1,13 +1,9 @@
 <script setup lang="ts">
 import { useCompare } from '~/composables/useCompare'
 const { compareList, clear } = useCompare()
-const { formatPrice } = useFormatters()
+const { formatPrice, formatDuration } = useFormatters()
 const { t, locale } = useI18n()
 const emit = defineEmits<{ select: [offer: any] }>()
-
-function formatDuration(mins: number) {
-  return `${Math.floor(mins / 60)}h ${mins % 60}m`
-}
 
 function totalDuration(offer: any): number {
   const slices = offer.slices || []

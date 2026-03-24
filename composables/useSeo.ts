@@ -13,7 +13,7 @@ export function useSeo(options: SeoOptions) {
 
   const title = `${options.title} — YouFly`
   const description = options.description || t('hero.subtitle')
-  const image = options.image || `${siteUrl}/og-image.svg`
+  const image = options.image || `${siteUrl}/og-image.png`
   const url = `${siteUrl}${route.path}`
 
   const ogLocale = locale.value === 'ro' ? 'ro_RO' : locale.value === 'ru' ? 'ru_RU' : 'en_US'

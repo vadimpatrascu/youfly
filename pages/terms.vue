@@ -8,11 +8,19 @@ useBreadcrumbStructuredData([
 </script>
 
 <template>
-  <div class="max-w-3xl mx-auto px-4 py-12">
-    <div class="text-center mb-10">
-      <h1 class="text-3xl font-bold text-gray-900 mb-3">{{ t('terms.title') }}</h1>
+  <div>
+    <div class="bg-gray-950 text-white py-12 px-4 text-center">
+      <h1 class="text-3xl font-black mb-2">{{ t('terms.title') }}</h1>
       <p class="text-gray-500 text-sm">{{ t('terms.lastUpdated') }}</p>
     </div>
+  <div class="max-w-3xl mx-auto px-4 py-12">
+
+    <!-- Quick TOC -->
+    <nav class="bg-gray-50 rounded-xl p-4 mb-6 text-xs">
+      <ol class="flex flex-wrap gap-x-4 gap-y-1 text-gray-500">
+        <li v-for="i in 7" :key="i"><a :href="`#terms-s${i}-title`" class="hover:text-brand-600 transition-colors">{{ t(`terms.s${i}Title`) }}</a></li>
+      </ol>
+    </nav>
 
     <div class="bg-white rounded-2xl border border-gray-200 p-8 space-y-6 text-sm text-gray-700 leading-relaxed">
       <section aria-labelledby="terms-s1-title">
@@ -54,5 +62,6 @@ useBreadcrumbStructuredData([
     <div class="mt-6 text-center">
       <NuxtLink to="/" class="text-brand-600 hover:underline text-sm">{{ t('terms.backHome') }}</NuxtLink>
     </div>
+  </div>
   </div>
 </template>

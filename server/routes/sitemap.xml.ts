@@ -20,7 +20,6 @@ export default defineEventHandler((event) => {
     { path: '/faq', priority: '0.8', changefreq: 'monthly' },
     { path: '/about', priority: '0.7', changefreq: 'monthly' },
     { path: '/contact', priority: '0.7', changefreq: 'monthly' },
-    { path: '/my-booking', priority: '0.6', changefreq: 'monthly' },
     { path: '/flight-status', priority: '0.6', changefreq: 'monthly' },
     { path: '/checkin', priority: '0.7', changefreq: 'monthly' },
     { path: '/luggage', priority: '0.7', changefreq: 'monthly' },

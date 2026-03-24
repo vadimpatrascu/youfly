@@ -13,7 +13,7 @@ const { query, suggestions, isLoading } = useAirports()
 const isOpen = ref(false)
 const highlightedIndex = ref(-1)
 const containerRef = ref<HTMLDivElement>()
-const uid = Math.random().toString(36).slice(2, 8)
+const uid = useId()
 const listboxId = `airport-listbox-${uid}`
 const optionId = (i: number) => `airport-option-${uid}-${i}`
 
@@ -109,7 +109,7 @@ onClickOutside(containerRef, () => { isOpen.value = false })
         <div aria-hidden="true" class="w-4 h-4 border-2 border-brand-500 border-t-transparent rounded-full animate-spin"></div>
       </div>
       <template v-else-if="modelValue">
-        <button @click="emit('update:modelValue', null); displayText = ''; query.value = ''"
+        <button @click="emit('update:modelValue', null); displayText = ''; query = ''"
           class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-300 hover:text-gray-500 transition-colors text-lg leading-none"
           :title="t('common.clear')" :aria-label="t('common.clear')"><span aria-hidden="true">✕</span></button>
       </template>
@@ -123,7 +123,8 @@ onClickOutside(containerRef, () => { isOpen.value = false })
       style="max-height: 300px; overflow-y: auto;"
     >
       <div v-if="!query" class="px-4 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wide bg-gray-50 border-b border-gray-100">
-        <span aria-hidden="true">⭐</span> {{ t('search.popularAirports') }}
+        <svg aria-hidden="true" class="w-3 h-3 text-yellow-400 inline shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        {{ t('search.popularAirports') }}
       </div>
       <button
         v-for="(airport, i) in suggestions"

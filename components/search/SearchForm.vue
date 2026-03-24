@@ -115,8 +115,8 @@ const cabinOptions = computed(() => [
     <!-- Airport row -->
     <div class="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] gap-3 mb-4 items-end">
       <AirportInput v-model="searchStore.origin" :label="t('search.from')" :placeholder="t('search.fromPlaceholder')" />
-      <button @click="swapAirports" :aria-label="t('search.swap')" class="mb-1 p-3 rounded-full hover:bg-gray-100 transition-all text-gray-500 text-lg self-end border border-gray-200">
-        <span aria-hidden="true" class="inline-block transition-transform duration-300" :style="`transform: rotate(${swapRotation}deg)`">⇄</span>
+      <button @click="swapAirports" :aria-label="t('search.swap')" class="mb-1 p-3 rounded-full hover:bg-brand-50 hover:border-brand-300 transition-all text-gray-500 hover:text-brand-600 self-end border border-gray-200">
+        <svg class="w-5 h-5 transition-transform duration-300" :style="`transform: rotate(${swapRotation}deg)`" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/></svg>
       </button>
       <AirportInput v-model="searchStore.destination" :label="t('search.to')" :placeholder="t('search.toPlaceholder')" />
     </div>

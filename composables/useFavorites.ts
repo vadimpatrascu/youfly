@@ -8,22 +8,21 @@ interface FavoriteRoute {
   savedAt: string
 }
 
-function loadFavorites(): FavoriteRoute[] {
-  if (typeof window === 'undefined') return []
-  try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]')
-  } catch {
-    return []
-  }
-}
-
 const favorites = ref<FavoriteRoute[]>([])
-
-if (typeof window !== 'undefined') {
-  favorites.value = loadFavorites()
-}
+let loaded = false
 
 export function useFavorites() {
+  // Load from localStorage on first client-side use (inside onMounted)
+  onMounted(() => {
+    if (loaded) return
+    loaded = true
+    try {
+      favorites.value = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]')
+    } catch {
+      favorites.value = []
+    }
+  })
+
   function toggle(route: Omit<FavoriteRoute, 'savedAt'>) {
     const idx = favorites.value.findIndex(f => f.from === route.from && f.to === route.to)
     if (idx >= 0) {
@@ -40,9 +39,7 @@ export function useFavorites() {
   }
 
   function save() {
-    if (typeof window !== 'undefined') {
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(favorites.value)) } catch {}
-    }
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(favorites.value)) } catch {}
   }
 
   return { favorites, toggle, isFavorite }

@@ -2,7 +2,9 @@
 import { useSearchStore } from '~/stores/search'
 const { t } = useI18n()
 
+const { showMdl } = useCurrency()
 useSeo({ title: t('destinations.title'), description: t('destinations.seoDesc') })
+useReveal()
 useBreadcrumbStructuredData([
   { name: 'YouFly', url: '/' },
   { name: t('destinations.title'), url: '/destinations' },
@@ -13,18 +15,18 @@ const router = useRouter()
 const searching = ref<string | null>(null)
 
 const destData = [
-  { code: 'OTP', flag: '🇷🇴', price: 35, emoji: '🏛️', pop: 5 },
-  { code: 'IST', flag: '🇹🇷', price: 32, emoji: '🕌', pop: 5 },
-  { code: 'LTN', flag: '🇬🇧', price: 39, emoji: '🎡', pop: 5 },
-  { code: 'BCN', flag: '🇪🇸', price: 31, emoji: '🏖️', pop: 5 },
-  { code: 'CDG', flag: '🇫🇷', price: 73, emoji: '🗼', pop: 5 },
-  { code: 'VIE', flag: '🇦🇹', price: 39, emoji: '🎻', pop: 4 },
-  { code: 'MXP', flag: '🇮🇹', price: 59, emoji: '🛍️', pop: 4 },
-  { code: 'TLV', flag: '🇮🇱', price: 45, emoji: '🌊', pop: 4 },
-  { code: 'BEG', flag: '🇷🇸', price: 28, emoji: '🏰', pop: 3 },
-  { code: 'WAW', flag: '🇵🇱', price: 33, emoji: '🏙️', pop: 3 },
-  { code: 'AMS', flag: '🇳🇱', price: 68, emoji: '🚲', pop: 4 },
-  { code: 'DXB', flag: '🇦🇪', price: 89, emoji: '🏙️', pop: 4 },
+  { code: 'OTP', flag: '🇷🇴', price: 35, emoji: '🏛️', pop: 5, season: '🌸 Mar-Oct', flight: '1h 10m', direct: true },
+  { code: 'IST', flag: '🇹🇷', price: 32, emoji: '🕌', pop: 5, season: '🌷 Apr-Jun', flight: '2h 15m', direct: true },
+  { code: 'LTN', flag: '🇬🇧', price: 39, emoji: '🎡', pop: 5, season: '☀️ Jun-Sep', flight: '3h 30m', direct: true },
+  { code: 'BCN', flag: '🇪🇸', price: 31, emoji: '🏖️', pop: 5, season: '☀️ May-Oct', flight: '3h 45m', direct: true },
+  { code: 'CDG', flag: '🇫🇷', price: 73, emoji: '🗼', pop: 5, season: '🌸 Apr-Jun', flight: '3h 40m', direct: true },
+  { code: 'VIE', flag: '🇦🇹', price: 39, emoji: '🎻', pop: 4, season: '🎄 Dec-Mar', flight: '2h 10m', direct: true },
+  { code: 'MXP', flag: '🇮🇹', price: 59, emoji: '🛍️', pop: 4, season: '☀️ May-Sep', flight: '2h 55m', direct: true },
+  { code: 'TLV', flag: '🇮🇱', price: 45, emoji: '🌊', pop: 4, season: '☀️ Mar-Nov', flight: '3h 00m', direct: true },
+  { code: 'BEG', flag: '🇷🇸', price: 28, emoji: '🏰', pop: 3, season: '🌸 May-Sep', flight: '1h 30m', direct: true },
+  { code: 'WAW', flag: '🇵🇱', price: 33, emoji: '🏙️', pop: 3, season: '☀️ Jun-Aug', flight: '2h 30m', direct: true },
+  { code: 'AMS', flag: '🇳🇱', price: 68, emoji: '🚲', pop: 4, season: '🌷 Apr-Jun', flight: '3h 20m', direct: false },
+  { code: 'DXB', flag: '🇦🇪', price: 89, emoji: '🏙️', pop: 4, season: '❄️ Nov-Mar', flight: '5h 30m', direct: true },
 ]
 
 const destinations = computed(() => destData.map(d => ({
@@ -33,6 +35,19 @@ const destinations = computed(() => destData.map(d => ({
   country: t(`destinations.country_${d.code}`),
   desc: t(`destinations.dest_${d.code}`),
 })))
+
+useStructuredData({
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  name: t('destinations.title'),
+  numberOfItems: 12,
+  itemListElement: destData.map((d, i) => ({
+    '@type': 'ListItem',
+    position: i + 1,
+    name: `${t('airports.city_RMO')} → ${t('destinations.city_' + d.code)}`,
+    url: 'https://youfly-xi.vercel.app/destinations',
+  })),
+})
 
 const selectedRegion = ref('all')
 const regionKeys = ['all', 'europa', 'asia', 'middleEast'] as const
@@ -74,10 +89,13 @@ async function search(dest: (typeof destinations.value)[0]) {
 <template>
   <div>
     <!-- Hero -->
-    <div class="bg-gradient-to-br from-brand-600 to-brand-900 text-white py-14 px-4 text-center">
-      <h1 class="text-4xl font-extrabold mb-3">{{ t('destinations.title') }}</h1>
-      <p class="text-brand-200 text-lg max-w-xl mx-auto">{{ t('destinations.subtitle') }}</p>
-    </div>
+    <DestinationPhoto code="BCN" :width="1200" height-class="relative text-white py-16 px-4 text-center">
+      <div class="absolute inset-0 bg-gradient-to-t from-gray-950 via-gray-950/60 to-gray-950/80"></div>
+      <div class="relative z-10">
+        <h1 class="text-4xl font-black mb-3">{{ t('destinations.title') }}</h1>
+        <p class="text-gray-400 text-lg max-w-xl mx-auto">{{ t('destinations.subtitle') }}</p>
+      </div>
+    </DestinationPhoto>
 
     <div class="max-w-6xl mx-auto px-4 py-10">
       <!-- Region filter -->
@@ -93,30 +111,41 @@ async function search(dest: (typeof destinations.value)[0]) {
         </button>
       </div>
 
+      <!-- Results count -->
+      <p class="text-sm text-gray-500 mb-4">{{ filtered.length }} {{ t('destinations.destinationsCount') }}</p>
+
       <!-- Destination grid -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-        <div v-for="dest in filtered" :key="dest.code"
-          class="bg-white rounded-2xl border border-gray-200 overflow-hidden hover:border-brand-300 hover:shadow-lg transition-all group">
-          <!-- Colored header -->
-          <div class="bg-gradient-to-br from-gray-100 to-gray-50 h-28 flex items-center justify-center relative">
-            <span aria-hidden="true" class="text-6xl">{{ dest.emoji }}</span>
-            <span aria-hidden="true" class="absolute top-3 right-3 text-2xl">{{ dest.flag }}</span>
-            <span class="absolute top-3 left-3 bg-green-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">
-              {{ t('destinations.fromPrice') }} €{{ dest.price }}
+        <div v-for="(dest, di) in filtered" :key="dest.code"
+          class="bg-white rounded-2xl border border-gray-200 overflow-hidden hover:border-brand-300 hover:shadow-lg transition-all group reveal card-premium"
+          :style="`transition-delay: ${di * 0.05}s`">
+          <!-- Destination photo -->
+          <DestinationPhoto :code="dest.code" height-class="h-40">
+            <span aria-hidden="true" class="absolute top-3 right-3 text-2xl drop-shadow-lg z-10">{{ dest.flag }}</span>
+            <span class="absolute top-3 left-3 bg-green-500 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-lg z-10">
+              {{ t('destinations.fromPrice') }} €{{ dest.price }}<span v-if="showMdl" class="opacity-80"> · {{ Math.round(dest.price * 19.5) }} MDL</span>
             </span>
-          </div>
+            <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+          </DestinationPhoto>
           <div class="p-5">
             <div class="flex items-start justify-between mb-2">
               <div>
                 <h3 class="text-lg font-bold text-gray-900 group-hover:text-brand-600 transition-colors">{{ dest.city }}</h3>
-                <p class="text-sm text-gray-500">{{ dest.country }} · {{ dest.code }}</p>
+                <p class="text-sm text-gray-500">{{ dest.country }} · {{ dest.code }}
+                  <span v-if="dest.season" class="ml-1 text-[10px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded">{{ dest.season }}</span>
+                </p>
               </div>
               <!-- Popularity stars -->
               <div role="img" :aria-label="t('destinations.popularityLabel', { n: dest.pop })" class="flex text-yellow-400 text-xs">
                 <span v-for="i in dest.pop" :key="i" aria-hidden="true">★</span>
               </div>
             </div>
-            <p class="text-sm text-gray-600 mb-4 leading-relaxed">{{ dest.desc }}</p>
+            <p class="text-sm text-gray-600 mb-3 leading-relaxed">{{ dest.desc }}</p>
+            <div class="flex items-center gap-2 mb-3 text-[10px]">
+              <span v-if="dest.flight" class="bg-gray-100 text-gray-500 px-2 py-0.5 rounded"><span aria-hidden="true">⏱</span> {{ dest.flight }}</span>
+              <span v-if="dest.direct" class="bg-green-50 text-green-600 px-2 py-0.5 rounded font-semibold">{{ t('flightCard.direct') }}</span>
+              <span v-else class="bg-orange-50 text-orange-600 px-2 py-0.5 rounded">1+ {{ t('flightCard.stop') }}</span>
+            </div>
             <button @click="search(dest)"
               :disabled="searching !== null"
               :aria-label="t('destinations.searchBtnLabel', { city: dest.city })"

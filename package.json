@@ -13,7 +13,7 @@
     "@nuxtjs/i18n": "^9.5.5",
     "@nuxtjs/tailwindcss": "^6.12.2",
     "@pinia/nuxt": "^0.10.1",
-    "@supabase/supabase-js": "^2.49.1",
+    "@supabase/supabase-js": "^2.99.3",
     "@vueuse/core": "^12.7.0",
     "@vueuse/nuxt": "^12.7.0",
     "nuxt": "^3.16.1",
@@ -24,5 +24,8 @@
   "devDependencies": {
     "@types/node": "^22.13.10",
     "typescript": "^5.8.2"
+  },
+  "overrides": {
+    "serialize-javascript": "^7.0.4"
   }
 }

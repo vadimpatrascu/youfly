@@ -96,6 +96,17 @@ function skip() {
 </script>
 
 <template>
+  <div>
+    <BookingSteps :current="2" />
+    <!-- Destination strip -->
+    <DestinationPhoto v-if="bookingStore.selectedOffer" :code="bookingStore.selectedOffer.slices?.[bookingStore.selectedOffer.slices.length - 1]?.destination?.iata_code || ''" height-class="h-20">
+      <div class="absolute inset-0 bg-gradient-to-r from-gray-950/80 via-transparent to-gray-950/80"></div>
+      <div class="relative z-10 flex items-center justify-center h-full text-white font-black text-xl tracking-wider">
+        {{ bookingStore.selectedOffer.slices?.[0]?.origin?.iata_code }}
+        <span aria-hidden="true" class="mx-3 text-brand-400">✈</span>
+        {{ bookingStore.selectedOffer.slices?.[bookingStore.selectedOffer.slices.length - 1]?.destination?.iata_code }}
+      </div>
+    </DestinationPhoto>
   <div class="max-w-5xl mx-auto px-4 py-6">
     <div aria-live="polite" aria-atomic="true" class="sr-only">{{ seatAnnouncement }}</div>
     <div class="flex items-center gap-3 mb-6">
@@ -205,5 +216,22 @@ function skip() {
         <p class="text-xs text-center text-gray-400">{{ t('seatSelection.optional') }}</p>
       </div>
     </div>
+
+    <!-- Fixed bottom bar on mobile for quick access to continue -->
+    <div class="fixed bottom-14 left-0 right-0 bg-white border-t border-gray-200 p-3 z-30 lg:hidden pb-safe shadow-lg">
+      <div class="flex items-center gap-3 max-w-5xl mx-auto">
+        <div class="flex-1 min-w-0">
+          <div class="text-xs text-gray-500">
+            {{ Object.keys(selectedSeats).length }}/{{ passengers.length }} {{ t('seatSelection.passengers').toLowerCase() }}
+          </div>
+        </div>
+        <button @click="proceed"
+          class="px-6 py-2.5 font-semibold rounded-xl text-sm transition-colors shrink-0"
+          :class="allSelected ? 'bg-brand-600 hover:bg-brand-700 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'">
+          {{ allSelected ? t('seatSelection.continueWithSeat') : t('seatSelection.continueWithoutSeat') }}
+        </button>
+      </div>
+    </div>
+  </div>
   </div>
 </template>

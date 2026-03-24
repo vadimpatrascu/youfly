@@ -86,6 +86,10 @@ const showFilters = ref(false)
 const showModifySearch = ref(false)
 const filterCloseBtn = ref<HTMLButtonElement>()
 let filterPrevFocus: HTMLElement | null = null
+function onFilterKeydown(e: KeyboardEvent) {
+  if (e.key === 'Escape') showFilters.value = false
+}
+
 watch(showFilters, async (val) => {
   if (val) {
     filterPrevFocus = document.activeElement as HTMLElement
@@ -126,16 +130,16 @@ watch(() => offersStore.filtered.length, () => { visibleCount.value = PAGE_SIZE 
 <template>
   <div>
     <!-- Compact search bar -->
-    <div class="bg-white border-b border-gray-200 py-3 px-4 shadow-sm">
+    <div class="bg-gray-950 border-b border-white/10 py-3 px-4">
       <div class="max-w-6xl mx-auto flex items-center gap-3 flex-wrap">
         <button @click="showModifySearch = !showModifySearch"
           :aria-expanded="showModifySearch"
           aria-controls="modify-search-panel"
-          class="flex-1 min-w-0 flex items-center gap-3 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-xl px-4 py-2.5 text-left transition-colors">
-          <span aria-hidden="true" class="text-brand-600 shrink-0">🔍</span>
+          class="flex-1 min-w-0 flex items-center gap-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl px-4 py-2.5 text-left transition-colors">
+          <span aria-hidden="true" class="text-brand-400 shrink-0">✈</span>
           <div class="min-w-0">
-            <div class="font-semibold text-gray-900 text-sm truncate">
-              {{ searchStore.origin?.city_name || '?' }} <span aria-hidden="true">→</span> {{ searchStore.destination?.city_name || '?' }}
+            <div class="font-bold text-white text-sm truncate">
+              {{ searchStore.origin?.city_name || '?' }} <span aria-hidden="true" class="text-gray-500">→</span> {{ searchStore.destination?.city_name || '?' }}
             </div>
             <div class="text-xs text-gray-500 truncate">
               {{ searchStore.departureDate }}
@@ -144,7 +148,7 @@ watch(() => offersStore.filtered.length, () => { visibleCount.value = PAGE_SIZE 
               · {{ cabinLabels[searchStore.cabinClass] || searchStore.cabinClass }}
             </div>
           </div>
-          <span class="text-gray-400 text-xs ml-auto shrink-0">{{ t('results.modify') }}</span>
+          <span class="text-gray-500 text-xs ml-auto shrink-0">{{ t('results.modify') }}</span>
         </button>
         <button @click="showFilters = !showFilters" :aria-expanded="showFilters" :aria-label="t('results.filters')" class="md:hidden px-4 py-2.5 text-sm bg-brand-600 text-white rounded-xl shrink-0 flex items-center gap-1.5">
           {{ t('results.filters') }}
@@ -157,7 +161,7 @@ watch(() => offersStore.filtered.length, () => { visibleCount.value = PAGE_SIZE 
     </div>
 
     <!-- Expandable search modification -->
-    <div v-if="showModifySearch" id="modify-search-panel" class="bg-brand-700 py-6 px-4">
+    <div v-if="showModifySearch" id="modify-search-panel" class="bg-gray-900 py-6 px-4 border-b border-white/10">
       <div class="max-w-6xl mx-auto">
         <SearchForm />
       </div>
@@ -165,9 +169,23 @@ watch(() => offersStore.filtered.length, () => { visibleCount.value = PAGE_SIZE 
 
     <!-- Price guarantee strip -->
     <div v-if="!offersStore.isLoading && offersStore.filtered.length > 0"
-      class="bg-green-50 border-b border-green-100 py-2 px-4 text-center text-xs text-green-700 font-medium">
-      {{ t('results.priceGuarantee') }}
+      class="bg-green-50 border-b border-green-100 py-2 px-4 text-center text-xs text-green-700 font-medium flex items-center justify-center gap-3 flex-wrap">
+      <span>{{ t('results.priceGuarantee') }}</span>
+      <span class="bg-brand-100 text-brand-700 px-2 py-0.5 rounded-full font-bold">Mix & Match</span>
     </div>
+
+    <!-- Destination photo strip -->
+    <DestinationPhoto v-if="searchStore.destination" :code="searchStore.destination.airport_iata || searchStore.destination.iata_code || ''" :width="1200" height-class="h-24 md:h-32">
+      <div class="absolute inset-0 bg-gradient-to-r from-gray-950/80 via-transparent to-gray-950/80"></div>
+      <div class="absolute inset-0 bg-gradient-to-t from-gray-50 via-transparent to-transparent"></div>
+      <div class="relative z-10 flex items-center justify-center h-full text-white">
+        <span class="font-black text-xl tracking-wider drop-shadow-lg">
+          {{ searchStore.origin?.city_name || searchStore.origin?.airport_iata }}
+          <span aria-hidden="true" class="mx-2 text-brand-400">✈</span>
+          {{ searchStore.destination?.city_name || searchStore.destination?.airport_iata }}
+        </span>
+      </div>
+    </DestinationPhoto>
 
     <div class="max-w-6xl mx-auto px-4 py-6">
       <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
@@ -176,9 +194,26 @@ watch(() => offersStore.filtered.length, () => { visibleCount.value = PAGE_SIZE 
           <span v-if="!offersStore.isLoading"> {{ t('results.flightsFound') }}</span>
           <span v-else>{{ t('results.loading') }}</span>
         </p>
-        <div v-if="!offersStore.isLoading && offersStore.filtered.length > 0" class="text-xs text-gray-400">
-          {{ t('results.fromPrice') }} <span class="font-semibold text-gray-700">{{ formatPrice(offersStore.priceRange.min.toString(), offersStore.filtered[0]?.total_currency || 'EUR') }}</span>
-          {{ t('results.toPrice') }} <span class="font-semibold text-gray-700">{{ formatPrice(offersStore.priceRange.max.toString(), offersStore.filtered[0]?.total_currency || 'EUR') }}</span>
+        <div v-if="!offersStore.isLoading && offersStore.filtered.length > 0" class="text-xs text-gray-400 flex items-center gap-3 flex-wrap">
+          <span>{{ t('results.fromPrice') }} <span class="font-semibold text-gray-700">{{ formatPrice(offersStore.priceRange.min.toString(), offersStore.filtered[0]?.total_currency || 'EUR') }}</span>
+          {{ t('results.toPrice') }} <span class="font-semibold text-gray-700">{{ formatPrice(offersStore.priceRange.max.toString(), offersStore.filtered[0]?.total_currency || 'EUR') }}</span></span>
+          <span v-if="offersStore.uniqueAirlinesWithCode.length" class="bg-gray-100 px-2 py-0.5 rounded text-gray-500">{{ offersStore.uniqueAirlinesWithCode.length }} {{ t('about.stat1Label').toLowerCase() }}</span>
+        </div>
+      </div>
+
+      <!-- Hopper-style "Buy now or wait" recommendation -->
+      <div v-if="!offersStore.isLoading && offersStore.filtered.length > 0"
+        class="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-xl px-4 py-3 mb-3 flex items-center gap-3">
+        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-green-500 to-emerald-600 text-white flex items-center justify-center shrink-0 shadow-sm">
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+        </div>
+        <div class="flex-1">
+          <p class="text-sm font-bold text-green-800">{{ t('results.buyNowTitle') }}</p>
+          <p class="text-xs text-green-600 mt-0.5">{{ t('results.buyNowDesc') }}</p>
+        </div>
+        <div class="text-right shrink-0">
+          <div class="text-xs text-green-600 font-bold">95%</div>
+          <div class="text-[10px] text-green-500">{{ t('results.confidence') }}</div>
         </div>
       </div>
 
@@ -210,15 +245,23 @@ watch(() => offersStore.filtered.length, () => { visibleCount.value = PAGE_SIZE 
 
         <!-- Mobile filter overlay -->
         <Teleport to="body">
-          <div v-if="showFilters" class="fixed inset-0 z-50 md:hidden bg-black/50" @click="showFilters = false">
-            <div role="dialog" aria-labelledby="mobile-filter-title" aria-modal="true" class="absolute right-0 top-0 bottom-0 w-80 bg-gray-50 p-4 overflow-y-auto" @click.stop>
-              <div class="flex justify-between items-center mb-4">
-                <h3 id="mobile-filter-title" class="font-semibold">{{ t('filters.title') }}</h3>
-                <button ref="filterCloseBtn" @click="showFilters = false" :aria-label="t('common.close')" class="text-gray-500 text-xl"><span aria-hidden="true">✕</span></button>
-              </div>
-              <FilterSidebar />
+          <Transition name="filter-overlay">
+            <div v-if="showFilters" class="fixed inset-0 z-50 md:hidden bg-black/50" @click="showFilters = false" @keydown="onFilterKeydown">
+              <Transition name="filter-panel">
+                <div v-if="showFilters" role="dialog" aria-labelledby="mobile-filter-title" aria-modal="true"
+                  class="absolute right-0 top-0 bottom-0 w-80 max-w-[85vw] bg-gray-900 p-4 overflow-y-auto shadow-2xl shadow-black/50 pb-safe" @click.stop>
+                  <div class="flex justify-between items-center mb-4 sticky top-0 bg-gray-900 py-2 -mt-2 -mx-4 px-4 border-b border-gray-800 z-10">
+                    <h3 id="mobile-filter-title" class="font-semibold text-white">{{ t('filters.title') }}</h3>
+                    <button ref="filterCloseBtn" @click="showFilters = false" :aria-label="t('common.close')"
+                      class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-800 text-gray-400 text-xl transition-colors">
+                      <span aria-hidden="true">✕</span>
+                    </button>
+                  </div>
+                  <FilterSidebar :dark="true" />
+                </div>
+              </Transition>
             </div>
-          </div>
+          </Transition>
         </Teleport>
 
         <div class="flex-1 space-y-3 min-w-0">
@@ -227,13 +270,17 @@ watch(() => offersStore.filtered.length, () => { visibleCount.value = PAGE_SIZE 
           </template>
 
           <div v-else-if="offersStore.error" role="alert" class="bg-red-50 border border-red-200 rounded-2xl p-6 text-center">
-            <div aria-hidden="true" class="text-4xl mb-3">😕</div>
+            <div class="w-14 h-14 mx-auto mb-3 rounded-2xl bg-red-100 flex items-center justify-center">
+              <svg class="w-7 h-7 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z"/></svg>
+            </div>
             <p class="text-red-600 font-medium mb-4">{{ offersStore.error }}</p>
             <button @click="router.push('/')" class="px-6 py-2 bg-brand-600 text-white rounded-xl text-sm">{{ t('results.modify') }}</button>
           </div>
 
           <div v-else-if="!offersStore.filtered.length" class="bg-white rounded-2xl border border-gray-200 p-10 text-center">
-            <div aria-hidden="true" class="text-5xl mb-4">🔍</div>
+            <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gray-100 flex items-center justify-center">
+              <svg class="w-8 h-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            </div>
             <h3 class="font-semibold text-gray-900 mb-2">{{ t('results.noFlights') }}</h3>
             <p class="text-gray-500 text-sm mb-4">{{ t('results.noFlightsDesc') }}</p>
             <div class="flex gap-3 justify-center flex-wrap mb-5">
@@ -272,9 +319,28 @@ watch(() => offersStore.filtered.length, () => { visibleCount.value = PAGE_SIZE 
                 {{ t('results.showMore') }} ({{ offersStore.filtered.length - visibleCount }} {{ t('results.remaining') }})
               </button>
             </div>
+
+            <!-- Nearby dates suggestion -->
+            <div v-if="offersStore.filtered.length > 0" class="mt-4 bg-blue-50 border border-blue-100 rounded-xl p-4 text-center">
+              <p class="text-xs text-blue-700 font-medium mb-2 flex items-center justify-center gap-1">
+                <svg aria-hidden="true" class="w-3.5 h-3.5 shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2a7 7 0 00-3.5 13.06V17a1 1 0 001 1h5a1 1 0 001-1v-1.94A7 7 0 0012 2zm1 14h-2v-1h2v1zm0-3h-2V9h2v4z"/></svg>
+                {{ t('results.dateTip') }}
+              </p>
+              <div class="flex gap-2 justify-center flex-wrap">
+                <span class="text-[10px] bg-white border border-blue-200 rounded-full px-3 py-1 text-blue-600">{{ t('results.dateTipTuesday') }}</span>
+                <span class="text-[10px] bg-white border border-blue-200 rounded-full px-3 py-1 text-blue-600">{{ t('results.dateTipAvoid') }}</span>
+              </div>
+            </div>
           </template>
         </div>
       </div>
     </div>
   </div>
 </template>
+
+<style scoped>
+.filter-overlay-enter-active, .filter-overlay-leave-active { transition: opacity 0.25s ease; }
+.filter-overlay-enter-from, .filter-overlay-leave-to { opacity: 0; }
+.filter-panel-enter-active, .filter-panel-leave-active { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+.filter-panel-enter-from, .filter-panel-leave-to { transform: translateX(100%); }
+</style>

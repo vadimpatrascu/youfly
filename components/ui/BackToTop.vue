@@ -29,9 +29,9 @@ function scrollToTop() {
     <!-- Back to top button -->
     <Transition name="fade-up">
       <button v-if="show" @click="scrollToTop"
-        class="fixed bottom-20 md:bottom-6 right-4 z-40 w-10 h-10 bg-white border border-gray-200 rounded-full shadow-lg flex items-center justify-center text-gray-600 hover:bg-brand-600 hover:text-white hover:border-brand-600 transition-all"
+        class="fixed bottom-20 md:bottom-6 right-4 z-40 w-10 h-10 bg-gray-900 border border-gray-700/50 rounded-full shadow-lg shadow-black/30 flex items-center justify-center text-gray-400 hover:bg-brand-600 hover:text-white hover:border-brand-600 transition-all"
         :title="t('common.backToTop')" :aria-label="t('common.backToTop')">
-        <span aria-hidden="true">↑</span>
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7"/></svg>
       </button>
     </Transition>
   </Teleport>

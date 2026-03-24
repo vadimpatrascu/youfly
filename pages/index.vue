@@ -140,7 +140,7 @@ const { current: countCountries, el: countCountriesEl } = useCountUp(32)
           <!-- Badge -->
           <div class="inline-flex items-center gap-2 glass rounded-full px-5 py-2 text-xs font-medium text-brand-200 mb-6 animate-fade-in">
             <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
-            <span>Chișinău (KIV) — 25+ companii aeriene</span>
+            <span>{{ t('hero.badge') }}</span>
           </div>
           <!-- Title -->
           <h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black mb-6 leading-[1.05] tracking-tight">
@@ -168,9 +168,17 @@ const { current: countCountries, el: countCountriesEl } = useCountUp(32)
 
         <!-- Trust badges row -->
         <div class="max-w-3xl mx-auto mt-10 grid grid-cols-3 gap-3 md:gap-4">
-          <div v-for="stat in stats" :key="stat.value" class="glass rounded-2xl py-4 px-4 text-center hover:bg-white/10 transition-all cursor-default group">
+          <div v-for="(stat, si) in stats" :key="stat.value" class="glass rounded-2xl py-4 px-4 text-center hover:bg-white/10 transition-all cursor-default group"
+            :style="`animation: fadeIn 0.6s ease ${0.3 + si * 0.15}s both`">
             <div class="text-xl md:text-3xl font-black text-white group-hover:text-brand-300 transition-colors">{{ stat.value }}</div>
             <div class="text-[10px] md:text-xs text-gray-500 mt-1 font-medium uppercase tracking-wide">{{ stat.label }}</div>
+          </div>
+        </div>
+
+        <!-- Scroll indicator -->
+        <div class="flex justify-center mt-8" aria-hidden="true">
+          <div class="w-6 h-10 rounded-full border-2 border-white/20 flex justify-center pt-2">
+            <div class="w-1 h-2.5 rounded-full bg-white/50 scroll-dot"></div>
           </div>
         </div>
       </div>
@@ -278,7 +286,7 @@ const { current: countCountries, el: countCountriesEl } = useCountUp(32)
                   <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                   {{ route.duration }}
                 </span>
-                <span class="text-[10px] bg-green-500/20 text-green-400 px-2 py-0.5 rounded-full font-semibold">Direct</span>
+                <span class="text-[10px] bg-green-500/20 text-green-400 px-2 py-0.5 rounded-full font-semibold">{{ t('flightCard.direct') }}</span>
               </div>
             </button>
           </div>
@@ -326,8 +334,8 @@ const { current: countCountries, el: countCountriesEl } = useCountUp(32)
           <div class="text-xs text-gray-500 mt-2 uppercase tracking-wider font-medium">{{ t('index.statAirlines') }}</div>
         </div>
         <div class="group">
-          <div class="text-3xl md:text-5xl font-black text-gradient-warm group-hover:scale-105 transition-transform">4.9<span class="text-xl">★</span></div>
-          <div class="text-xs text-gray-500 mt-2 uppercase tracking-wider font-medium">177 reviews</div>
+          <div class="text-3xl md:text-5xl font-black text-gradient-warm group-hover:scale-105 transition-transform">4.9<span aria-hidden="true" class="text-xl">★</span></div>
+          <div class="text-xs text-gray-500 mt-2 uppercase tracking-wider font-medium">177 {{ t('hero.reviews') }}</div>
         </div>
         <div ref="countCountriesEl" class="group">
           <div class="text-3xl md:text-5xl font-black text-gradient-brand group-hover:scale-105 transition-transform">{{ countCountries }}</div>
@@ -372,9 +380,9 @@ const { current: countCountries, el: countCountriesEl } = useCountUp(32)
         <div class="text-center mb-10">
           <h2 class="text-3xl md:text-4xl font-black mb-3">{{ t('index.testimonialsTitle') }}</h2>
           <div class="flex items-center justify-center gap-2">
-            <span class="text-yellow-300 text-lg tracking-wide">★★★★★</span>
+            <span aria-hidden="true" class="text-yellow-300 text-lg tracking-wide">★★★★★</span>
             <span class="text-white font-black text-xl">4.97</span>
-            <span class="text-gray-400 text-sm">/ 5 · 177 reviews</span>
+            <span class="text-gray-400 text-sm">/ 5 · 177 {{ t('hero.reviews') }}</span>
           </div>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -492,7 +500,7 @@ const { current: countCountries, el: countCountriesEl } = useCountUp(32)
             <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" :d="step.svg" /></svg>
           </div>
           <div class="inline-flex items-center gap-1.5 text-xs font-bold text-brand-600 bg-brand-50 rounded-full px-3 py-1 mb-3">
-            Step {{ step.n }}
+            {{ t('index.step') }} {{ step.n }}
           </div>
           <h3 class="font-bold text-gray-900 mb-2 text-lg">{{ step.title }}</h3>
           <p class="text-gray-500 text-sm leading-relaxed max-w-xs mx-auto">{{ step.desc }}</p>
@@ -568,7 +576,7 @@ const { current: countCountries, el: countCountriesEl } = useCountUp(32)
           <div class="grid grid-cols-3 gap-3">
             <div v-for="rate in [{cur:'EUR',val:'19.50',flag:'🇪🇺'},{cur:'USD',val:'18.10',flag:'🇺🇸'},{cur:'GBP',val:'23.20',flag:'🇬🇧'}]" :key="rate.cur"
               class="bg-gray-50 rounded-xl p-3 text-center hover:bg-gray-100 transition-colors">
-              <div class="text-xs text-gray-400 mb-0.5">{{ rate.flag }} {{ rate.cur }}</div>
+              <div class="text-xs text-gray-400 mb-0.5"><span aria-hidden="true">{{ rate.flag }}</span> {{ rate.cur }}</div>
               <div class="font-black text-gray-900 text-lg">{{ rate.val }}</div>
               <div class="text-[10px] text-gray-400">MDL</div>
             </div>

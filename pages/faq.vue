@@ -3,6 +3,7 @@ const { t } = useI18n()
 useSeo({ title: t('faq.title'), description: t('faq.subtitle') })
 
 const openFaq = ref<number | null>(null)
+const faqSearch = ref('')
 
 function toggle(i: number) {
   openFaq.value = openFaq.value === i ? null : i
@@ -29,15 +30,35 @@ useBreadcrumbStructuredData([
 </script>
 
 <template>
+  <div>
+    <div class="bg-gray-950 text-white py-14 px-4 text-center relative overflow-hidden">
+      <div class="absolute inset-0 opacity-5" aria-hidden="true">
+        <svg viewBox="0 0 1200 300" class="w-full h-full" preserveAspectRatio="none">
+          <path d="M-50,200 Q300,50 600,150 Q900,250 1250,50" fill="none" stroke="white" stroke-width="1" class="flight-path"/>
+        </svg>
+      </div>
+      <div class="relative z-10">
+        <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-brand-500/20 flex items-center justify-center">
+          <svg class="w-8 h-8 text-brand-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        </div>
+        <h1 class="text-3xl font-black mb-3">{{ t('faq.title') }}</h1>
+        <p class="text-gray-400">{{ t('faq.subtitle') }}</p>
+      </div>
+    </div>
   <div class="max-w-3xl mx-auto px-4 py-12">
-    <div class="text-center mb-10">
-      <div aria-hidden="true" class="text-5xl mb-4">❓</div>
-      <h1 class="text-3xl font-bold text-gray-900 mb-3">{{ t('faq.title') }}</h1>
-      <p class="text-gray-500">{{ t('faq.subtitle') }}</p>
+
+    <!-- Search FAQ -->
+    <div class="mb-6">
+      <div class="relative">
+        <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+        <input v-model="faqSearch" type="text" :placeholder="t('faq.searchPlaceholder')"
+          class="w-full pl-11 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 text-sm"
+          :aria-label="t('faq.searchPlaceholder')" />
+      </div>
     </div>
 
     <div class="space-y-3">
-      <div v-for="(faq, i) in faqs" :key="i"
+      <div v-for="(faq, i) in faqs.filter(f => !faqSearch || f.q.toLowerCase().includes(faqSearch.toLowerCase()) || f.a.toLowerCase().includes(faqSearch.toLowerCase()))" :key="i"
         class="bg-white rounded-2xl border border-gray-200 overflow-hidden transition-all">
         <button @click="toggle(i)"
           :id="`faq-btn-${i}`"
@@ -67,5 +88,20 @@ useBreadcrumbStructuredData([
         </a>
       </div>
     </div>
+
+    <!-- Related resources -->
+    <div class="mt-8 grid grid-cols-2 md:grid-cols-4 gap-3">
+      <NuxtLink v-for="link in [
+        { to: '/checkin', icon: '🎫', label: t('nav.checkin') },
+        { to: '/luggage', icon: '🧳', label: t('nav.luggage') },
+        { to: '/visa', icon: '🛂', label: t('nav.visa') },
+        { to: '/blog', icon: '📖', label: t('nav.blog') },
+      ]" :key="link.to" :to="link.to"
+        class="flex items-center gap-2 bg-white rounded-xl border border-gray-200 p-3 hover:border-brand-400 transition-colors text-sm font-medium text-gray-700 hover:text-brand-600">
+        <span aria-hidden="true">{{ link.icon }}</span>
+        {{ link.label }}
+      </NuxtLink>
+    </div>
+  </div>
   </div>
 </template>

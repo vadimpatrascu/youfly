@@ -44,10 +44,13 @@ html {
   p, span, h1, h2, h3, h4, h5, h6, li, td, th, label, div { user-select: text; }
 }
 
-button, a, [role="button"], select, input[type="checkbox"], input[type="radio"] {
+/* Touch targets: only enforce 44px on standalone interactive elements, not inline links */
+button, [role="button"], select, input[type="checkbox"], input[type="radio"] {
   min-height: 44px;
   min-width: 44px;
 }
+/* Allow inline links and tiny buttons to shrink when explicitly sized */
+a { min-height: auto; min-width: auto; }
 input, select, textarea { font-size: 1rem; }
 .overflow-x-auto, .overflow-y-auto { -webkit-overflow-scrolling: touch; }
 
@@ -111,6 +114,14 @@ button:active:not(:disabled), a:active { transform: scale(0.98); }
   transition: box-shadow 0.3s ease;
 }
 .glow-brand:hover { box-shadow: 0 6px 30px rgba(14, 165, 233, 0.45); }
+
+.glow-cta {
+  box-shadow: 0 4px 24px rgba(2, 132, 199, 0.25);
+  transition: box-shadow 0.3s ease, transform 0.2s ease;
+}
+.glow-cta:hover {
+  box-shadow: 0 8px 32px rgba(14, 165, 233, 0.4);
+}
 
 /* ── Skeleton shimmer ────────────────────── */
 @keyframes shimmer {
@@ -261,3 +272,89 @@ button:active:not(:disabled), a:active { transform: scale(0.98); }
   50% { transform: translateY(12px); opacity: 0.3; }
 }
 .scroll-dot { animation: scrollDot 2s ease-in-out infinite; }
+
+/* ── Staggered card entrance ────────────────────── */
+@keyframes cardEntrance {
+  from { opacity: 0; transform: translateY(30px) scale(0.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.card-stagger { animation: cardEntrance 0.5s cubic-bezier(0.16, 1, 0.3, 1) both; }
+
+/* ── Marquee for airline logos ────────────────────── */
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.animate-marquee { animation: marquee 30s linear infinite; }
+.animate-marquee:hover { animation-play-state: paused; }
+
+/* ── Pulse ring for live indicators ────────────────────── */
+@keyframes pulseRing {
+  0% { transform: scale(1); opacity: 0.8; }
+  100% { transform: scale(2.5); opacity: 0; }
+}
+.pulse-ring::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  animation: pulseRing 1.5s ease-out infinite;
+}
+
+/* ── Gradient border animation ────────────────────── */
+@keyframes borderRotate {
+  0% { --angle: 0deg; }
+  100% { --angle: 360deg; }
+}
+
+/* ── Number highlight pop ────────────────────── */
+@keyframes numberPop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+.number-pop:hover { animation: numberPop 0.3s ease-out; }
+
+/* ── Smooth underline animation for nav links ────────────────────── */
+.nav-underline {
+  position: relative;
+}
+.nav-underline::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 50%;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #0ea5e9, #38bdf8);
+  border-radius: 1px;
+  transition: width 0.3s ease, left 0.3s ease;
+}
+.nav-underline:hover::after,
+.nav-underline.router-link-exact-active::after {
+  width: 100%;
+  left: 0;
+}
+
+/* ── Loading dots animation ────────────────────── */
+@keyframes loadingDots {
+  0%, 20% { content: '.'; }
+  40% { content: '..'; }
+  60%, 100% { content: '...'; }
+}
+.loading-dots::after {
+  content: '';
+  animation: loadingDots 1.5s steps(1) infinite;
+}
+
+/* ── Success checkmark ────────────────────── */
+@keyframes checkmark {
+  0% { stroke-dashoffset: 48; }
+  100% { stroke-dashoffset: 0; }
+}
+.animate-checkmark {
+  stroke-dasharray: 48;
+  stroke-dashoffset: 48;
+  animation: checkmark 0.5s cubic-bezier(0.65, 0, 0.45, 1) 0.2s forwards;
+}
