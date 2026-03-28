@@ -74,6 +74,8 @@
     "tomorrow": "Mâine",
     "friday": "Vineri",
     "weekend": "Weekend",
+    "nextWeek": "+1 săpt.",
+    "daysShort": "z",
     "popularAirports": "Aeroporturi populare",
     "allAirports": "Toate aeroporturile",
     "swap": "Schimbă direcția",
@@ -154,7 +156,9 @@
     "checkedBags": "bagaje la cală",
     "cabinBag": "bagaj de mână",
     "shareText": "✈️ Zbor {from} → {to} — {price} | YouFly",
-    "nextDay": "Sosire după {n} zi/zile"
+    "nextDay": "Sosire după {n} zi/zile",
+    "via": "prin",
+    "selectFlight": "Selectează zbor {from} → {to}, {price}"
   },
   "compare": {
     "title": "Compară zboruri",
@@ -206,6 +210,8 @@
     "yourFlight": "Zborul tău",
     "total": "Total",
     "taxesIncluded": "Include toate taxele",
+    "departsIn": "Plecare în",
+    "daysLabel": "zile",
     "offerExpired": "Această ofertă a expirat. Căutați din nou.",
     "loadError": "Eroare la încărcarea detaliilor.",
     "searchAgain": "Caută din nou",

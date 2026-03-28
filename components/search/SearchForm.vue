@@ -74,6 +74,7 @@ const quickDates = computed(() => [
   { label: t('search.tomorrow'), value: addDays(1) },
   { label: t('search.friday'), value: nextWeekday(5) },
   { label: t('search.weekend'), value: nextWeekday(6) },
+  { label: t('search.nextWeek'), value: addDays(7) },
 ])
 
 const canSearch = computed(() =>
@@ -150,6 +151,14 @@ const cabinOptions = computed(() => [
         <label for="search-return" class="block text-sm font-medium text-gray-700 mb-1">{{ t('search.returnDate') }}</label>
         <input id="search-return" type="date" v-model="searchStore.returnDate" :min="searchStore.departureDate || today"
           class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 text-gray-900" />
+        <div v-if="searchStore.departureDate" class="flex gap-1.5 mt-1.5 flex-wrap">
+          <button v-for="rd in [3, 5, 7, 10, 14]" :key="rd"
+            @click="() => { const d = new Date(searchStore.departureDate); d.setDate(d.getDate() + rd); searchStore.returnDate = d.toISOString().split('T')[0] }"
+            type="button"
+            class="px-2.5 py-1 text-xs rounded-full border transition-colors border-gray-200 text-gray-500 hover:border-brand-300 hover:text-brand-600">
+            +{{ rd }}{{ t('search.daysShort') }}
+          </button>
+        </div>
       </div>
       <div :class="tripType === 'return' ? 'md:col-span-1' : 'md:col-span-2'">
         <label id="passengers-label" class="block text-sm font-medium text-gray-700 mb-1">{{ t('search.passengers') }}</label>

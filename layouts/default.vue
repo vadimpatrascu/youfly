@@ -34,6 +34,7 @@ onMounted(() => {
     if (e.key === 'h') { e.preventDefault(); router.push('/') }
     if (e.key === 'b') { e.preventDefault(); router.push('/my-booking') }
     if (e.key === 'd') { e.preventDefault(); router.push('/deals') }
+    if (e.key === 'm') { e.preventDefault(); toggleCurrency() }
   }
   window.addEventListener('keydown', handler)
   onUnmounted(() => window.removeEventListener('keydown', handler))

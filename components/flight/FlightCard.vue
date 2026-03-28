@@ -99,6 +99,10 @@ function layoverMins(arr: string, dep: string): number {
                 :class="slice.stops === 0 ? 'text-green-600' : 'text-orange-500'">
                 {{ stopsLabel(slice.stops) }}
               </div>
+              <!-- Connection cities -->
+              <div v-if="slice.stops > 0 && slice.segments?.length > 1" class="text-[10px] text-gray-400 mt-0.5">
+                {{ t('flightCard.via') }} {{ slice.segments.slice(0, -1).map((s: any) => s.destination?.iata_code).filter(Boolean).join(', ') }}
+              </div>
             </div>
             <div class="text-right">
               <div class="flex items-baseline justify-end gap-1">

@@ -74,6 +74,8 @@
     "tomorrow": "Tomorrow",
     "friday": "Friday",
     "weekend": "Weekend",
+    "nextWeek": "+1 week",
+    "daysShort": "d",
     "popularAirports": "Popular airports",
     "allAirports": "All airports",
     "swap": "Swap airports",
@@ -154,7 +156,9 @@
     "checkedBags": "checked bags",
     "cabinBag": "carry-on bag",
     "shareText": "✈️ Flight {from} → {to} — {price} | YouFly",
-    "nextDay": "Arrives {n} day(s) later"
+    "nextDay": "Arrives {n} day(s) later",
+    "via": "via",
+    "selectFlight": "Select flight {from} → {to}, {price}"
   },
   "compare": {
     "title": "Compare flights",
@@ -206,6 +210,8 @@
     "yourFlight": "Your Flight",
     "total": "Total",
     "taxesIncluded": "Includes all taxes and fees",
+    "departsIn": "Departs in",
+    "daysLabel": "days",
     "offerExpired": "This offer has expired. Please search again.",
     "loadError": "Failed to load offer details.",
     "searchAgain": "Search Again",

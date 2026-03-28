@@ -74,6 +74,8 @@
     "tomorrow": "Завтра",
     "friday": "Пятница",
     "weekend": "Выходные",
+    "nextWeek": "+1 нед.",
+    "daysShort": "д",
     "popularAirports": "Популярные аэропорты",
     "allAirports": "Все аэропорты",
     "swap": "Поменять местами",
@@ -154,7 +156,9 @@
     "checkedBags": "багажа в багажник",
     "cabinBag": "ручная кладь",
     "shareText": "✈️ Рейс {from} → {to} — {price} | YouFly",
-    "nextDay": "Прилёт через {n} день/дней"
+    "nextDay": "Прилёт через {n} день/дней",
+    "via": "через",
+    "selectFlight": "Выбрать рейс {from} → {to}, {price}"
   },
   "compare": {
     "title": "Сравнить рейсы",
@@ -206,6 +210,8 @@
     "yourFlight": "Ваш рейс",
     "total": "Итого",
     "taxesIncluded": "Включая все сборы",
+    "departsIn": "Вылет через",
+    "daysLabel": "дней",
     "offerExpired": "Срок действия предложения истёк. Поищите снова.",
     "loadError": "Ошибка загрузки деталей.",
     "searchAgain": "Искать снова",

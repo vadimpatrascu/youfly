@@ -272,6 +272,15 @@ function typeLabel(type: string) {
                 <span class="text-xl font-bold text-brand-600">{{ formatPrice(bookingStore.selectedOffer.total_amount, bookingStore.selectedOffer.total_currency) }}</span>
               </div>
               <p class="text-xs text-gray-400 mt-1">{{ t('passengers.taxesIncluded') }}</p>
+              <!-- Departure countdown -->
+              <div v-if="bookingStore.selectedOffer.slices?.[0]?.departing_at" class="mt-3 pt-3 border-t flex items-center gap-2 text-xs">
+                <svg class="w-3.5 h-3.5 text-brand-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                <span class="text-gray-500">
+                  {{ t('passengers.departsIn') }}
+                  <span class="font-semibold text-gray-700">{{ Math.max(0, Math.ceil((new Date(bookingStore.selectedOffer.slices[0].departing_at).getTime() - Date.now()) / 86400000)) }}</span>
+                  {{ t('passengers.daysLabel') }}
+                </span>
+              </div>
             </div>
           </div>
           </div>

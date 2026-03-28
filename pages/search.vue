@@ -281,7 +281,14 @@ watch(() => offersStore.filtered.length, () => { visibleCount.value = PAGE_SIZE 
               <svg class="w-7 h-7 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z"/></svg>
             </div>
             <p class="text-red-600 font-medium mb-4">{{ offersStore.error }}</p>
-            <button @click="router.push('/')" class="px-6 py-2 bg-brand-600 text-white rounded-xl text-sm">{{ t('results.modify') }}</button>
+            <div class="flex gap-3 justify-center">
+              <button @click="searchStore.submitSearch().then(ok => { if (ok) offersStore.loadOffers(searchStore.offerRequestId!) })"
+                class="px-6 py-2 bg-brand-600 text-white rounded-xl text-sm hover:bg-brand-700 transition-colors flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                {{ t('common.tryAgain') }}
+              </button>
+              <button @click="router.push('/')" class="px-6 py-2 border border-gray-300 text-gray-700 rounded-xl text-sm hover:bg-gray-50 transition-colors">{{ t('results.modify') }}</button>
+            </div>
           </div>
 
           <div v-else-if="!offersStore.filtered.length" class="bg-white rounded-2xl border border-gray-200 p-10 text-center">
