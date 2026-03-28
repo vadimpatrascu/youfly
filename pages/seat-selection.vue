@@ -128,6 +128,22 @@ function skip() {
             <div class="flex items-center gap-1.5"><div aria-hidden="true" class="w-5 h-5 bg-gray-300 border-b-2 border-gray-400 rounded-t-sm opacity-60"></div> {{ t('seatSelection.legendTaken') }}</div>
           </div>
 
+          <!-- Seat type hints -->
+          <div class="flex items-center justify-center gap-6 mb-4 text-[10px] text-gray-400">
+            <span class="flex items-center gap-1">
+              <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+              A, F = {{ t('seatSelection.window') }}
+            </span>
+            <span class="flex items-center gap-1">
+              <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+              C, D = {{ t('seatSelection.aisle') }}
+            </span>
+            <span class="flex items-center gap-1">
+              <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0"/></svg>
+              B, E = {{ t('seatSelection.middle') }}
+            </span>
+          </div>
+
           <!-- Airplane nose -->
           <div aria-hidden="true" class="text-center text-3xl mb-2">✈</div>
 

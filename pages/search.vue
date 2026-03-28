@@ -178,11 +178,17 @@ watch(() => offersStore.filtered.length, () => { visibleCount.value = PAGE_SIZE 
     <DestinationPhoto v-if="searchStore.destination" :code="searchStore.destination.airport_iata || searchStore.destination.iata_code || ''" :width="1200" height-class="h-24 md:h-32">
       <div class="absolute inset-0 bg-gradient-to-r from-gray-950/80 via-transparent to-gray-950/80"></div>
       <div class="absolute inset-0 bg-gradient-to-t from-gray-50 via-transparent to-transparent"></div>
-      <div class="relative z-10 flex items-center justify-center h-full text-white">
+      <div class="relative z-10 flex flex-col items-center justify-center h-full text-white">
         <span class="font-black text-xl tracking-wider drop-shadow-lg">
           {{ searchStore.origin?.city_name || searchStore.origin?.airport_iata }}
           <span aria-hidden="true" class="mx-2 text-brand-400">✈</span>
           {{ searchStore.destination?.city_name || searchStore.destination?.airport_iata }}
+        </span>
+        <span v-if="searchStore.departureDate" class="text-xs text-gray-400 mt-1 drop-shadow">
+          {{ searchStore.departureDate }}
+          <span v-if="searchStore.tripType === 'return' && searchStore.returnDate"> — {{ searchStore.returnDate }}</span>
+          <span class="mx-1.5">·</span>
+          {{ cabinLabels[searchStore.cabinClass] || searchStore.cabinClass }}
         </span>
       </div>
     </DestinationPhoto>
@@ -198,6 +204,7 @@ watch(() => offersStore.filtered.length, () => { visibleCount.value = PAGE_SIZE 
           <span>{{ t('results.fromPrice') }} <span class="font-semibold text-gray-700">{{ formatPrice(offersStore.priceRange.min.toString(), offersStore.filtered[0]?.total_currency || 'EUR') }}</span>
           {{ t('results.toPrice') }} <span class="font-semibold text-gray-700">{{ formatPrice(offersStore.priceRange.max.toString(), offersStore.filtered[0]?.total_currency || 'EUR') }}</span></span>
           <span v-if="offersStore.uniqueAirlinesWithCode.length" class="bg-gray-100 px-2 py-0.5 rounded text-gray-500">{{ offersStore.uniqueAirlinesWithCode.length }} {{ t('about.stat1Label').toLowerCase() }}</span>
+          <span class="bg-green-50 px-2 py-0.5 rounded text-green-600">{{ offersStore.filtered.filter(o => o.slices.every((s: any) => s.stops === 0)).length }} {{ t('flightCard.direct').toLowerCase() }}</span>
         </div>
       </div>
 

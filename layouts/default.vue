@@ -194,6 +194,9 @@ const airlineLogos = [
     <!-- SW update notification -->
     <UpdateBanner />
 
+    <!-- WhatsApp quick contact -->
+    <WhatsAppButton />
+
     <!-- Back to top + scroll progress -->
     <BackToTop />
 

@@ -80,6 +80,19 @@ async function copyRef() {
   }
 }
 
+function addToCalendar() {
+  if (!offer.value || !booking.value) return
+  const slice = offer.value.slices[0]
+  if (!slice) return
+  const depDate = slice.departing_at?.replace(/[-:]/g, '').replace('.000', '').split('+')[0] || ''
+  const arrDate = slice.arriving_at?.replace(/[-:]/g, '').replace('.000', '').split('+')[0] || ''
+  const title = `✈ ${slice.origin?.iata_code} → ${slice.destination?.iata_code} (${booking.value.reference})`
+  const details = `YouFly Booking: ${booking.value.reference}\n${slice.origin?.city_name} → ${slice.destination?.city_name}`
+  const location = slice.origin?.name || slice.origin?.city_name || ''
+  const url = `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&dates=${depDate}/${arrDate}&details=${encodeURIComponent(details)}&location=${encodeURIComponent(location)}`
+  window.open(url, '_blank', 'noopener')
+}
+
 function printBoardingPass() {
   isPrinting.value = true
   setTimeout(() => {
@@ -97,6 +110,20 @@ function shortDateCompact(iso: string) {
 <template>
   <div>
     <BookingSteps :current="4" />
+
+    <!-- Confetti celebration -->
+    <div class="confetti-container fixed inset-0 pointer-events-none z-50" aria-hidden="true">
+      <div v-for="i in 30" :key="i" class="confetti-piece"
+        :style="{
+          left: `${Math.random() * 100}%`,
+          animationDelay: `${Math.random() * 2}s`,
+          animationDuration: `${2 + Math.random() * 2}s`,
+          backgroundColor: ['#0ea5e9','#f97316','#22c55e','#a855f7','#ef4444','#eab308'][i % 6],
+          width: `${6 + Math.random() * 6}px`,
+          height: `${6 + Math.random() * 6}px`,
+        }">
+      </div>
+    </div>
 
     <!-- Destination scene hero -->
     <DestinationPhoto v-if="offer" :code="offer.slices?.[offer.slices.length - 1]?.destination?.iata_code || ''" :width="1200" height-class="relative no-print">
@@ -216,11 +243,16 @@ function shortDateCompact(iso: string) {
       </div>
 
       <!-- Actions -->
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-3 no-print">
+      <div class="grid grid-cols-2 md:grid-cols-5 gap-3 no-print">
         <button @click="shareBooking"
           class="py-3 border border-gray-300 rounded-xl text-center text-sm font-medium text-gray-700 hover:bg-gray-50 hover:border-brand-300 transition-all flex items-center justify-center gap-2">
           <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>
           {{ t('confirm.shareBooking') }}
+        </button>
+        <button @click="addToCalendar"
+          class="py-3 border border-gray-300 rounded-xl text-center text-sm font-medium text-gray-700 hover:bg-gray-50 hover:border-brand-300 transition-all flex items-center justify-center gap-2">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+          {{ t('confirm.addCalendar') }}
         </button>
         <button @click="printBoardingPass"
           class="py-3 border border-gray-300 rounded-xl text-center text-sm font-medium text-gray-700 hover:bg-gray-50 hover:border-brand-300 transition-all flex items-center justify-center gap-2">
@@ -283,6 +315,24 @@ function shortDateCompact(iso: string) {
 }
 .animate-confirm-check { animation: confirmCheck 0.5s ease forwards; }
 .animate-confirm-text { animation: confirmText 0.4s ease forwards; animation-delay: 0.3s; opacity: 0; }
+
+@keyframes confettiFall {
+  0% { transform: translateY(-20vh) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+}
+.confetti-piece {
+  position: absolute;
+  top: -10px;
+  border-radius: 2px;
+  animation: confettiFall 3s ease-out forwards;
+}
+.confetti-container {
+  animation: fadeOut 4s ease forwards;
+}
+@keyframes fadeOut {
+  0%, 80% { opacity: 1; }
+  100% { opacity: 0; visibility: hidden; }
+}
 
 @media print {
   .no-print { display: none !important; }

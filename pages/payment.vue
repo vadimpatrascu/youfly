@@ -100,7 +100,15 @@ function formatExpiry(e: Event) {
             <svg class="w-4 h-4 text-brand-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
           </div>
           <h2 class="font-semibold text-gray-900">{{ t('payment.cardDetails') }}</h2>
-          <span class="ml-auto text-xs bg-green-50 text-green-700 px-2 py-1 rounded-full font-medium">{{ t('payment.secure') }}</span>
+          <!-- Accepted card brands with auto-highlight -->
+          <div class="ml-auto flex items-center gap-1">
+            <span class="text-[10px] font-black px-1.5 py-0.5 rounded border transition-colors"
+              :class="cardBrand(cardNumber) === 'VISA' ? 'bg-blue-600 text-white border-blue-600' : 'bg-gray-50 text-gray-400 border-gray-200'">VISA</span>
+            <span class="text-[10px] font-black px-1.5 py-0.5 rounded border transition-colors"
+              :class="cardBrand(cardNumber) === 'MC' ? 'bg-red-500 text-white border-red-500' : 'bg-gray-50 text-gray-400 border-gray-200'">MC</span>
+            <span class="text-[10px] font-black px-1.5 py-0.5 rounded border transition-colors"
+              :class="cardBrand(cardNumber) === 'AMEX' ? 'bg-blue-800 text-white border-blue-800' : 'bg-gray-50 text-gray-400 border-gray-200'">AMEX</span>
+          </div>
         </div>
 
         <!-- Card visual (decorative) -->

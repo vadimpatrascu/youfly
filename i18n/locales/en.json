@@ -259,6 +259,7 @@
     "copy": "Copy",
     "copied": "Copied",
     "viewBooking": "View Booking",
+    "addCalendar": "Add to Calendar",
     "bookAnother": "Book Another Flight",
     "printPass": "Print ticket",
     "shareBooking": "Share booking",
@@ -387,7 +388,10 @@
     "available": "Available",
     "selected": "Selected",
     "seatSelected": "Seat {seat} selected for {name}",
-    "seatDeselected": "Seat {seat} deselected"
+    "seatDeselected": "Seat {seat} deselected",
+    "window": "Window",
+    "aisle": "Aisle",
+    "middle": "Middle"
   },
   "footer": {
     "rights": "All rights reserved.",

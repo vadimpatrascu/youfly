@@ -259,6 +259,7 @@
     "copy": "Копировать",
     "copied": "Скопировано",
     "viewBooking": "Просмотр бронирования",
+    "addCalendar": "Добавить в календарь",
     "bookAnother": "Забронировать ещё",
     "printPass": "Распечатать билет",
     "shareBooking": "Поделиться бронированием",
@@ -387,7 +388,10 @@
     "available": "Доступно",
     "selected": "Выбрано",
     "seatSelected": "Место {seat} выбрано для {name}",
-    "seatDeselected": "Место {seat} снято с выбора"
+    "seatDeselected": "Место {seat} снято с выбора",
+    "window": "У окна",
+    "aisle": "У прохода",
+    "middle": "Середина"
   },
   "footer": {
     "rights": "Все права защищены.",

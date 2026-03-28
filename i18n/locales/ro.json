@@ -259,6 +259,7 @@
     "copy": "Copiează",
     "copied": "Copiat",
     "viewBooking": "Vezi rezervarea",
+    "addCalendar": "Adaugă în calendar",
     "bookAnother": "Rezervă alt zbor",
     "printPass": "Printează biletul",
     "shareBooking": "Distribuie rezervarea",
@@ -387,7 +388,10 @@
     "available": "Disponibil",
     "selected": "Selectat",
     "seatSelected": "Locul {seat} selectat pentru {name}",
-    "seatDeselected": "Locul {seat} deselectat"
+    "seatDeselected": "Locul {seat} deselectat",
+    "window": "Fereastră",
+    "aisle": "Culoar",
+    "middle": "Mijloc"
   },
   "footer": {
     "rights": "Toate drepturile rezervate.",

@@ -7,7 +7,15 @@ const { success, error } = useToast()
 
 const tripType = computed({
   get: () => searchStore.tripType,
-  set: (v) => { searchStore.tripType = v }
+  set: (v) => {
+    searchStore.tripType = v
+    // Auto-suggest return date: departure + 7 days
+    if (v === 'return' && !searchStore.returnDate && searchStore.departureDate) {
+      const dep = new Date(searchStore.departureDate)
+      dep.setDate(dep.getDate() + 7)
+      searchStore.returnDate = dep.toISOString().split('T')[0]
+    }
+  }
 })
 
 const showPassengers = ref(false)

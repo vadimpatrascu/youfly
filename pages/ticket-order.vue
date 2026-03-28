@@ -22,20 +22,30 @@ onMounted(async () => {
       return
     }
     const offerPassengers = fullOffer.value.passengers || bookingStore.selectedOffer.passengers || []
-    passengerForms.value = offerPassengers.map((p: any, i: number) => ({
-      duffelPassengerId: p.id,
-      type: p.type || 'adult',
-      title: 'mr',
-      given_name: '',
-      family_name: '',
-      born_on: '',
-      email: i === 0 ? '' : undefined,
-      phone: i === 0 ? '' : undefined,
-      gender: 'm',
-      passport_number: '',
-      passport_country: 'MD',
-      passport_expires: '',
-    }))
+    // Try to restore saved passenger data
+    let savedForms: any[] | null = null
+    try {
+      const saved = sessionStorage.getItem('youfly_passenger_forms')
+      if (saved) savedForms = JSON.parse(saved)
+    } catch {}
+
+    passengerForms.value = offerPassengers.map((p: any, i: number) => {
+      const restored = savedForms?.find((s: any) => s.duffelPassengerId === p.id)
+      return restored || {
+        duffelPassengerId: p.id,
+        type: p.type || 'adult',
+        title: 'mr',
+        given_name: '',
+        family_name: '',
+        born_on: '',
+        email: i === 0 ? '' : undefined,
+        phone: i === 0 ? '' : undefined,
+        gender: 'm',
+        passport_number: '',
+        passport_country: 'MD',
+        passport_expires: '',
+      }
+    })
   } catch (e: any) {
     offerError.value = t('passengers.loadError')
   } finally {
@@ -62,6 +72,11 @@ function validate(): boolean {
   })
   return Object.keys(errors.value).length === 0
 }
+
+// Auto-save passenger forms to sessionStorage on changes
+watch(passengerForms, (val) => {
+  try { sessionStorage.setItem('youfly_passenger_forms', JSON.stringify(val)) } catch {}
+}, { deep: true })
 
 function onSubmit() {
   if (!validate()) return
