@@ -2,6 +2,7 @@ import { duffelFetch } from '../utils/duffel'
 import { createServerSupabase } from '../utils/supabase'
 import { enforceRateLimit } from '../utils/rateLimit'
 import { isValidDuffelId, isValidDate, isValidEmail, isValidPhone, safeString } from '../utils/validators'
+import { logger } from '../utils/logger'
 
 function normalizePhone(phone: string): string {
   if (!phone || !phone.trim()) {
@@ -146,7 +147,7 @@ export default defineEventHandler(async (event) => {
           )
         }
       } catch (dbErr: any) {
-        console.error('Supabase save error (non-fatal):', dbErr.message)
+        logger.warn('Supabase booking save failed (non-fatal)', { error: dbErr.message })
       }
     }
 
@@ -160,7 +161,7 @@ export default defineEventHandler(async (event) => {
     if (e?.statusCode) throw e
     // Log full error for debugging but return safe message to client
     const internalMsg = e?.data?.errors?.[0]?.message || e?.message || 'unknown'
-    console.error('[Book] Error:', internalMsg, JSON.stringify(e?.data || {}).substring(0, 500))
+    logger.error('Booking failed', { errorMessage: internalMsg })
     throw createError({ statusCode: 500, message: 'Booking failed. Please try again or contact support.' })
   }
 })

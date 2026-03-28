@@ -1,5 +1,6 @@
 import { duffelFetch } from '../utils/duffel'
 import { enforceRateLimit } from '../utils/rateLimit'
+import { logger } from '../utils/logger'
 
 // Simple in-memory cache: query -> { results, ts }
 const airportCache = new Map<string, { results: any[]; ts: number }>()
@@ -90,7 +91,7 @@ export default defineEventHandler(async (event) => {
     airportCache.set(q, { results, ts: Date.now() })
     return results
   } catch (e: any) {
-    console.error('Airport search error:', e?.message, JSON.stringify(e?.data || {}))
+    logger.warn('Airport search error', { error: e?.message })
     return []
   }
 })

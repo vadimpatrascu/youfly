@@ -3,6 +3,7 @@ import { createServerSupabase } from '../utils/supabase'
 import { enforceRateLimit } from '../utils/rateLimit'
 import { mapOffer } from '../utils/mapOffer'
 import { isValidIata, isValidDate, clampInt } from '../utils/validators'
+import { logger } from '../utils/logger'
 
 export default defineEventHandler(async (event) => {
   const ip = getRequestIP(event, { xForwardedFor: true }) || 'unknown'
@@ -72,7 +73,7 @@ export default defineEventHandler(async (event) => {
     const rawOffers = offerRequest?.offers || []
 
     if (!offerRequestId) {
-      console.error('No offer request ID:', JSON.stringify(res).slice(0, 500))
+      logger.error('No offer request ID returned from Duffel')
       throw createError({ statusCode: 500, message: 'No offer request ID returned from Duffel' })
     }
 
@@ -91,13 +92,13 @@ export default defineEventHandler(async (event) => {
         children: childrenN,
         infants: infantsN,
         cabin_class: cabinClass,
-      }).then(() => {}, (e: any) => console.error('Lead insert error:', e?.message))
+      }).then(() => {}, (e: any) => logger.warn('Lead insert failed (non-fatal)', { error: e?.message }))
     }
 
     return { offerRequestId, offers }
   } catch (e: any) {
     if (e?.statusCode) throw e
-    console.error('[Search] Error:', e?.message, JSON.stringify(e?.data || {}).substring(0, 500))
+    logger.error('Search failed', { errorMessage: e?.message })
     throw createError({ statusCode: 500, message: 'Search failed. Please try again.' })
   }
 })

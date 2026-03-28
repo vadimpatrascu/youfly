@@ -2,6 +2,9 @@
  * Email utility — sends transactional emails.
  * Supports Resend (RESEND_API_KEY) or falls back to console logging.
  *
+import { logger } from './logger'
+
+/**
  * To enable real email delivery:
  * 1. Sign up at resend.com
  * 2. Add RESEND_API_KEY to Vercel env vars
@@ -34,16 +37,16 @@ export async function sendEmail(payload: EmailPayload): Promise<boolean> {
           html: payload.html,
         },
       })
-      console.log('[Email] Sent via Resend to', payload.to)
+      logger.info('Email sent via Resend', { to: payload.to })
       return true
     } catch (e: any) {
-      console.error('[Email] Resend error:', e?.message || e)
+      logger.error('Resend email error', { error: e?.message || String(e) })
       return false
     }
   }
 
   // Fallback: log to Vercel runtime logs
-  console.log('[Email] Would send to', payload.to, '| Subject:', payload.subject)
+  logger.info('Email send (dry run)', { to: payload.to, subject: payload.subject })
   return true
 }
 
