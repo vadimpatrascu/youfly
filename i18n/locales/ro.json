@@ -317,7 +317,9 @@
     "logout": "Delogare",
     "title": "Panou de administrare",
     "demo": "DEMO",
-    "contactMessages": "Mesaje de contact"
+    "contactMessages": "Mesaje de contact",
+    "conversionRate": "Rata de conversie",
+    "refresh": "Actualizare"
   },
   "error": {
     "notFoundTitle": "Pagina nu a fost găsită",
@@ -533,6 +535,7 @@
     "subtitle": "Suntem aici să vă ajutăm. Scrieți-ne și vă vom răspunde în 24 de ore.",
     "phoneLabel": "Telefon",
     "phoneHours": "Luni-Vineri, 9:00-18:00",
+    "weekendHours": "Weekend: 10:00-16:00",
     "emailLabel": "Email",
     "emailNote": "Răspuns în maxim 24h",
     "addressLabel": "Adresă",

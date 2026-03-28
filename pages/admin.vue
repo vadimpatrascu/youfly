@@ -36,7 +36,13 @@ function formatDate(iso: string) {
       <div class="max-w-5xl mx-auto flex items-center gap-3">
         <h1 class="text-2xl font-black">{{ t('admin.title') }}</h1>
         <span class="px-2 py-1 bg-red-500/20 text-red-400 text-xs font-bold rounded-full border border-red-500/30">{{ t('admin.demo') }}</span>
-        <button v-if="stats" @click="stats = null; secretInput = ''" class="ml-auto text-xs text-gray-500 hover:text-white transition-colors">{{ t('admin.logout') }}</button>
+        <div v-if="stats" class="ml-auto flex items-center gap-3">
+          <button @click="loadStats" :disabled="isLoading" class="text-xs text-gray-500 hover:text-brand-400 transition-colors flex items-center gap-1">
+            <svg class="w-3.5 h-3.5" :class="isLoading ? 'animate-spin' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+            {{ t('admin.refresh') }}
+          </button>
+          <button @click="stats = null; secretInput = ''" class="text-xs text-gray-500 hover:text-white transition-colors">{{ t('admin.logout') }}</button>
+        </div>
       </div>
     </div>
   <div class="max-w-5xl mx-auto px-4 py-8">
@@ -85,6 +91,12 @@ function formatDate(iso: string) {
         <div class="bg-white rounded-2xl border border-gray-200 p-4 text-center">
           <div class="text-3xl font-black text-teal-600">{{ stats.summary.newsletterSubscribers ?? 0 }}</div>
           <div class="text-xs text-gray-500 mt-1">{{ t('admin.newsletterSubscribers') }}</div>
+        </div>
+        <div class="bg-white rounded-2xl border border-gray-200 p-4 text-center">
+          <div class="text-3xl font-black" :class="stats.summary.totalLeads > 0 ? 'text-indigo-600' : 'text-gray-300'">
+            {{ stats.summary.totalLeads > 0 ? ((stats.summary.totalBookings / stats.summary.totalLeads) * 100).toFixed(1) + '%' : '—' }}
+          </div>
+          <div class="text-xs text-gray-500 mt-1">{{ t('admin.conversionRate') }}</div>
         </div>
       </div>
 

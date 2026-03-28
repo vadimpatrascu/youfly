@@ -317,7 +317,9 @@
     "logout": "Выйти",
     "title": "Панель администратора",
     "demo": "ДЕМО",
-    "contactMessages": "Контактные сообщения"
+    "contactMessages": "Контактные сообщения",
+    "conversionRate": "Коэффициент конверсии",
+    "refresh": "Обновить"
   },
   "error": {
     "notFoundTitle": "Страница не найдена",
@@ -533,6 +535,7 @@
     "subtitle": "Мы здесь, чтобы помочь. Напишите нам и мы ответим в течение 24 часов.",
     "phoneLabel": "Телефон",
     "phoneHours": "Пн-Пт, 9:00-18:00",
+    "weekendHours": "Выходные: 10:00-16:00",
     "emailLabel": "Email",
     "emailNote": "Ответ в течение 24 часов",
     "addressLabel": "Адрес",

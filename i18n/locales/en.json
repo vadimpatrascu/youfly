@@ -317,7 +317,9 @@
     "logout": "Logout",
     "title": "Admin Dashboard",
     "demo": "DEMO",
-    "contactMessages": "Contact Messages"
+    "contactMessages": "Contact Messages",
+    "conversionRate": "Conversion Rate",
+    "refresh": "Refresh"
   },
   "error": {
     "notFoundTitle": "Page not found",
@@ -533,6 +535,7 @@
     "subtitle": "We are here to help. Write to us and we will respond within 24 hours.",
     "phoneLabel": "Phone",
     "phoneHours": "Mon-Fri, 9:00-18:00",
+    "weekendHours": "Weekend: 10:00-16:00",
     "emailLabel": "Email",
     "emailNote": "Response within 24h",
     "addressLabel": "Address",
