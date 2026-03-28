@@ -123,6 +123,16 @@ let flashInterval: ReturnType<typeof setInterval> | null = null
 onMounted(() => { updateFlash(); flashInterval = setInterval(updateFlash, 1000) })
 onUnmounted(() => { if (flashInterval) clearInterval(flashInterval) })
 
+async function shareDeal(deal: (typeof deals.value)[0]) {
+  const text = `✈️ ${deal.fromCity} → ${deal.toCity} — €${deal.price} (-${deal.discount}%) — YouFly`
+  const url = `${window.location.origin}/deals`
+  if (navigator.share) {
+    try { await navigator.share({ title: `YouFly: ${deal.fromCity} → ${deal.toCity}`, text, url }) } catch {}
+  } else {
+    try { await navigator.clipboard.writeText(`${text}\n${url}`) } catch {}
+  }
+}
+
 async function bookDeal(deal: (typeof deals.value)[0]) {
   searchingDeal.value = deal.to
   searchStore.origin = { iata_code: 'MD', airport_iata: deal.from, name: deal.fromCity + ' Airport', city_name: deal.fromCity, country_code: 'MD' }
@@ -199,12 +209,18 @@ async function bookDeal(deal: (typeof deals.value)[0]) {
           </div>
           <p class="text-xs text-gray-400 mb-4">{{ t('deals.perPerson') }} · {{ t('deals.flashSaleEnds') }} {{ new Date(deal.validUntil).toLocaleDateString(String(locale), {day: 'numeric', month: 'long'}) }}</p>
 
-          <button @click="bookDeal(deal)" :disabled="searchingDeal !== null"
-            :aria-label="t('deals.bookBtnLabel', { from: deal.fromCity, to: deal.toCity, price: deal.price })"
-            class="w-full py-3 bg-brand-600 hover:bg-brand-700 disabled:opacity-60 disabled:cursor-wait text-white font-semibold rounded-xl transition-colors flex items-center justify-center gap-2">
-            <div v-if="searchingDeal === deal.to" role="status" :aria-label="t('common.loading')" class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-            <span v-else>{{ t('deals.bookNow') }} <span aria-hidden="true">→</span></span>
-          </button>
+          <div class="flex gap-2">
+            <button @click="bookDeal(deal)" :disabled="searchingDeal !== null"
+              :aria-label="t('deals.bookBtnLabel', { from: deal.fromCity, to: deal.toCity, price: deal.price })"
+              class="flex-1 py-3 bg-brand-600 hover:bg-brand-700 disabled:opacity-60 disabled:cursor-wait text-white font-semibold rounded-xl transition-colors flex items-center justify-center gap-2">
+              <div v-if="searchingDeal === deal.to" role="status" :aria-label="t('common.loading')" class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+              <span v-else>{{ t('deals.bookNow') }} <span aria-hidden="true">→</span></span>
+            </button>
+            <button @click="shareDeal(deal)" :aria-label="t('confirm.shareBooking')"
+              class="px-3 py-3 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors text-gray-400 hover:text-gray-600">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>
+            </button>
+          </div>
         </div>
       </div>
     </div>

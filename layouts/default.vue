@@ -122,6 +122,7 @@ const airlineLogos = [
             <span class="relative flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span></span>
             {{ t('nav.deals') }}
           </NuxtLink>
+          <NuxtLink to="/flight-status" class="nav-link nav-underline text-sm font-medium text-gray-400 hover:text-white transition-colors hidden lg:flex items-center gap-1 px-3 py-2 rounded-lg hover:bg-white/5">{{ t('nav.flightStatus') }}</NuxtLink>
           <NuxtLink to="/blog" class="nav-link nav-underline text-sm font-medium text-gray-400 hover:text-white transition-colors hidden lg:flex items-center gap-1 px-3 py-2 rounded-lg hover:bg-white/5">{{ t('nav.blog') }}</NuxtLink>
           <NuxtLink to="/faq" class="nav-link nav-underline text-sm font-medium text-gray-400 hover:text-white transition-colors hidden lg:flex items-center gap-1 px-3 py-2 rounded-lg hover:bg-white/5">FAQ</NuxtLink>
 

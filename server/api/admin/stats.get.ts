@@ -7,7 +7,10 @@ export default defineEventHandler(async (event) => {
 
   // Read secret from Authorization header: "Bearer <secret>"
   const authHeader = getHeader(event, 'authorization') || ''
-  const secret = useRuntimeConfig().adminSecret || 'youfly-admin-2026'
+  const secret = useRuntimeConfig().adminSecret
+  if (!secret) {
+    throw createError({ statusCode: 503, message: 'Admin not configured' })
+  }
   const provided = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : ''
   if (provided !== secret) {
     throw createError({ statusCode: 401, message: 'Unauthorized' })

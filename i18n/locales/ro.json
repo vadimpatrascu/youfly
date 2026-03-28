@@ -1142,5 +1142,24 @@
     "s5": "Aveți dreptul la: acces la datele personale, rectificarea datelor incorecte, ștergerea datelor (\"dreptul de a fi uitat\"), portabilitatea datelor, opoziția față de prelucrare. Pentru exercitarea acestor drepturi, contactați-ne la privacy{'@'}youfly.md.",
     "s6Title": "6. Cookie-uri",
     "s6": "YouFly folosește cookie-uri esențiale pentru funcționarea platformei și stochează preferințele de căutare în localStorage. Nu utilizăm cookie-uri de tracking sau publicitate."
+  },
+  "error404": {
+    "title": "Pagina nu a fost găsită",
+    "desc": "Pagina pe care o căutați nu există sau a fost mutată.",
+    "searchFlights": "Caută zboruri",
+    "suggestions": "Pagini populare"
+  },
+  "testimonials": {
+    "title": "Ce spun pasagerii noștri",
+    "subtitle": "Mii de călători au ales YouFly pentru zborurile lor",
+    "r1Name": "Maria D.",
+    "r1City": "Chișinău",
+    "r1Text": "Am rezervat un zbor spre Barcelona în doar 3 minute. Cele mai bune prețuri pe care le-am găsit!",
+    "r2Name": "Andrei P.",
+    "r2City": "Bălți",
+    "r2Text": "Foarte ușor de folosit, chiar și părinții mei au reușit să-și rezerve primul zbor online cu YouFly.",
+    "r3Name": "Elena S.",
+    "r3City": "Chișinău",
+    "r3Text": "Mereu compar prețurile și YouFly are constant cele mai mici tarife din Chișinău."
   }
 }

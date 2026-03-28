@@ -46,7 +46,7 @@ export async function duffelFetch<T>(
 
       // Retry on 429 or 5xx
       if (attempt < MAX_RETRIES && (status === 429 || status >= 500)) {
-        const delay = RETRY_DELAY_MS * (attempt + 1) // Linear backoff
+        const delay = RETRY_DELAY_MS * Math.pow(2, attempt) // Exponential backoff: 1s, 2s
         console.warn(`[Duffel] Retry ${attempt + 1}/${MAX_RETRIES} for ${path} (status ${status}), waiting ${delay}ms`)
         await sleep(delay)
         continue

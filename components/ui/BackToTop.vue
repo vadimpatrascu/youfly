@@ -26,12 +26,21 @@ function scrollToTop() {
         :style="`width: ${progress}%`"></div>
     </div>
 
-    <!-- Back to top button -->
+    <!-- Back to top button with circular progress ring -->
     <Transition name="fade-up">
       <button v-if="show" @click="scrollToTop"
-        class="fixed bottom-20 md:bottom-6 right-4 z-40 w-10 h-10 bg-gray-900 border border-gray-700/50 rounded-full shadow-lg shadow-black/30 flex items-center justify-center text-gray-400 hover:bg-brand-600 hover:text-white hover:border-brand-600 transition-all"
+        class="fixed bottom-20 md:bottom-6 right-4 z-40 w-11 h-11 rounded-full shadow-lg shadow-black/30 flex items-center justify-center text-gray-400 hover:text-white transition-all group"
         :title="t('common.backToTop')" :aria-label="t('common.backToTop')">
-        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7"/></svg>
+        <!-- Progress ring -->
+        <svg class="absolute inset-0 w-11 h-11 -rotate-90" viewBox="0 0 44 44" aria-hidden="true">
+          <circle cx="22" cy="22" r="20" fill="#111827" stroke="#374151" stroke-width="2" class="group-hover:fill-brand-600 transition-colors" />
+          <circle cx="22" cy="22" r="20" fill="none" stroke="#0ea5e9" stroke-width="2.5"
+            stroke-linecap="round"
+            :stroke-dasharray="125.6"
+            :stroke-dashoffset="125.6 - (125.6 * progress / 100)"
+            class="transition-all duration-100" />
+        </svg>
+        <svg class="w-4 h-4 relative z-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7"/></svg>
       </button>
     </Transition>
   </Teleport>

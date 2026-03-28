@@ -43,14 +43,22 @@ onMounted(async () => {
   }
 })
 
+const emailRe = /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/
+
 function validate(): boolean {
   errors.value = {}
   passengerForms.value.forEach((p, i) => {
     if (!p.given_name?.trim()) errors.value[`${i}_given_name`] = '!'
+    else if (p.given_name.trim().length > 100) errors.value[`${i}_given_name`] = '!'
     if (!p.family_name?.trim()) errors.value[`${i}_family_name`] = '!'
+    else if (p.family_name.trim().length > 100) errors.value[`${i}_family_name`] = '!'
     if (!p.born_on) errors.value[`${i}_born_on`] = '!'
-    if (i === 0 && !p.email?.trim()) errors.value[`${i}_email`] = '!'
-    if (i === 0 && !p.phone?.trim()) errors.value[`${i}_phone`] = '!'
+    if (i === 0) {
+      if (!p.email?.trim()) errors.value[`${i}_email`] = '!'
+      else if (!emailRe.test(p.email.trim())) errors.value[`${i}_email`] = '!'
+      if (!p.phone?.trim()) errors.value[`${i}_phone`] = '!'
+      else if (p.phone.replace(/\D/g, '').length < 7) errors.value[`${i}_phone`] = '!'
+    }
   })
   return Object.keys(errors.value).length === 0
 }
@@ -137,7 +145,7 @@ function typeLabel(type: string) {
               <label :for="`pax-${i}-given-name`" class="block text-sm font-medium text-gray-700 mb-1">{{ t('passengers.firstName') }}</label>
               <input :id="`pax-${i}-given-name`" v-model="passenger.given_name" type="text" :placeholder="t('passengers.firstNamePlaceholder')"
                 :aria-invalid="!!errors[`${i}_given_name`]"
-                required
+                required maxlength="100"
                 :autocomplete="i === 0 ? 'given-name' : 'off'"
                 class="w-full px-3 py-2.5 border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500"
                 :class="errors[`${i}_given_name`] ? 'border-red-400 bg-red-50' : 'border-gray-300'" />
@@ -146,7 +154,7 @@ function typeLabel(type: string) {
               <label :for="`pax-${i}-family-name`" class="block text-sm font-medium text-gray-700 mb-1">{{ t('passengers.lastName') }}</label>
               <input :id="`pax-${i}-family-name`" v-model="passenger.family_name" type="text" :placeholder="t('passengers.lastNamePlaceholder')"
                 :aria-invalid="!!errors[`${i}_family_name`]"
-                required
+                required maxlength="100"
                 :autocomplete="i === 0 ? 'family-name' : 'off'"
                 class="w-full px-3 py-2.5 border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500"
                 :class="errors[`${i}_family_name`] ? 'border-red-400 bg-red-50' : 'border-gray-300'" />
@@ -184,7 +192,8 @@ function typeLabel(type: string) {
             <div>
               <label :for="`pax-${i}-passport`" class="block text-sm font-medium text-gray-700 mb-1">{{ t('passengers.passport') }}</label>
               <input :id="`pax-${i}-passport`" v-model="passenger.passport_number" type="text" :placeholder="t('passengers.passportPlaceholder')"
-                class="w-full px-3 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500" />
+                autocapitalize="characters" maxlength="20"
+                class="w-full px-3 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 uppercase font-mono tracking-wider" />
             </div>
             <div>
               <label :for="`pax-${i}-passport-expires`" class="block text-sm font-medium text-gray-700 mb-1">{{ t('passengers.passportExpiry') }}</label>

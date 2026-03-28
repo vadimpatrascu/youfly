@@ -6,6 +6,16 @@ useBreadcrumbStructuredData([
   { name: t('nav.blog'), url: '/blog' },
 ])
 
+// Blog listing structured data
+useStructuredData({
+  '@context': 'https://schema.org',
+  '@type': 'Blog',
+  name: t('blog.title'),
+  description: t('blog.seoDesc'),
+  url: 'https://youfly-xi.vercel.app/blog',
+  publisher: { '@type': 'Organization', name: 'YouFly', url: 'https://youfly-xi.vercel.app' },
+})
+
 const articleData = [
   { slug: 'cum-sa-gasesti-bilete-ieftine', date: '2026-03-10', readTime: '5', category: 'tips', emoji: '💰', titleKey: 'blog.art1Title', excerptKey: 'blog.art1Excerpt' },
   { slug: 'top-destinatii-moldova', date: '2026-03-05', readTime: '7', category: 'destinations', emoji: '🌍', titleKey: 'blog.art2Title', excerptKey: 'blog.art2Excerpt' },
@@ -36,11 +46,24 @@ function formatDate(iso: string) {
 </script>
 
 <template>
-  <div class="max-w-4xl mx-auto px-4 py-12">
-    <div class="text-center mb-10">
-      <h1 class="text-3xl font-bold text-gray-900 mb-3">{{ t('blog.title') }}</h1>
-      <p class="text-gray-500 max-w-xl mx-auto">{{ t('blog.subtitle') }}</p>
+  <div>
+    <!-- Hero -->
+    <div class="bg-gray-950 text-white py-14 px-4 text-center relative overflow-hidden">
+      <div class="absolute inset-0 opacity-5" aria-hidden="true">
+        <svg viewBox="0 0 1200 300" class="w-full h-full" preserveAspectRatio="none">
+          <path d="M-50,200 Q300,50 600,150 Q900,250 1250,50" fill="none" stroke="white" stroke-width="1" class="flight-path"/>
+        </svg>
+      </div>
+      <div class="relative z-10">
+        <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-brand-500/20 flex items-center justify-center">
+          <svg class="w-8 h-8 text-brand-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"/></svg>
+        </div>
+        <h1 class="text-3xl font-black mb-3">{{ t('blog.title') }}</h1>
+        <p class="text-gray-400">{{ t('blog.subtitle') }}</p>
+      </div>
     </div>
+
+  <div class="max-w-4xl mx-auto px-4 py-12">
 
     <!-- Category filter -->
     <div role="group" :aria-label="t('blog.filterGroupLabel')" class="flex gap-2 flex-wrap justify-center mb-8">
@@ -105,5 +128,6 @@ function formatDate(iso: string) {
         {{ t('search.searchButton') }}
       </NuxtLink>
     </div>
+  </div>
   </div>
 </template>

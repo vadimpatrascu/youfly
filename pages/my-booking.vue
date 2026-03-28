@@ -12,9 +12,20 @@ const booking = ref<any>(null)
 const isLoading = ref(false)
 const error = ref('')
 const { formatPrice, formatDate, formatTime } = useFormatters()
+const refCopied = ref(false)
 
 function printPage() {
   if (typeof window !== 'undefined') window.print()
+}
+
+async function copyReference() {
+  if (!booking.value?.reference) return
+  try {
+    await navigator.clipboard.writeText(booking.value.reference)
+    refCopied.value = true
+    if (navigator.vibrate) navigator.vibrate(50)
+    setTimeout(() => { refCopied.value = false }, 2000)
+  } catch {}
 }
 
 function passengerTypeLabel(type: string) {
@@ -118,7 +129,14 @@ if (route.query.ref) lookup()
         <div class="flex items-start justify-between mb-5">
           <div>
             <p class="text-xs text-gray-500 mb-1">{{ t('myBooking.reference') }}</p>
-            <p class="text-3xl font-mono font-bold text-brand-600 tracking-widest">{{ booking.reference }}</p>
+            <div class="flex items-center gap-2">
+              <p class="text-3xl font-mono font-bold text-brand-600 tracking-widest">{{ booking.reference }}</p>
+              <button @click="copyReference" :aria-label="refCopied ? t('confirm.copied') : t('confirm.copy')"
+                class="p-1.5 rounded-lg hover:bg-brand-50 transition-colors text-gray-400 hover:text-brand-600">
+                <svg v-if="refCopied" class="w-4 h-4 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                <svg v-else class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+              </button>
+            </div>
           </div>
           <span class="px-3 py-1.5 rounded-full text-sm font-semibold"
             :class="booking.status === 'confirmed' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'">
@@ -216,3 +234,10 @@ if (route.query.ref) lookup()
   </div>
   </div>
 </template>
+
+<style>
+@media print {
+  .no-print, header, footer, nav { display: none !important; }
+  body { background: white; }
+}
+</style>

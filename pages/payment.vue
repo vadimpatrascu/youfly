@@ -21,6 +21,10 @@ const payErrors = ref<Record<string, string>>({})
 const { formatPrice, formatTime, stopsLabel } = useFormatters()
 const { formatWithMdl, showMdl } = useCurrency()
 
+// Offer expiry countdown
+const expiresAt = computed(() => bookingStore.selectedOffer?.expires_at || null)
+const { formatted: countdownFormatted, isExpiringSoon, isExpired } = useCountdown(expiresAt)
+
 function passengerTypeLabel(type: string) {
   if (type === 'adult') return t('passengers.adult')
   if (type === 'child') return t('passengers.child')
@@ -73,6 +77,19 @@ function formatExpiry(e: Event) {
     <div class="flex items-center gap-3 mb-8">
       <button @click="router.back()" class="text-gray-500 hover:text-gray-700 text-sm">{{ t('payment.back') }}</button>
       <h1 class="text-2xl font-bold text-gray-900">{{ t('payment.title') }}</h1>
+    </div>
+
+    <!-- Offer expiry countdown -->
+    <div v-if="bookingStore.selectedOffer && !isExpired"
+      class="mb-4 flex items-center gap-2 text-sm px-4 py-2.5 rounded-xl border"
+      :class="isExpiringSoon ? 'bg-orange-50 border-orange-200 text-orange-700' : 'bg-brand-50 border-brand-100 text-brand-700'">
+      <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      <span v-if="isExpiringSoon">{{ t('ticketOrder.expiringSoon', { time: countdownFormatted }) }}</span>
+      <span v-else>{{ t('ticketOrder.reserved', { time: countdownFormatted }) }}</span>
+    </div>
+    <div v-if="isExpired" role="alert" class="mb-4 bg-red-50 border border-red-200 rounded-xl p-4 text-center">
+      <p class="text-red-600 font-medium mb-3">{{ t('ticketOrder.expired') }}</p>
+      <button @click="router.push('/')" class="px-6 py-2 bg-brand-600 text-white rounded-xl font-medium hover:bg-brand-700 transition-colors">{{ t('passengers.searchAgain') }}</button>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -153,7 +170,7 @@ function formatExpiry(e: Event) {
 
         <p v-if="bookingStore.bookingError" role="alert" class="mt-4 text-red-600 text-sm bg-red-50 p-3 rounded-xl">{{ bookingStore.bookingError }}</p>
 
-        <button type="submit" :disabled="isProcessing || !cardName.trim()"
+        <button type="submit" :disabled="isProcessing || !cardName.trim() || isExpired"
           class="mt-6 w-full py-4 bg-brand-600 hover:bg-brand-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-semibold rounded-xl text-lg transition-all shadow-lg hover:shadow-brand-500/30 hover:shadow-xl glow-cta">
           <span v-if="isProcessing" class="flex items-center justify-center gap-2">
             <div role="status" :aria-label="t('common.loading')" class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>

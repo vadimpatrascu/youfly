@@ -50,6 +50,14 @@ export const useBookingStore = defineStore('booking', {
           }
         })
         this.confirmedBooking = result
+        // Persist confirmed booking to survive page refresh
+        try {
+          sessionStorage.setItem('youfly_confirmed_booking', JSON.stringify(result))
+          if (this.selectedOffer) {
+            sessionStorage.setItem('youfly_confirmed_offer', JSON.stringify(this.selectedOffer))
+          }
+          sessionStorage.setItem('youfly_confirmed_passengers', JSON.stringify(this.passengers))
+        } catch {}
         return true
       } catch (e: any) {
         const msg = e?.data?.message || ''

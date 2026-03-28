@@ -13,6 +13,7 @@ export function mapOffer(offer: any) {
     tax_amount: offer.tax_amount || '0',
     base_amount: offer.base_amount || offer.total_amount,
     expires_at: offer.expires_at,
+    cabin_class: offer.slices?.[0]?.segments?.[0]?.passengers?.[0]?.cabin_class || offer.cabin_class || '',
     passengers: offer.passengers || [],
     slices: (offer.slices || []).map((slice: any) => {
       const segs = slice.segments || []

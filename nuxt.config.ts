@@ -34,7 +34,7 @@ export default defineNuxtConfig({
     supabaseUrl: '',
     supabaseServiceRoleKey: '',
     resendApiKey: '',
-    adminSecret: 'youfly-admin-2026',
+    adminSecret: process.env.NUXT_ADMIN_SECRET || '',
     public: {
       siteUrl: 'https://youfly-xi.vercel.app',
       gaId: '', // Set NUXT_PUBLIC_GA_ID env var to enable Google Analytics

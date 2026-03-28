@@ -161,7 +161,7 @@ watch(() => offersStore.filtered.length, () => { visibleCount.value = PAGE_SIZE 
     </div>
 
     <!-- Expandable search modification -->
-    <div v-if="showModifySearch" id="modify-search-panel" class="bg-gray-900 py-6 px-4 border-b border-white/10">
+    <div v-if="showModifySearch" id="modify-search-panel" role="dialog" :aria-label="t('results.modify')" class="bg-gray-900 py-6 px-4 border-b border-white/10">
       <div class="max-w-6xl mx-auto">
         <SearchForm />
       </div>
@@ -287,9 +287,26 @@ watch(() => offersStore.filtered.length, () => { visibleCount.value = PAGE_SIZE 
               <button @click="offersStore.clearFilters()" class="px-6 py-2 border border-brand-600 text-brand-600 rounded-xl text-sm hover:bg-brand-50 transition-colors">{{ t('results.clearFilters') }}</button>
               <button @click="router.push('/')" class="px-6 py-2 bg-brand-600 text-white rounded-xl text-sm hover:bg-brand-700 transition-colors">{{ t('results.modify') }}</button>
             </div>
-            <p v-if="offersStore.all.length > 0" class="text-xs text-gray-400 mb-4">
-              {{ offersStore.all.length }} {{ t('results.available') }}
-            </p>
+            <div v-if="offersStore.all.length > 0" class="mb-4">
+              <p class="text-xs text-gray-400 mb-2">
+                {{ offersStore.all.length }} {{ t('results.available') }}
+              </p>
+              <!-- Show which filters are active -->
+              <div class="flex gap-1.5 justify-center flex-wrap">
+                <span v-if="offersStore.filters.maxPrice" class="text-[10px] bg-orange-50 text-orange-600 border border-orange-200 px-2 py-0.5 rounded-full">
+                  {{ t('filters.maxPrice') }}: €{{ offersStore.filters.maxPrice }}
+                </span>
+                <span v-if="offersStore.filters.stops.length" class="text-[10px] bg-orange-50 text-orange-600 border border-orange-200 px-2 py-0.5 rounded-full">
+                  {{ t('filters.stops') }}: {{ offersStore.filters.stops.join(', ') }}
+                </span>
+                <span v-if="offersStore.filters.airlines.length" class="text-[10px] bg-orange-50 text-orange-600 border border-orange-200 px-2 py-0.5 rounded-full">
+                  {{ t('filters.airlines') }}: {{ offersStore.filters.airlines.join(', ') }}
+                </span>
+                <span v-if="offersStore.filters.maxDuration" class="text-[10px] bg-orange-50 text-orange-600 border border-orange-200 px-2 py-0.5 rounded-full">
+                  {{ t('filters.duration') }}: {{ offersStore.filters.maxDuration }}h
+                </span>
+              </div>
+            </div>
             <!-- Alternative date suggestions when truly no results -->
             <div v-if="!offersStore.all.length" class="border-t pt-5">
               <p class="text-sm text-gray-500 mb-3">{{ t('results.tryDates') }}:</p>

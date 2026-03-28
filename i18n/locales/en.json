@@ -1142,5 +1142,24 @@
     "s5": "You have the right to: access your personal data, rectify incorrect data, delete data (\"right to be forgotten\"), data portability, objection to processing. To exercise these rights, contact us at privacy{'@'}youfly.md.",
     "s6Title": "6. Cookies",
     "s6": "YouFly uses essential cookies for the platform to function and stores search preferences in localStorage. We do not use tracking or advertising cookies."
+  },
+  "error404": {
+    "title": "Page not found",
+    "desc": "The page you're looking for doesn't exist or has been moved.",
+    "searchFlights": "Search flights",
+    "suggestions": "Popular pages"
+  },
+  "testimonials": {
+    "title": "What our passengers say",
+    "subtitle": "Thousands of travellers trust YouFly for their flights",
+    "r1Name": "Maria D.",
+    "r1City": "Chișinău",
+    "r1Text": "Booked a flight to Barcelona in just 3 minutes. The best prices I found anywhere!",
+    "r2Name": "Andrei P.",
+    "r2City": "Bălți",
+    "r2Text": "Very easy to use, even my parents managed to book their first flight online with YouFly.",
+    "r3Name": "Elena S.",
+    "r3City": "Chișinău",
+    "r3Text": "I always compare prices and YouFly consistently has the lowest fares from Chișinău."
   }
 }

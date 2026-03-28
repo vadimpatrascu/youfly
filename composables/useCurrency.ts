@@ -9,6 +9,7 @@ const rates = ref<Record<string, number>>({
 
 const showMdl = ref(false)
 let rateFetched = false
+let mdlPrefLoaded = false
 
 async function fetchRates() {
   if (rateFetched || typeof window === 'undefined') return
@@ -29,6 +30,14 @@ export function useCurrency() {
   // Fetch rates once on first use
   if (typeof window !== 'undefined' && !rateFetched) {
     fetchRates()
+  }
+  // Restore MDL preference from localStorage
+  if (typeof window !== 'undefined' && !mdlPrefLoaded) {
+    mdlPrefLoaded = true
+    try {
+      const saved = localStorage.getItem('youfly_currency_mdl')
+      if (saved === '1') showMdl.value = true
+    } catch {}
   }
 
   const { locale } = useI18n()
@@ -54,6 +63,7 @@ export function useCurrency() {
 
   function toggleCurrency() {
     showMdl.value = !showMdl.value
+    try { localStorage.setItem('youfly_currency_mdl', showMdl.value ? '1' : '0') } catch {}
   }
 
   return { showMdl, formatWithMdl, toggleCurrency }

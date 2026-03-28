@@ -7,6 +7,7 @@ export interface SimplifiedOffer {
   tax_amount: string
   base_amount: string
   expires_at: string
+  cabin_class?: string
   passengers: any[]
   slices: any[]
 }

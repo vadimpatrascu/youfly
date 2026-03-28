@@ -12,6 +12,19 @@ const bookingStore = useBookingStore()
 const router = useRouter()
 
 onMounted(async () => {
+  // Restore from sessionStorage if store is empty (page refresh)
+  if (!bookingStore.confirmedBooking) {
+    try {
+      const saved = sessionStorage.getItem('youfly_confirmed_booking')
+      if (saved) {
+        bookingStore.confirmedBooking = JSON.parse(saved)
+        const savedOffer = sessionStorage.getItem('youfly_confirmed_offer')
+        if (savedOffer) bookingStore.selectedOffer = JSON.parse(savedOffer)
+        const savedPax = sessionStorage.getItem('youfly_confirmed_passengers')
+        if (savedPax) bookingStore.passengers = JSON.parse(savedPax)
+      }
+    } catch {}
+  }
   if (!bookingStore.confirmedBooking) return router.push('/my-booking')
   // Auto-save booking reference to localStorage for easy lookup later
   const ref = bookingStore.confirmedBooking.reference

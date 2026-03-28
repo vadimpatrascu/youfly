@@ -19,7 +19,7 @@ export default defineEventHandler(async (event) => {
   if (!nameStr || nameStr.length < 2) {
     throw createError({ statusCode: 400, message: 'Name is required' })
   }
-  if (!emailStr || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailStr)) {
+  if (!emailStr || !/^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/.test(emailStr)) {
     throw createError({ statusCode: 400, message: 'Valid email is required' })
   }
   if (!messageStr || messageStr.length < 10) {

@@ -85,8 +85,8 @@ function layoverMins(arr: string, dep: string): number {
           <div class="flex-1 grid grid-cols-3 items-center gap-2">
             <div>
               <div class="text-xl md:text-2xl font-bold text-gray-900">{{ formatTime(slice.departing_at) }}</div>
-              <div class="text-sm font-semibold text-gray-700">{{ slice.origin && slice.origin.iata_code }}</div>
-              <div class="text-xs text-gray-400">{{ shortDate(slice.departing_at) }}</div>
+              <div class="text-sm font-semibold text-gray-700" :title="slice.origin?.city_name || slice.origin?.name">{{ slice.origin && slice.origin.iata_code }}</div>
+              <div class="text-xs text-gray-400">{{ slice.origin?.city_name || shortDate(slice.departing_at) }}</div>
             </div>
             <div class="text-center">
               <div class="text-xs text-gray-500 mb-1.5">{{ formatDuration(slice.duration_minutes) }}</div>
@@ -109,8 +109,8 @@ function layoverMins(arr: string, dep: string): number {
                   +{{ dayDiff(slice.departing_at, slice.arriving_at) }}
                 </span>
               </div>
-              <div class="text-sm font-semibold text-gray-700">{{ slice.destination && slice.destination.iata_code }}</div>
-              <div class="text-xs text-gray-400">{{ shortDate(slice.arriving_at) }}</div>
+              <div class="text-sm font-semibold text-gray-700" :title="slice.destination?.city_name || slice.destination?.name">{{ slice.destination && slice.destination.iata_code }}</div>
+              <div class="text-xs text-gray-400">{{ slice.destination?.city_name || shortDate(slice.arriving_at) }}</div>
             </div>
           </div>
         </div>
@@ -121,7 +121,23 @@ function layoverMins(arr: string, dep: string): number {
           <span class="font-mono">
             {{ (slice.segments || []).map((s: any) => s.flight_number).filter(Boolean).join(' · ') }}
           </span>
+          <span v-if="offer.cabin_class" class="text-[10px] bg-brand-50 text-brand-600 px-2 py-0.5 rounded-full font-semibold border border-brand-100">
+            {{ offer.cabin_class === 'economy' ? t('search.economy') : offer.cabin_class === 'premium_economy' ? t('search.premiumEconomy') : offer.cabin_class === 'business' ? t('search.business') : offer.cabin_class === 'first' ? t('search.first') : offer.cabin_class }}
+          </span>
         </div>
+      </div>
+
+      <!-- Inline baggage summary -->
+      <div v-if="offer.passengers?.[0]?.baggages?.length" class="mt-3 ml-[52px] flex items-center gap-3 text-xs text-gray-500">
+        <span v-for="bag in offer.passengers[0].baggages" :key="bag.type" class="flex items-center gap-1">
+          <svg v-if="bag.type === 'carry_on'" class="w-3.5 h-3.5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+          <svg v-else-if="bag.type === 'checked'" class="w-3.5 h-3.5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+          {{ bag.quantity }}× {{ bag.type === 'checked' ? t('flightCard.checkedBag') : t('flightCard.cabinBag') }}
+        </span>
+      </div>
+      <div v-else class="mt-3 ml-[52px] text-xs text-gray-400 flex items-center gap-1">
+        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+        {{ t('common.noBaggage') }}
       </div>
 
       <div class="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between gap-3">

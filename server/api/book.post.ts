@@ -3,12 +3,17 @@ import { createServerSupabase } from '../utils/supabase'
 import { enforceRateLimit } from '../utils/rateLimit'
 
 function normalizePhone(phone: string): string {
-  if (!phone) return '+37360000000'
+  if (!phone || !phone.trim()) {
+    throw createError({ statusCode: 400, message: 'Phone number is required for the lead passenger' })
+  }
   const digits = phone.replace(/\D/g, '')
+  if (digits.length < 7 || digits.length > 15) {
+    throw createError({ statusCode: 400, message: 'Invalid phone number' })
+  }
   if (phone.startsWith('+')) return phone.trim()
   if (digits.startsWith('373')) return `+${digits}`
   if (digits.startsWith('0')) return `+373${digits.substring(1)}`
-  return `+${digits}`
+  return `+373${digits}`
 }
 
 export default defineEventHandler(async (event) => {
