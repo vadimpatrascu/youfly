@@ -2,9 +2,11 @@
  * Duffel API client with automatic retry for transient errors.
  * Retries on 429 (rate limit) and 5xx (server errors), up to 2 retries.
  */
+import { logger } from './logger'
 
 const MAX_RETRIES = 2
 const RETRY_DELAY_MS = 1000
+const REQUEST_TIMEOUT_MS = 30_000 // 30s per request (Duffel search can be slow)
 
 async function sleep(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms))
@@ -27,6 +29,7 @@ export async function duffelFetch<T>(
     try {
       return await $fetch<T>(`https://api.duffel.com${path}`, {
         ...options,
+        signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
         headers: {
           Authorization: `Bearer ${token}`,
           'Duffel-Version': 'v2',
@@ -47,7 +50,7 @@ export async function duffelFetch<T>(
       // Retry on 429 or 5xx
       if (attempt < MAX_RETRIES && (status === 429 || status >= 500)) {
         const delay = RETRY_DELAY_MS * Math.pow(2, attempt) // Exponential backoff: 1s, 2s
-        console.warn(`[Duffel] Retry ${attempt + 1}/${MAX_RETRIES} for ${path} (status ${status}), waiting ${delay}ms`)
+        logger.warn('Duffel retry', { attempt: attempt + 1, maxRetries: MAX_RETRIES, path, status, delayMs: delay })
         await sleep(delay)
         continue
       }
@@ -60,13 +63,12 @@ export async function duffelFetch<T>(
   const duffelError = lastError?.data?.errors?.[0]
   const statusCode = lastError?.statusCode || 500
   if (duffelError) {
-    // Log full error for debugging, return safe message to client
-    console.error('[Duffel] API error:', JSON.stringify(duffelError).substring(0, 500))
+    logger.error('Duffel API error', { statusCode, errorCode: duffelError.code, errorTitle: duffelError.title, path: 'redacted' })
     const safeMessage = statusCode === 422 ? (duffelError.message || 'Validation error')
       : statusCode === 404 ? 'Not found'
       : 'Flight service temporarily unavailable'
     throw createError({ statusCode, message: safeMessage })
   }
-  console.error('[Duffel] Unknown error:', lastError?.message)
+  logger.error('Duffel unknown error', { statusCode, errorMessage: lastError?.message })
   throw createError({ statusCode, message: 'Flight service temporarily unavailable' })
 }

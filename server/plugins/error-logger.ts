@@ -1,23 +1,23 @@
 /**
  * Server-side error logger — captures all unhandled Nitro errors.
- * Logs structured errors visible in Vercel runtime logs.
- * In production, replace with Sentry SDK integration.
+ * Outputs structured JSON for Vercel log drains.
  */
+import { logger } from '../utils/logger'
+
 export default defineNitroPlugin((nitroApp) => {
   nitroApp.hooks.hook('error', (error: any, { event }: any) => {
-    // Skip 4xx client errors from verbose logging
     const status = error?.statusCode || 500
+
+    // Skip 4xx client errors from verbose logging (except rate limits)
     if (status >= 400 && status < 500 && status !== 429) return
 
-    console.error('[YouFly Server Error]', {
+    logger.error('Unhandled server error', {
       requestId: event?.context?.requestId || 'no-id',
-      message: error?.message || String(error),
       statusCode: status,
       url: event?.path || 'unknown',
       method: event?.method || 'unknown',
-      ip: event ? (getRequestIP(event, { xForwardedFor: true }) || 'unknown') : 'unknown',
-      timestamp: new Date().toISOString(),
-      stack: status >= 500 ? error?.stack?.split('\n').slice(0, 3).join(' | ') : undefined,
+      errorMessage: error?.message || String(error),
+      stack: status >= 500 ? error?.stack?.split('\n').slice(0, 5).join('\n') : undefined,
     })
   })
 })
