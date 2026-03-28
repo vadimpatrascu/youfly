@@ -75,6 +75,16 @@ onMounted(async () => {
   )
 })
 
+async function shareSearch() {
+  const url = window.location.href
+  const text = `✈ ${searchStore.origin?.city_name || ''} → ${searchStore.destination?.city_name || ''} — YouFly`
+  if (navigator.share) {
+    try { await navigator.share({ title: text, url }) } catch {}
+  } else {
+    try { await navigator.clipboard.writeText(url) } catch {}
+  }
+}
+
 function selectOffer(offer: any) {
   const airline = offer.slices?.[0]?.segments?.[0]?.carrier_name || ''
   trackSelectOffer(offer.id, parseFloat(offer.total_amount), offer.total_currency, airline)
@@ -150,6 +160,10 @@ watch(() => offersStore.filtered.length, () => { visibleCount.value = PAGE_SIZE 
           </div>
           <span class="text-gray-500 text-xs ml-auto shrink-0">{{ t('results.modify') }}</span>
         </button>
+        <button @click="shareSearch" :aria-label="t('confirm.shareBooking')"
+          class="hidden sm:flex px-3 py-2.5 border border-white/10 rounded-xl text-gray-400 hover:bg-white/5 hover:text-white transition-colors shrink-0">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>
+        </button>
         <button @click="showFilters = !showFilters" :aria-expanded="showFilters" :aria-label="t('results.filters')" class="md:hidden px-4 py-2.5 text-sm bg-brand-600 text-white rounded-xl shrink-0 flex items-center gap-1.5">
           {{ t('results.filters') }}
           <span v-if="offersStore.filters.stops.length + offersStore.filters.airlines.length + (offersStore.filters.maxPrice ? 1 : 0) + (offersStore.filters.maxDuration ? 1 : 0) + offersStore.filters.timeSlots.length > 0"
@@ -195,11 +209,17 @@ watch(() => offersStore.filtered.length, () => { visibleCount.value = PAGE_SIZE 
 
     <div class="max-w-6xl mx-auto px-4 py-6">
       <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
-        <p class="text-sm text-gray-500" aria-live="polite" aria-atomic="true">
-          <span v-if="!offersStore.isLoading" class="font-semibold text-gray-800">{{ offersStore.filtered.length }}</span>
-          <span v-if="!offersStore.isLoading"> {{ t('results.flightsFound') }}</span>
-          <span v-else>{{ t('results.loading') }}</span>
-        </p>
+        <div class="flex items-center gap-2">
+          <span class="text-[10px] font-bold px-2 py-0.5 rounded-full border"
+            :class="searchStore.tripType === 'return' ? 'bg-purple-50 text-purple-600 border-purple-200' : 'bg-brand-50 text-brand-600 border-brand-200'">
+            {{ searchStore.tripType === 'return' ? t('search.return') : t('search.oneWay') }}
+          </span>
+          <p class="text-sm text-gray-500" aria-live="polite" aria-atomic="true">
+            <span v-if="!offersStore.isLoading" class="font-semibold text-gray-800">{{ offersStore.filtered.length }}</span>
+            <span v-if="!offersStore.isLoading"> {{ t('results.flightsFound') }}</span>
+            <span v-else>{{ t('results.loading') }}</span>
+          </p>
+        </div>
         <div v-if="!offersStore.isLoading && offersStore.filtered.length > 0" class="text-xs text-gray-400 flex items-center gap-3 flex-wrap">
           <span>{{ t('results.fromPrice') }} <span class="font-semibold text-gray-700">{{ formatPrice(offersStore.priceRange.min.toString(), offersStore.filtered[0]?.total_currency || 'EUR') }}</span>
           {{ t('results.toPrice') }} <span class="font-semibold text-gray-700">{{ formatPrice(offersStore.priceRange.max.toString(), offersStore.filtered[0]?.total_currency || 'EUR') }}</span></span>

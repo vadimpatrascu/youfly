@@ -90,6 +90,29 @@ const expiresAt = computed(() => fullOffer.value?.expires_at || null)
 const { formatted: countdownFormatted, isExpiringSoon, isExpired } = useCountdown(expiresAt)
 const today = new Date().toISOString().split('T')[0]
 
+const passportCountries = [
+  { code: 'MD', flag: '🇲🇩', name: 'Moldova' },
+  { code: 'RO', flag: '🇷🇴', name: 'România' },
+  { code: 'UA', flag: '🇺🇦', name: 'Ukraina' },
+  { code: 'RU', flag: '🇷🇺', name: 'Russia' },
+  { code: 'TR', flag: '🇹🇷', name: 'Türkiye' },
+  { code: 'DE', flag: '🇩🇪', name: 'Deutschland' },
+  { code: 'FR', flag: '🇫🇷', name: 'France' },
+  { code: 'IT', flag: '🇮🇹', name: 'Italia' },
+  { code: 'ES', flag: '🇪🇸', name: 'España' },
+  { code: 'GB', flag: '🇬🇧', name: 'United Kingdom' },
+  { code: 'US', flag: '🇺🇸', name: 'United States' },
+  { code: 'IL', flag: '🇮🇱', name: 'Israel' },
+  { code: 'GE', flag: '🇬🇪', name: 'Georgia' },
+  { code: 'PL', flag: '🇵🇱', name: 'Polska' },
+  { code: 'AT', flag: '🇦🇹', name: 'Österreich' },
+  { code: 'BG', flag: '🇧🇬', name: 'Bulgaria' },
+  { code: 'GR', flag: '🇬🇷', name: 'Greece' },
+  { code: 'CZ', flag: '🇨🇿', name: 'Česko' },
+  { code: 'HU', flag: '🇭🇺', name: 'Magyarország' },
+  { code: 'AE', flag: '🇦🇪', name: 'UAE' },
+]
+
 function typeLabel(type: string) {
   if (type === 'adult') return t('passengers.adult')
   if (type === 'child') return t('passengers.child')
@@ -209,6 +232,13 @@ function typeLabel(type: string) {
               <input :id="`pax-${i}-passport`" v-model="passenger.passport_number" type="text" :placeholder="t('passengers.passportPlaceholder')"
                 autocapitalize="characters" maxlength="20"
                 class="w-full px-3 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 uppercase font-mono tracking-wider" />
+            </div>
+            <div>
+              <label :for="`pax-${i}-passport-country`" class="block text-sm font-medium text-gray-700 mb-1">{{ t('passengers.passportCountry') }}</label>
+              <select :id="`pax-${i}-passport-country`" v-model="passenger.passport_country"
+                class="w-full px-3 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500">
+                <option v-for="c in passportCountries" :key="c.code" :value="c.code">{{ c.flag }} {{ c.name }}</option>
+              </select>
             </div>
             <div>
               <label :for="`pax-${i}-passport-expires`" class="block text-sm font-medium text-gray-700 mb-1">{{ t('passengers.passportExpiry') }}</label>

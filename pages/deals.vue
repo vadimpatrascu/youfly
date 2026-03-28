@@ -9,20 +9,21 @@ useBreadcrumbStructuredData([
   { name: t('nav.deals'), url: '/deals' },
 ])
 
-// Structured data for flight deals (OfferCatalog)
+// Structured data for flight deals — uses first 6 deals for schema
 useStructuredData({
   '@context': 'https://schema.org',
   '@type': 'OfferCatalog',
   name: t('deals.title'),
   description: t('deals.seoDesc'),
-  numberOfItems: 6,
+  url: 'https://youfly-xi.vercel.app/deals',
+  numberOfItems: 12,
   itemListElement: [
-    { '@type': 'Offer', name: 'Chișinău → Barcelona', price: '31', priceCurrency: 'EUR' },
-    { '@type': 'Offer', name: 'Chișinău → Istanbul', price: '32', priceCurrency: 'EUR' },
-    { '@type': 'Offer', name: 'Chișinău → London', price: '39', priceCurrency: 'EUR' },
-    { '@type': 'Offer', name: 'Chișinău → Vienna', price: '39', priceCurrency: 'EUR' },
-    { '@type': 'Offer', name: 'Chișinău → Paris', price: '73', priceCurrency: 'EUR' },
-    { '@type': 'Offer', name: 'Chișinău → Tel Aviv', price: '45', priceCurrency: 'EUR' },
+    { '@type': 'Offer', name: `${t('airports.city_RMO')} → ${t('index.city_BCN')}`, price: '31', priceCurrency: 'EUR', availability: 'https://schema.org/InStock' },
+    { '@type': 'Offer', name: `${t('airports.city_RMO')} → ${t('index.city_IST')}`, price: '32', priceCurrency: 'EUR', availability: 'https://schema.org/InStock' },
+    { '@type': 'Offer', name: `${t('airports.city_RMO')} → ${t('index.city_LTN')}`, price: '39', priceCurrency: 'EUR', availability: 'https://schema.org/InStock' },
+    { '@type': 'Offer', name: `${t('airports.city_RMO')} → ${t('index.city_VIE')}`, price: '39', priceCurrency: 'EUR', availability: 'https://schema.org/InStock' },
+    { '@type': 'Offer', name: `${t('airports.city_RMO')} → ${t('airports.city_NAP')}`, price: '24', priceCurrency: 'EUR', availability: 'https://schema.org/InStock' },
+    { '@type': 'Offer', name: `${t('airports.city_RMO')} → ${t('airports.city_BER')}`, price: '29', priceCurrency: 'EUR', availability: 'https://schema.org/InStock' },
   ],
 })
 
