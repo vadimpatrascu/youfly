@@ -42,6 +42,10 @@ export function useSeo(options: SeoOptions) {
     ],
     link: [
       { rel: 'canonical', href: url },
+      { rel: 'alternate', hreflang: 'ro', href: url },
+      { rel: 'alternate', hreflang: 'ru', href: url },
+      { rel: 'alternate', hreflang: 'en', href: url },
+      { rel: 'alternate', hreflang: 'x-default', href: url },
     ],
   })
 }

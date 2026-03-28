@@ -1,5 +1,5 @@
 /// YouFly Service Worker — Offline-first PWA support
-const CACHE_VERSION = 'youfly-v130';
+const CACHE_VERSION = 'youfly-v131';
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 
