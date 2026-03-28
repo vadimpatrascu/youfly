@@ -19,6 +19,9 @@ export default defineEventHandler((event) => {
   const query = getQuery(event)
   const pair = (query.pair as string || 'EUR-MDL').substring(0, 10).toUpperCase()
 
+  // Cache static rates aggressively
+  setHeader(event, 'Cache-Control', 'public, max-age=1800, s-maxage=3600')
+
   return {
     pair,
     rate: STATIC_RATES[pair] ?? null,

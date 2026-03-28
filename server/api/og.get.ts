@@ -3,11 +3,16 @@
  * Usage: /api/og?from=RMO&to=BCN&price=31
  * Returns an SVG image for social sharing
  */
+import { enforceRateLimit } from '../utils/rateLimit'
+
 export default defineEventHandler((event) => {
+  const ip = getRequestIP(event, { xForwardedFor: true }) || 'unknown'
+  enforceRateLimit(event, `og:${ip}`, 60, 60_000)
+
   const query = getQuery(event)
-  const from = String(query.from || 'RMO').toUpperCase().substring(0, 3)
-  const to = String(query.to || '').toUpperCase().substring(0, 3)
-  const price = String(query.price || '').substring(0, 10)
+  const from = String(query.from || 'RMO').toUpperCase().replace(/[^A-Z0-9]/g, '').substring(0, 3)
+  const to = String(query.to || '').toUpperCase().replace(/[^A-Z0-9]/g, '').substring(0, 3)
+  const price = String(query.price || '').replace(/[^0-9.]/g, '').substring(0, 10)
 
   const title = to ? `${from} → ${to}` : 'YouFly'
   const subtitle = price ? `from €${price}` : 'Search & book cheap flights'

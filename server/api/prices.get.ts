@@ -21,6 +21,8 @@ export default defineEventHandler((event) => {
   const query = getQuery(event)
   const route = (query.route as string || '').substring(0, 10).toUpperCase()
 
+  setHeader(event, 'Cache-Control', 'public, max-age=900, s-maxage=1800')
+
   if (route && routePrices[route]) {
     return routePrices[route]
   }
