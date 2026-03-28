@@ -38,7 +38,7 @@ export function useRecentSearches() {
 
   function clear() {
     searches.value = []
-    if (typeof window !== 'undefined') localStorage.removeItem('youfly_recent_searches')
+    if (typeof window !== 'undefined') try { localStorage.removeItem('youfly_recent_searches') } catch {}
   }
 
   onMounted(() => load())
