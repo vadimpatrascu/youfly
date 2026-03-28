@@ -74,13 +74,24 @@ const airports = computed(() => airportData.map(a => ({
   country: t(`airports.country_${a.iata}`),
 })))
 
-const filtered = computed(() =>
-  activeRegionKey.value === 'all'
+const filtered = computed(() => {
+  let list = activeRegionKey.value === 'all'
     ? airports.value
     : airports.value.filter(a => a.region === activeRegionKey.value)
-)
+  if (airportSearch.value.trim()) {
+    const q = airportSearch.value.toLowerCase()
+    list = list.filter(a =>
+      a.city.toLowerCase().includes(q) ||
+      a.iata.toLowerCase().includes(q) ||
+      a.name.toLowerCase().includes(q) ||
+      a.country.toLowerCase().includes(q)
+    )
+  }
+  return list
+})
 
 const directCount = computed(() => airports.value.filter(a => a.direct).length)
+const airportSearch = ref('')
 
 async function searchFrom(airport: (typeof airports.value)[0]) {
   searchStore.destination = {
@@ -127,6 +138,20 @@ async function searchFrom(airport: (typeof airports.value)[0]) {
     </DestinationPhoto>
 
     <div class="max-w-5xl mx-auto px-4 py-10">
+      <!-- Search airports -->
+      <div class="mb-6">
+        <div class="relative">
+          <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+          <input v-model="airportSearch" type="text" :placeholder="t('airports.searchPlaceholder')"
+            :aria-label="t('airports.searchPlaceholder')"
+            class="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 text-gray-900" />
+          <button v-if="airportSearch" @click="airportSearch = ''" :aria-label="t('common.clear')"
+            class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 text-lg">
+            <span aria-hidden="true">×</span>
+          </button>
+        </div>
+      </div>
+
       <!-- Region filter -->
       <div role="group" :aria-label="t('airports.filterGroupLabel')" class="flex gap-2 flex-wrap mb-8">
         <button v-for="r in regionKeys" :key="r" @click="activeRegionKey = r"

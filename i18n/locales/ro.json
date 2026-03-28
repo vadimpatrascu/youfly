@@ -983,6 +983,7 @@
     "durationLabel": "Durata zbor",
     "searchBtn": "Caută",
     "searchBtnLabel": "Caută zboruri spre {city} ({iata})",
+    "searchPlaceholder": "Caută oraș, aeroport sau țară...",
     "filterGroupLabel": "Filtrare aeroporturi după regiune",
     "filterAll": "Toate",
     "filterEurope": "Europa",
@@ -1060,8 +1061,13 @@
     "text": "Folosim cookie-uri pentru a îmbunătăți experiența dvs. și pentru statistici anonime.",
     "textBefore": "🍪 Folosim cookie-uri pentru a îmbunătăți experiența ta. Prin continuare, accepți",
     "linkText": "politica de confidențialitate",
-    "accept": "Accept",
-    "decline": "Refuz",
+    "accept": "Acceptă toate",
+    "decline": "Doar esențiale",
+    "customize": "Personalizare",
+    "essential": "Esențiale (mereu active)",
+    "analytics": "Analiză",
+    "preferences": "Preferințe",
+    "savePreferences": "Salvează preferințele",
     "bannerLabel": "Notificare cookie-uri"
   },
   "help": {

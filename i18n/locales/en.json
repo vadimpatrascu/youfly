@@ -983,6 +983,7 @@
     "durationLabel": "Flight duration",
     "searchBtn": "Search",
     "searchBtnLabel": "Search flights to {city} ({iata})",
+    "searchPlaceholder": "Search city, airport, or country...",
     "filterGroupLabel": "Filter airports by region",
     "filterAll": "All",
     "filterEurope": "Europe",
@@ -1060,8 +1061,13 @@
     "text": "We use cookies to improve your experience and for anonymous statistics.",
     "textBefore": "🍪 We use cookies to improve your experience. By continuing, you accept our",
     "linkText": "privacy policy",
-    "accept": "Accept",
-    "decline": "Decline",
+    "accept": "Accept all",
+    "decline": "Essential only",
+    "customize": "Customize",
+    "essential": "Essential (always on)",
+    "analytics": "Analytics",
+    "preferences": "Preferences",
+    "savePreferences": "Save preferences",
     "bannerLabel": "Cookie notice"
   },
   "help": {
