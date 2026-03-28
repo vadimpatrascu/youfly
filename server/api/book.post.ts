@@ -47,7 +47,13 @@ export default defineEventHandler(async (event) => {
     if (p.passport_expires && !isValidDate(p.passport_expires)) {
       throw createError({ statusCode: 400, message: 'Invalid passport expiry date' })
     }
-    if (!p.duffelPassengerId || !/^[a-zA-Z0-9_-]{1,100}$/.test(p.duffelPassengerId)) {
+    if (p.passport_number && typeof p.passport_number === 'string' && p.passport_number.length > 20) {
+      throw createError({ statusCode: 400, message: 'Invalid passport number' })
+    }
+    if (p.passport_country && typeof p.passport_country === 'string' && !/^[A-Z]{2}$/.test(p.passport_country.toUpperCase())) {
+      throw createError({ statusCode: 400, message: 'Invalid passport country code' })
+    }
+    if (!isValidDuffelId(p.duffelPassengerId)) {
       throw createError({ statusCode: 400, message: 'Invalid passenger ID' })
     }
   }
