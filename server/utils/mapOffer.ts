@@ -6,10 +6,13 @@ export function parseDurationMins(iso: string): number {
 }
 
 export function mapOffer(offer: any) {
+  if (!offer || typeof offer !== 'object') {
+    return { id: '', total_amount: '0', total_currency: 'EUR', tax_amount: '0', base_amount: '0', expires_at: '', cabin_class: '', passengers: [], slices: [] }
+  }
   return {
-    id: offer.id,
-    total_amount: offer.total_amount,
-    total_currency: offer.total_currency,
+    id: offer.id || '',
+    total_amount: offer.total_amount || '0',
+    total_currency: offer.total_currency || 'EUR',
     tax_amount: offer.tax_amount || '0',
     base_amount: offer.base_amount || offer.total_amount,
     expires_at: offer.expires_at,

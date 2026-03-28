@@ -53,6 +53,12 @@ export function enforceRateLimit(
   message = 'Too many requests. Please try again later.'
 ): void {
   const rl = checkRateLimit(key, maxRequests, windowMs)
+
+  // Always set rate limit headers for client awareness
+  setHeader(event, 'X-RateLimit-Limit', maxRequests)
+  setHeader(event, 'X-RateLimit-Remaining', Math.max(0, rl.remaining))
+  setHeader(event, 'X-RateLimit-Reset', Math.ceil(rl.resetAt / 1000))
+
   if (!rl.allowed) {
     const retryAfter = Math.ceil((rl.resetAt - Date.now()) / 1000)
     setHeader(event, 'Retry-After', retryAfter)

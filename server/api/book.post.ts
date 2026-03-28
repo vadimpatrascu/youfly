@@ -153,8 +153,9 @@ export default defineEventHandler(async (event) => {
     }
   } catch (e: any) {
     if (e?.statusCode) throw e
-    const msg = e?.data?.errors?.[0]?.message || e?.message || 'Booking failed'
-    console.error('Book error:', msg, JSON.stringify(e?.data || {}))
-    throw createError({ statusCode: 500, message: msg })
+    // Log full error for debugging but return safe message to client
+    const internalMsg = e?.data?.errors?.[0]?.message || e?.message || 'unknown'
+    console.error('[Book] Error:', internalMsg, JSON.stringify(e?.data || {}).substring(0, 500))
+    throw createError({ statusCode: 500, message: 'Booking failed. Please try again or contact support.' })
   }
 })

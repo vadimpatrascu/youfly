@@ -56,14 +56,17 @@ export async function duffelFetch<T>(
     }
   }
 
-  // Re-throw with useful message
+  // Re-throw with safe message — never expose raw Duffel internals to client
   const duffelError = lastError?.data?.errors?.[0]
+  const statusCode = lastError?.statusCode || 500
   if (duffelError) {
-    throw createError({
-      statusCode: lastError.statusCode || 500,
-      message: duffelError.message || duffelError.title || 'Duffel API error',
-      data: lastError.data,
-    })
+    // Log full error for debugging, return safe message to client
+    console.error('[Duffel] API error:', JSON.stringify(duffelError).substring(0, 500))
+    const safeMessage = statusCode === 422 ? (duffelError.message || 'Validation error')
+      : statusCode === 404 ? 'Not found'
+      : 'Flight service temporarily unavailable'
+    throw createError({ statusCode, message: safeMessage })
   }
-  throw lastError
+  console.error('[Duffel] Unknown error:', lastError?.message)
+  throw createError({ statusCode, message: 'Flight service temporarily unavailable' })
 }

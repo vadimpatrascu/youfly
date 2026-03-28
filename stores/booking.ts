@@ -37,6 +37,8 @@ export const useBookingStore = defineStore('booking', {
     },
     async submitBooking() {
       if (!this.selectedOffer || !this.passengers.length) return false
+      // Prevent double-submission
+      if (this.isBooking) return false
       this.isBooking = true
       this.bookingError = null
       try {

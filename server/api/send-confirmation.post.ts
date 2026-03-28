@@ -16,7 +16,7 @@ export default defineEventHandler(async (event) => {
   if (!reference || typeof reference !== 'string' || !/^[A-Z0-9]{4,10}$/.test(reference)) {
     throw createError({ statusCode: 400, message: 'Invalid booking reference' })
   }
-  if (!email || typeof email !== 'string' || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+  if (!email || typeof email !== 'string' || !/^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/.test(email.trim())) {
     throw createError({ statusCode: 400, message: 'Invalid email address' })
   }
 

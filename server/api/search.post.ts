@@ -107,8 +107,7 @@ export default defineEventHandler(async (event) => {
     return { offerRequestId, offers }
   } catch (e: any) {
     if (e?.statusCode) throw e
-    console.error('Search error:', e?.message, JSON.stringify(e?.data || {}).slice(0, 500))
-    const msg = e?.data?.errors?.[0]?.message || e?.message || 'Search failed'
-    throw createError({ statusCode: 500, message: msg })
+    console.error('[Search] Error:', e?.message, JSON.stringify(e?.data || {}).substring(0, 500))
+    throw createError({ statusCode: 500, message: 'Search failed. Please try again.' })
   }
 })

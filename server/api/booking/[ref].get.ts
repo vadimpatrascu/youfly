@@ -18,8 +18,27 @@ export default defineEventHandler(async (event) => {
     .eq('reference', ref.toUpperCase())
     .maybeSingle()
 
-  if (error) throw createError({ statusCode: 500, message: error.message })
+  if (error) throw createError({ statusCode: 500, message: 'Lookup failed' })
   if (!booking) throw createError({ statusCode: 404, message: 'Booking not found' })
+
+  // Mask sensitive data before returning
+  if (booking.passengers) {
+    booking.passengers = booking.passengers.map((p: any) => ({
+      ...p,
+      email: p.email ? p.email[0] + '***@' + p.email.split('@')[1] : null,
+    }))
+  }
+  // Strip raw Duffel response to avoid leaking API internals
+  if (booking.raw_offer) {
+    booking.raw_offer = {
+      slices: (booking.raw_offer.slices || []).map((s: any) => ({
+        origin: s.origin ? { iata_code: s.origin.iata_code, city_name: s.origin.city_name || s.origin.city?.name } : null,
+        destination: s.destination ? { iata_code: s.destination.iata_code, city_name: s.destination.city_name || s.destination.city?.name } : null,
+        departing_at: s.departing_at,
+        arriving_at: s.arriving_at,
+      })),
+    }
+  }
 
   return booking
 })
