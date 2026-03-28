@@ -239,6 +239,13 @@ function formatExpiry(e: Event) {
               </div>
             </div>
             <div class="space-y-2 pt-1">
+              <!-- Per-passenger breakdown -->
+              <div v-if="bookingStore.passengers.length > 1" class="space-y-1 pb-2 mb-2 border-b border-gray-100">
+                <div v-for="p in bookingStore.passengers" :key="p.duffelPassengerId" class="flex justify-between text-xs text-gray-400">
+                  <span>{{ p.given_name }} {{ p.family_name }} <span class="text-gray-300">({{ passengerTypeLabel(p.type) }})</span></span>
+                  <span>{{ formatPrice((parseFloat(bookingStore.selectedOffer.total_amount) / bookingStore.passengers.length).toFixed(2), bookingStore.selectedOffer.total_currency) }}</span>
+                </div>
+              </div>
               <div class="flex justify-between text-sm text-gray-500">
                 <span>{{ t('payment.baseFare') }}</span>
                 <span>{{ formatPrice(bookingStore.selectedOffer.base_amount || bookingStore.selectedOffer.total_amount, bookingStore.selectedOffer.total_currency) }}</span>

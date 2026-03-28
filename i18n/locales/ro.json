@@ -1077,6 +1077,7 @@
     "home": "Mergi la pagina principală",
     "booking": "Mergi la rezervarea mea",
     "deals": "Mergi la oferte",
+    "currency": "Comută MDL / EUR",
     "escape": "Închide meniuri / overlay-uri",
     "help": "Arată acest panou de ajutor",
     "hint": "Apasă pentru a deschide/închide"
@@ -1162,6 +1163,12 @@
     "s5": "Aveți dreptul la: acces la datele personale, rectificarea datelor incorecte, ștergerea datelor (\"dreptul de a fi uitat\"), portabilitatea datelor, opoziția față de prelucrare. Pentru exercitarea acestor drepturi, contactați-ne la privacy{'@'}youfly.md.",
     "s6Title": "6. Cookie-uri",
     "s6": "YouFly folosește cookie-uri esențiale pentru funcționarea platformei și stochează preferințele de căutare în localStorage. Nu utilizăm cookie-uri de tracking sau publicitate."
+  },
+  "weather": {
+    "hot": "Cald",
+    "warm": "Plăcut",
+    "cool": "Răcoros",
+    "cold": "Frig"
   },
   "error404": {
     "title": "Pagina nu a fost găsită",

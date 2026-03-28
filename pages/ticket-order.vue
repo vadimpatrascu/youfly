@@ -29,6 +29,14 @@ onMounted(async () => {
       if (saved) savedForms = JSON.parse(saved)
     } catch {}
 
+    // Try to recall last used email/phone for lead passenger
+    let lastEmail = ''
+    let lastPhone = ''
+    try {
+      lastEmail = localStorage.getItem('youfly_last_email') || ''
+      lastPhone = localStorage.getItem('youfly_last_phone') || ''
+    } catch {}
+
     passengerForms.value = offerPassengers.map((p: any, i: number) => {
       const restored = savedForms?.find((s: any) => s.duffelPassengerId === p.id)
       return restored || {
@@ -38,8 +46,8 @@ onMounted(async () => {
         given_name: '',
         family_name: '',
         born_on: '',
-        email: i === 0 ? '' : undefined,
-        phone: i === 0 ? '' : undefined,
+        email: i === 0 ? lastEmail : undefined,
+        phone: i === 0 ? lastPhone : undefined,
         gender: 'm',
         passport_number: '',
         passport_country: 'MD',
@@ -80,6 +88,10 @@ watch(passengerForms, (val) => {
 
 function onSubmit() {
   if (!validate()) return
+  // Remember email/phone for next booking
+  const lead = passengerForms.value[0]
+  if (lead?.email) try { localStorage.setItem('youfly_last_email', lead.email.trim()) } catch {}
+  if (lead?.phone) try { localStorage.setItem('youfly_last_phone', lead.phone.trim()) } catch {}
   bookingStore.setPassengers(passengerForms.value)
   router.push('/seat-selection')
 }

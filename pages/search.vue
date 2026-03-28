@@ -5,6 +5,12 @@ import { useBookingStore } from '~/stores/booking'
 
 const { t } = useI18n()
 
+const { getHint: getWeatherHint } = useWeatherHint()
+const destWeather = computed(() => {
+  const code = searchStore.destination?.airport_iata || searchStore.destination?.iata_code || ''
+  return getWeatherHint(code, searchStore.departureDate)
+})
+
 const cabinLabels = computed<Record<string, string>>(() => ({
   economy: t('search.economy'),
   premium_economy: t('search.premiumEconomy'),
@@ -198,11 +204,16 @@ watch(() => offersStore.filtered.length, () => { visibleCount.value = PAGE_SIZE 
           <span aria-hidden="true" class="mx-2 text-brand-400">✈</span>
           {{ searchStore.destination?.city_name || searchStore.destination?.airport_iata }}
         </span>
-        <span v-if="searchStore.departureDate" class="text-xs text-gray-400 mt-1 drop-shadow">
-          {{ searchStore.departureDate }}
-          <span v-if="searchStore.tripType === 'return' && searchStore.returnDate"> — {{ searchStore.returnDate }}</span>
-          <span class="mx-1.5">·</span>
-          {{ cabinLabels[searchStore.cabinClass] || searchStore.cabinClass }}
+        <span v-if="searchStore.departureDate" class="text-xs text-gray-400 mt-1 drop-shadow flex items-center gap-2 justify-center">
+          <span>
+            {{ searchStore.departureDate }}
+            <span v-if="searchStore.tripType === 'return' && searchStore.returnDate"> — {{ searchStore.returnDate }}</span>
+            <span class="mx-1.5">·</span>
+            {{ cabinLabels[searchStore.cabinClass] || searchStore.cabinClass }}
+          </span>
+          <span v-if="destWeather" class="bg-white/10 px-2 py-0.5 rounded-full text-[11px] flex items-center gap-1">
+            {{ destWeather.icon }} {{ destWeather.temp }}
+          </span>
         </span>
       </div>
     </DestinationPhoto>

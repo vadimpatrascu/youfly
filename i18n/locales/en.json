@@ -1077,6 +1077,7 @@
     "home": "Go to home page",
     "booking": "Go to my booking",
     "deals": "Go to deals",
+    "currency": "Toggle MDL / EUR",
     "escape": "Close menus / overlays",
     "help": "Show this help panel",
     "hint": "Press to open/close"
@@ -1162,6 +1163,12 @@
     "s5": "You have the right to: access your personal data, rectify incorrect data, delete data (\"right to be forgotten\"), data portability, objection to processing. To exercise these rights, contact us at privacy{'@'}youfly.md.",
     "s6Title": "6. Cookies",
     "s6": "YouFly uses essential cookies for the platform to function and stores search preferences in localStorage. We do not use tracking or advertising cookies."
+  },
+  "weather": {
+    "hot": "Hot",
+    "warm": "Warm",
+    "cool": "Cool",
+    "cold": "Cold"
   },
   "error404": {
     "title": "Page not found",

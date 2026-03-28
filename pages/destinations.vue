@@ -13,6 +13,7 @@ useBreadcrumbStructuredData([
 const searchStore = useSearchStore()
 const router = useRouter()
 const searching = ref<string | null>(null)
+const { getHint: getWeatherHint } = useWeatherHint()
 
 const destData = [
   { code: 'OTP', flag: '🇷🇴', price: 35, emoji: '🏛️', pop: 5, season: '🌸 Mar-Oct', flight: '1h 10m', direct: true },
@@ -145,6 +146,7 @@ async function search(dest: (typeof destinations.value)[0]) {
               <span v-if="dest.flight" class="bg-gray-100 text-gray-500 px-2 py-0.5 rounded"><span aria-hidden="true">⏱</span> {{ dest.flight }}</span>
               <span v-if="dest.direct" class="bg-green-50 text-green-600 px-2 py-0.5 rounded font-semibold">{{ t('flightCard.direct') }}</span>
               <span v-else class="bg-orange-50 text-orange-600 px-2 py-0.5 rounded">1+ {{ t('flightCard.stop') }}</span>
+              <span v-if="getWeatherHint(dest.code)" class="bg-blue-50 text-blue-600 px-2 py-0.5 rounded">{{ getWeatherHint(dest.code)?.icon }} {{ getWeatherHint(dest.code)?.temp }}</span>
             </div>
             <button @click="search(dest)"
               :disabled="searching !== null"

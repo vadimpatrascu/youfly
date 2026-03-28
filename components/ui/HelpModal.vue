@@ -23,6 +23,7 @@ const shortcuts = computed(() => [
   { key: 'h', desc: t('help.home') },
   { key: 'b', desc: t('help.booking') },
   { key: 'd', desc: t('help.deals') },
+  { key: 'm', desc: t('help.currency') },
   { key: 'Escape', desc: t('help.escape') },
   { key: '?', desc: t('help.help') },
 ])
