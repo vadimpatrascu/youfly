@@ -1,6 +1,7 @@
 import { duffelFetch } from '../utils/duffel'
 import { enforceRateLimit } from '../utils/rateLimit'
 import { mapOffer } from '../utils/mapOffer'
+import { isValidDuffelId } from '../utils/validators'
 
 export default defineEventHandler(async (event) => {
   const ip = getRequestIP(event, { xForwardedFor: true }) || 'unknown'
@@ -8,7 +9,7 @@ export default defineEventHandler(async (event) => {
 
   const query = getQuery(event)
   const offerRequestId = query.offer_request_id as string
-  if (!offerRequestId || !/^[a-zA-Z0-9_-]{1,100}$/.test(offerRequestId)) throw createError({ statusCode: 400, message: 'offer_request_id required' })
+  if (!isValidDuffelId(offerRequestId)) throw createError({ statusCode: 400, message: 'offer_request_id required' })
 
   try {
     let allOffers: any[] = []

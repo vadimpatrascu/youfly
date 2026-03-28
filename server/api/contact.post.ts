@@ -1,6 +1,7 @@
 import { createServerSupabase } from '../utils/supabase'
 import { enforceRateLimit } from '../utils/rateLimit'
 import { sanitizeInput } from '../utils/sanitize'
+import { isValidEmail } from '../utils/validators'
 
 export default defineEventHandler(async (event) => {
   // Rate limit: 3 messages per 10 minutes per IP
@@ -19,7 +20,7 @@ export default defineEventHandler(async (event) => {
   if (!nameStr || nameStr.length < 2) {
     throw createError({ statusCode: 400, message: 'Name is required' })
   }
-  if (!emailStr || !/^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/.test(emailStr)) {
+  if (!isValidEmail(emailStr)) {
     throw createError({ statusCode: 400, message: 'Valid email is required' })
   }
   if (!messageStr || messageStr.length < 10) {

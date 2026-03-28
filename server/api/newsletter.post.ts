@@ -1,5 +1,6 @@
 import { createServerSupabase } from '../utils/supabase'
 import { enforceRateLimit } from '../utils/rateLimit'
+import { isValidEmail } from '../utils/validators'
 
 export default defineEventHandler(async (event) => {
   // Rate limit: 3 newsletter signups per 5 minutes per IP
@@ -9,7 +10,7 @@ export default defineEventHandler(async (event) => {
   const body = await readBody(event)
   const { email } = body
 
-  if (!email || typeof email !== 'string' || !/^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/.test(email.trim())) {
+  if (!isValidEmail(email)) {
     throw createError({ statusCode: 400, message: 'Email invalid' })
   }
 

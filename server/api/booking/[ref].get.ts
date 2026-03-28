@@ -1,5 +1,6 @@
 import { createServerSupabase } from '../../utils/supabase'
 import { enforceRateLimit } from '../../utils/rateLimit'
+import { isValidBookingRef } from '../../utils/validators'
 
 export default defineEventHandler(async (event) => {
   // Rate limit: 10 lookups per minute per IP to prevent reference enumeration
@@ -7,7 +8,7 @@ export default defineEventHandler(async (event) => {
   enforceRateLimit(event, `booking-lookup:${ip}`, 10, 60_000)
 
   const ref = getRouterParam(event, 'ref')
-  if (!ref || !/^[A-Z0-9]{4,10}$/.test(ref.toUpperCase())) throw createError({ statusCode: 400, message: 'Reference required' })
+  if (!isValidBookingRef(ref)) throw createError({ statusCode: 400, message: 'Reference required' })
 
   const supabase = createServerSupabase()
   if (!supabase) throw createError({ statusCode: 503, message: 'Database not configured' })

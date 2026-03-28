@@ -1,5 +1,6 @@
 import { duffelFetch } from '../../utils/duffel'
 import { enforceRateLimit } from '../../utils/rateLimit'
+import { isValidDuffelId } from '../../utils/validators'
 
 export default defineEventHandler(async (event) => {
   // Rate limit: 30 offer lookups per minute per IP
@@ -7,7 +8,7 @@ export default defineEventHandler(async (event) => {
   enforceRateLimit(event, `offer:${ip}`, 30, 60_000)
 
   const id = getRouterParam(event, 'id')
-  if (!id || !/^[a-zA-Z0-9_-]{1,100}$/.test(id)) throw createError({ statusCode: 400, message: 'ID required' })
+  if (!isValidDuffelId(id)) throw createError({ statusCode: 400, message: 'ID required' })
 
   try {
     const res = await duffelFetch<any>(`/air/offers/${id}`)

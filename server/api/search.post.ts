@@ -2,32 +2,24 @@ import { duffelFetch } from '../utils/duffel'
 import { createServerSupabase } from '../utils/supabase'
 import { enforceRateLimit } from '../utils/rateLimit'
 import { mapOffer } from '../utils/mapOffer'
+import { isValidIata, isValidDate, clampInt } from '../utils/validators'
 
 export default defineEventHandler(async (event) => {
-  // Rate limit: 20 searches per minute per IP
   const ip = getRequestIP(event, { xForwardedFor: true }) || 'unknown'
   enforceRateLimit(event, `search:${ip}`, 20, 60_000, 'Too many searches. Please wait a minute.')
 
   const body = await readBody(event)
-  const { departureDate, returnDate, adults = 1, children = 0, infants = 0, cabinClass = 'economy' } = body
-  // Normalize IATA codes to uppercase immediately so validation and Duffel call are consistent
+  const { departureDate, returnDate, cabinClass = 'economy' } = body
   const origin = String(body.origin || '').toUpperCase()
   const destination = String(body.destination || '').toUpperCase()
 
-  if (!origin || !destination || !departureDate) {
-    throw createError({ statusCode: 400, message: 'Missing required fields: origin, destination, departureDate' })
-  }
-
-  // Validate IATA codes (3 uppercase letters/digits) and date format
-  const iataRe = /^[A-Z0-9]{3}$/
-  if (!iataRe.test(origin) || !iataRe.test(destination)) {
+  if (!isValidIata(origin) || !isValidIata(destination)) {
     throw createError({ statusCode: 400, message: 'Invalid airport IATA code' })
   }
-  const dateRe = /^\d{4}-\d{2}-\d{2}$/
-  if (!dateRe.test(String(departureDate))) {
+  if (!isValidDate(departureDate)) {
     throw createError({ statusCode: 400, message: 'Invalid departure date format' })
   }
-  if (returnDate && !dateRe.test(String(returnDate))) {
+  if (returnDate && !isValidDate(returnDate)) {
     throw createError({ statusCode: 400, message: 'Invalid return date format' })
   }
   const validCabins = ['economy', 'premium_economy', 'business', 'first']
@@ -35,7 +27,6 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, message: 'Invalid cabin class' })
   }
 
-  // Reject past dates (must be today or future)
   const today = new Date().toISOString().split('T')[0]
   if (String(departureDate) < today) {
     throw createError({ statusCode: 400, message: 'Departure date cannot be in the past' })
@@ -44,10 +35,9 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, message: 'Return date cannot be before departure date' })
   }
 
-  // Cap passenger counts to prevent oversized requests
-  const adultsN = Math.min(9, Math.max(1, Number(adults) || 1))
-  const childrenN = Math.min(9, Math.max(0, Number(children) || 0))
-  const infantsN = Math.min(4, Math.max(0, Number(infants) || 0))
+  const adultsN = clampInt(body.adults, 1, 9, 1)
+  const childrenN = clampInt(body.children, 0, 9, 0)
+  const infantsN = clampInt(body.infants, 0, 4, 0)
 
   const slices: any[] = [
     { origin, destination, departure_date: departureDate }

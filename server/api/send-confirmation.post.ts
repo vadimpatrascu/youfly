@@ -1,6 +1,7 @@
 import { createServerSupabase } from '../utils/supabase'
 import { enforceRateLimit } from '../utils/rateLimit'
 import { sendEmail, buildBookingConfirmationEmail } from '../utils/email'
+import { isValidBookingRef, isValidEmail } from '../utils/validators'
 
 /**
  * Send booking confirmation email.
@@ -13,10 +14,10 @@ export default defineEventHandler(async (event) => {
   const body = await readBody(event)
   const { reference, email } = body
 
-  if (!reference || typeof reference !== 'string' || !/^[A-Z0-9]{4,10}$/.test(reference)) {
+  if (!isValidBookingRef(reference)) {
     throw createError({ statusCode: 400, message: 'Invalid booking reference' })
   }
-  if (!email || typeof email !== 'string' || !/^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/.test(email.trim())) {
+  if (!isValidEmail(email)) {
     throw createError({ statusCode: 400, message: 'Invalid email address' })
   }
 

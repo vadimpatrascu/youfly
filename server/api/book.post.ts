@@ -1,6 +1,7 @@
 import { duffelFetch } from '../utils/duffel'
 import { createServerSupabase } from '../utils/supabase'
 import { enforceRateLimit } from '../utils/rateLimit'
+import { isValidDuffelId, isValidDate, isValidEmail, isValidPhone, safeString } from '../utils/validators'
 
 function normalizePhone(phone: string): string {
   if (!phone || !phone.trim()) {
@@ -24,28 +25,26 @@ export default defineEventHandler(async (event) => {
   const body = await readBody(event)
   const { offerId, passengers } = body
 
-  if (!offerId || typeof offerId !== 'string' || !/^[a-zA-Z0-9_-]{1,100}$/.test(offerId)) {
-    throw createError({ statusCode: 400, message: 'offerId and passengers are required' })
+  if (!isValidDuffelId(offerId)) {
+    throw createError({ statusCode: 400, message: 'Valid offerId is required' })
   }
   if (!passengers?.length || !Array.isArray(passengers) || passengers.length > 9) {
-    throw createError({ statusCode: 400, message: 'offerId and passengers are required' })
+    throw createError({ statusCode: 400, message: 'Passengers array is required (max 9)' })
   }
 
-  const dateRe = /^\d{4}-\d{2}-\d{2}$/
-  const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
   for (const p of passengers) {
-    const name = (p.given_name || '').trim()
-    const surname = (p.family_name || '').trim()
-    if (!name || name.length > 100 || !surname || surname.length > 100) {
+    const name = safeString(p.given_name, 100)
+    const surname = safeString(p.family_name, 100)
+    if (!name || !surname) {
       throw createError({ statusCode: 400, message: 'Invalid passenger name' })
     }
-    if (!p.born_on || !dateRe.test(p.born_on)) {
+    if (!isValidDate(p.born_on)) {
       throw createError({ statusCode: 400, message: 'Invalid passenger date of birth' })
     }
-    if (p.email && !emailRe.test(p.email)) {
+    if (p.email && !isValidEmail(p.email)) {
       throw createError({ statusCode: 400, message: 'Invalid passenger email' })
     }
-    if (p.passport_expires && !dateRe.test(p.passport_expires)) {
+    if (p.passport_expires && !isValidDate(p.passport_expires)) {
       throw createError({ statusCode: 400, message: 'Invalid passport expiry date' })
     }
     if (!p.duffelPassengerId || !/^[a-zA-Z0-9_-]{1,100}$/.test(p.duffelPassengerId)) {
