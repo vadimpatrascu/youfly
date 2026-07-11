@@ -80,19 +80,25 @@ export default defineEventHandler(async (event) => {
     // Map offers to simplified format
     const offers = rawOffers.map(mapOffer)
 
-    // Fire-and-forget lead save
+    // Lead save — awaited: fire-and-forget promises die when the serverless
+    // function freezes after responding, so the insert would be lost.
     const supabase = createServerSupabase()
     if (supabase) {
-      supabase.from('flight_leads').insert({
-        from_iata: origin,
-        to_iata: destination,
-        depart_date: departureDate,
-        return_date: returnDate || null,
-        adults: adultsN,
-        children: childrenN,
-        infants: infantsN,
-        cabin_class: cabinClass,
-      }).then(() => {}, (e: any) => logger.warn('Lead insert failed (non-fatal)', { error: e?.message }))
+      try {
+        const { error: leadErr } = await supabase.from('flight_leads').insert({
+          from_iata: origin,
+          to_iata: destination,
+          depart_date: departureDate,
+          return_date: returnDate || null,
+          adults: adultsN,
+          children: childrenN,
+          infants: infantsN,
+          cabin_class: cabinClass,
+        })
+        if (leadErr) logger.warn('Lead insert failed (non-fatal)', { error: leadErr.message })
+      } catch (e: any) {
+        logger.warn('Lead insert failed (non-fatal)', { error: e?.message })
+      }
     }
 
     return { offerRequestId, offers }
