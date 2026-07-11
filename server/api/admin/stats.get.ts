@@ -34,7 +34,7 @@ export default defineEventHandler(async (event) => {
   const [bookingsRes, leadsRes, subscribersRes, contactRes] = await Promise.allSettled([
     // count: 'exact' returns the true table count alongside the recent rows
     supabase.from('bookings').select('id, reference, status, total_amount, currency, created_at', { count: 'exact' }).order('created_at', { ascending: false }).limit(20),
-    supabase.from('leads').select('id, from_iata, to_iata, depart_date, adults, cabin_class, created_at', { count: 'exact' }).order('created_at', { ascending: false }).limit(50),
+    supabase.from('flight_leads').select('id, from_iata, to_iata, depart_date, adults, cabin_class, created_at', { count: 'exact' }).order('created_at', { ascending: false }).limit(50),
     supabase.from('newsletter_subscribers').select('id', { count: 'exact', head: true }),
     supabase.from('contact_messages').select('id, name, email, subject, created_at').order('created_at', { ascending: false }).limit(10),
   ])

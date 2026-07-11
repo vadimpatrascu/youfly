@@ -83,7 +83,7 @@ export default defineEventHandler(async (event) => {
     // Fire-and-forget lead save
     const supabase = createServerSupabase()
     if (supabase) {
-      supabase.from('leads').insert({
+      supabase.from('flight_leads').insert({
         from_iata: origin,
         to_iata: destination,
         depart_date: departureDate,
