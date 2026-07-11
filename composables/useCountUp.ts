@@ -2,7 +2,10 @@
  * Animated count-up effect — counts from 0 to target number when element enters viewport.
  */
 export function useCountUp(target: number, duration = 1500) {
-  const current = ref(0)
+  // Start at the target so SSR output (and crawlers) see the real number
+  // instead of "0". The client animates 0 → target once the element scrolls
+  // into view; initial values match, so hydration is clean.
+  const current = ref(target)
   const el = ref<HTMLElement>()
   const hasAnimated = ref(false)
 

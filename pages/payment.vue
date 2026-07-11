@@ -6,19 +6,18 @@ useHead({ title: computed(() => `${t('payment.title')} — YouFly`), meta: [{ na
 const bookingStore = useBookingStore()
 const router = useRouter()
 
-onMounted(() => {
-  if (!bookingStore.selectedOffer || !bookingStore.passengers.length) {
-    router.push('/')
-  }
-})
+// Duffel Payments web component (Stripe-backed, PCI handled by Duffel)
+const DUFFEL_COMPONENT_SRC = 'https://assets.duffel.com/components/3.16.1/duffel-payments.js'
 
-const cardNumber = ref('')
-const cardExpiry = ref('')
-const cardCvv = ref('')
-const cardName = ref('')
-const isProcessing = ref(false)
-const payErrors = ref<Record<string, string>>({})
-const { formatPrice, formatTime, stopsLabel } = useFormatters()
+const initState = ref<'loading' | 'ready' | 'unavailable'>('loading')
+const isBookingTickets = ref(false)
+const payError = ref('')
+const paymentIntentId = ref('')
+const clientToken = ref('')
+const chargeAmount = ref('')
+const chargeCurrency = ref('')
+
+const { formatPrice, formatPriceExact, formatTime, stopsLabel } = useFormatters()
 const { formatWithMdl, showMdl } = useCurrency()
 
 // Offer expiry countdown
@@ -32,42 +31,76 @@ function passengerTypeLabel(type: string) {
   return type
 }
 
-function cardBrand(num: string): string {
-  const n = num.replace(/\s/g, '')
-  if (n.startsWith('4')) return 'VISA'
-  if (/^5[1-5]/.test(n) || /^2[2-7]/.test(n)) return 'MC'
-  if (/^3[47]/.test(n)) return 'AMEX'
-  return '••••'
+let scriptPromise: Promise<void> | null = null
+function loadDuffelComponent(): Promise<void> {
+  if (typeof customElements !== 'undefined' && customElements.get('duffel-payments')) {
+    return Promise.resolve()
+  }
+  if (!scriptPromise) {
+    scriptPromise = new Promise((resolve, reject) => {
+      const s = document.createElement('script')
+      s.src = DUFFEL_COMPONENT_SRC
+      s.async = true
+      s.onload = () => resolve()
+      s.onerror = () => { scriptPromise = null; reject(new Error('component_load_failed')) }
+      document.head.appendChild(s)
+    })
+  }
+  return scriptPromise
 }
 
-function validateCard(): boolean {
-  payErrors.value = {}
-  const digits = cardNumber.value.replace(/\s/g, '')
-  if (digits.length < 13) payErrors.value.cardNumber = t('payment.errorCardNumber')
-  if (!cardName.value.trim()) payErrors.value.cardName = t('payment.errorRequired')
-  if (cardExpiry.value.length < 5) payErrors.value.cardExpiry = t('payment.errorExpiry')
-  if (cardCvv.value.length < 3) payErrors.value.cardCvv = t('payment.errorCvv')
-  return Object.keys(payErrors.value).length === 0
+async function onPaymentSucceeded() {
+  payError.value = ''
+  isBookingTickets.value = true
+  const ok = await bookingStore.submitBooking(paymentIntentId.value)
+  if (ok) {
+    router.push('/booking-confirm')
+  } else {
+    isBookingTickets.value = false
+  }
 }
 
-async function pay() {
-  if (!validateCard()) return
-  isProcessing.value = true
-  await new Promise(r => setTimeout(r, 1800))
-  const ok = await bookingStore.submitBooking()
-  isProcessing.value = false
-  if (ok) router.push('/booking-confirm')
+function onPaymentFailed() {
+  // The component shows field-level card errors itself; this is the final failure event
+  payError.value = t('payment.paymentFailed')
 }
 
-function formatCardNumber(e: Event) {
-  let v = (e.target as HTMLInputElement).value.replace(/\D/g, '').substring(0, 16)
-  cardNumber.value = v.replace(/(.{4})/g, '$1 ').trim()
+async function setupPayment() {
+  const offer = bookingStore.selectedOffer
+  if (!offer || isExpired.value) return
+  initState.value = 'loading'
+  payError.value = ''
+  try {
+    const intent = await $fetch<any>('/api/payment/intent', {
+      method: 'POST',
+      body: { offerId: offer.id },
+    })
+    paymentIntentId.value = intent.paymentIntentId
+    clientToken.value = intent.clientToken
+    chargeAmount.value = intent.amount
+    chargeCurrency.value = intent.currency
+
+    await loadDuffelComponent()
+    initState.value = 'ready'
+    await nextTick()
+
+    const el = document.querySelector('duffel-payments') as any
+    if (!el) throw new Error('element_missing')
+    el.render({ paymentIntentClientToken: clientToken.value })
+    el.addEventListener('onSuccessfulPayment', onPaymentSucceeded)
+    el.addEventListener('onFailedPayment', onPaymentFailed)
+  } catch {
+    initState.value = 'unavailable'
+  }
 }
-function formatExpiry(e: Event) {
-  let v = (e.target as HTMLInputElement).value.replace(/\D/g, '').substring(0, 4)
-  if (v.length >= 3) v = v.substring(0, 2) + '/' + v.substring(2)
-  cardExpiry.value = v
-}
+
+onMounted(() => {
+  if (!bookingStore.selectedOffer || !bookingStore.passengers.length) {
+    router.push('/')
+    return
+  }
+  setupPayment()
+})
 </script>
 
 <template>
@@ -93,106 +126,53 @@ function formatExpiry(e: Event) {
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-      <!-- Card form -->
+      <!-- Payment column -->
       <div class="bg-white rounded-2xl border border-gray-200 p-6">
         <div class="flex items-center gap-2 mb-6">
           <div class="w-8 h-8 rounded-lg bg-brand-50 flex items-center justify-center">
             <svg class="w-4 h-4 text-brand-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
           </div>
           <h2 class="font-semibold text-gray-900">{{ t('payment.cardDetails') }}</h2>
-          <!-- Accepted card brands with auto-highlight -->
-          <div class="ml-auto flex items-center gap-1">
-            <span class="text-[10px] font-black px-1.5 py-0.5 rounded border transition-colors"
-              :class="cardBrand(cardNumber) === 'VISA' ? 'bg-blue-600 text-white border-blue-600' : 'bg-gray-50 text-gray-400 border-gray-200'">VISA</span>
-            <span class="text-[10px] font-black px-1.5 py-0.5 rounded border transition-colors"
-              :class="cardBrand(cardNumber) === 'MC' ? 'bg-red-500 text-white border-red-500' : 'bg-gray-50 text-gray-400 border-gray-200'">MC</span>
-            <span class="text-[10px] font-black px-1.5 py-0.5 rounded border transition-colors"
-              :class="cardBrand(cardNumber) === 'AMEX' ? 'bg-blue-800 text-white border-blue-800' : 'bg-gray-50 text-gray-400 border-gray-200'">AMEX</span>
-          </div>
         </div>
 
-        <!-- Card visual (decorative) -->
-        <div aria-hidden="true" class="bg-gradient-to-br from-brand-600 via-brand-700 to-brand-900 text-white rounded-2xl p-5 mb-6 h-44 flex flex-col justify-between shadow-xl relative overflow-hidden">
-          <div class="absolute inset-0 opacity-10" style="background: radial-gradient(circle at 70% 30%, white 0%, transparent 60%)"></div>
-          <div class="flex justify-between items-start relative z-10">
-            <span class="text-sm font-medium opacity-80">YouFly</span>
-            <span class="font-bold text-sm tracking-widest opacity-90">{{ cardNumber ? cardBrand(cardNumber) : '' }}</span>
-            <span aria-hidden="true" class="text-3xl">✈</span>
+        <!-- Amount to charge (offer total + card processing fee) -->
+        <div v-if="chargeAmount && !isExpired" class="mb-5 p-4 rounded-xl bg-gray-50 border border-gray-100">
+          <div class="flex justify-between items-center">
+            <span class="text-sm text-gray-600">{{ t('payment.total') }}</span>
+            <span class="text-2xl font-black text-brand-600">{{ formatPriceExact(chargeAmount, chargeCurrency) }}</span>
           </div>
-          <div class="font-mono text-xl tracking-[0.2em] relative z-10">{{ cardNumber || '•••• •••• •••• ••••' }}</div>
-          <div class="flex justify-between items-end relative z-10">
-            <div>
-              <div class="text-xs opacity-60 mb-0.5">{{ t('payment.nameOnCard') }}</div>
-              <div class="font-semibold uppercase text-sm">{{ cardName || '—' }}</div>
-            </div>
-            <div class="text-right">
-              <div class="text-xs opacity-60 mb-0.5">{{ t('payment.expiry') }}</div>
-              <div class="font-semibold">{{ cardExpiry || 'MM/YY' }}</div>
-            </div>
-          </div>
+          <p class="text-xs text-gray-400 mt-1">{{ t('payment.processingFeeNote') }}</p>
         </div>
 
-        <form @submit.prevent="pay" novalidate class="space-y-4">
-          <div>
-            <label for="pay-cardnumber" class="block text-sm font-medium text-gray-700 mb-1">{{ t('payment.cardNumber') }}</label>
-            <input id="pay-cardnumber" :value="cardNumber" @input="formatCardNumber" type="text" inputmode="numeric" maxlength="19"
-              placeholder="1234 5678 9012 3456" :aria-invalid="!!payErrors.cardNumber"
-              :aria-describedby="payErrors.cardNumber ? 'pay-cardnumber-error' : undefined"
-              autocomplete="cc-number" required
-              class="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 font-mono tracking-wider"
-              :class="payErrors.cardNumber ? 'border-red-400 bg-red-50' : 'border-gray-300'" />
-            <p v-if="payErrors.cardNumber" id="pay-cardnumber-error" role="alert" class="text-xs text-red-500 mt-1">{{ payErrors.cardNumber }}</p>
-          </div>
-          <div>
-            <label for="pay-cardname" class="block text-sm font-medium text-gray-700 mb-1">{{ t('payment.nameOnCard') }}</label>
-            <input id="pay-cardname" v-model="cardName" type="text" :placeholder="t('payment.nameOnCardPlaceholder')"
-              :aria-invalid="!!payErrors.cardName"
-              :aria-describedby="payErrors.cardName ? 'pay-cardname-error' : undefined"
-              autocomplete="cc-name" required
-              class="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500"
-              :class="payErrors.cardName ? 'border-red-400 bg-red-50' : 'border-gray-300'" />
-            <p v-if="payErrors.cardName" id="pay-cardname-error" role="alert" class="text-xs text-red-500 mt-1">{{ payErrors.cardName }}</p>
-          </div>
-          <div class="grid grid-cols-2 gap-4">
-            <div>
-              <label for="pay-expiry" class="block text-sm font-medium text-gray-700 mb-1">{{ t('payment.expiry') }}</label>
-              <input id="pay-expiry" :value="cardExpiry" @input="formatExpiry" type="text" inputmode="numeric" maxlength="5" placeholder="MM/YY"
-                :aria-invalid="!!payErrors.cardExpiry"
-                :aria-describedby="payErrors.cardExpiry ? 'pay-expiry-error' : undefined"
-                autocomplete="cc-exp" required
-                class="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 font-mono"
-                :class="payErrors.cardExpiry ? 'border-red-400 bg-red-50' : 'border-gray-300'" />
-              <p v-if="payErrors.cardExpiry" id="pay-expiry-error" role="alert" class="text-xs text-red-500 mt-1">{{ payErrors.cardExpiry }}</p>
-            </div>
-            <div>
-              <label for="pay-cvv" class="block text-sm font-medium text-gray-700 mb-1">{{ t('payment.cvv') }}</label>
-              <input id="pay-cvv" v-model="cardCvv" type="text" inputmode="numeric" maxlength="4" placeholder="•••"
-                :aria-invalid="!!payErrors.cardCvv"
-                :aria-describedby="payErrors.cardCvv ? 'pay-cvv-error' : undefined"
-                autocomplete="cc-csc" required
-                class="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 font-mono"
-                :class="payErrors.cardCvv ? 'border-red-400 bg-red-50' : 'border-gray-300'" />
-              <p v-if="payErrors.cardCvv" id="pay-cvv-error" role="alert" class="text-xs text-red-500 mt-1">{{ payErrors.cardCvv }}</p>
-            </div>
-          </div>
+        <!-- Loading payment form -->
+        <div v-if="initState === 'loading' && !isExpired" role="status" :aria-label="t('common.loading')" class="flex flex-col items-center gap-3 py-12">
+          <div class="w-10 h-10 border-4 border-brand-500 border-t-transparent rounded-full animate-spin"></div>
+          <p class="text-sm text-gray-400">{{ t('common.loading') }}</p>
+        </div>
 
+        <!-- Payments not available -->
+        <div v-else-if="initState === 'unavailable'" role="alert" class="bg-orange-50 border border-orange-200 rounded-xl p-5 text-center">
+          <p class="text-orange-700 text-sm mb-4">{{ t('payment.unavailable') }}</p>
+          <button @click="setupPayment" class="px-5 py-2.5 bg-brand-600 text-white rounded-xl text-sm font-semibold hover:bg-brand-700 transition-colors">{{ t('payment.retry') }}</button>
+        </div>
+
+        <!-- Duffel Payments card form (Stripe-backed, 3D Secure included) -->
+        <div v-show="initState === 'ready' && !isExpired && !isBookingTickets">
+          <duffel-payments></duffel-payments>
+        </div>
+
+        <!-- Issuing tickets after successful charge -->
+        <div v-if="isBookingTickets" role="status" class="flex flex-col items-center gap-3 py-10">
+          <div class="w-10 h-10 border-4 border-green-500 border-t-transparent rounded-full animate-spin"></div>
+          <p class="text-sm font-medium text-gray-700">{{ t('payment.issuingTickets') }}</p>
+        </div>
+
+        <p v-if="payError" role="alert" class="mt-4 text-red-600 text-sm bg-red-50 p-3 rounded-xl">{{ payError }}</p>
         <p v-if="bookingStore.bookingError" role="alert" class="mt-4 text-red-600 text-sm bg-red-50 p-3 rounded-xl">{{ bookingStore.bookingError }}</p>
 
-        <button type="submit" :disabled="isProcessing || !cardName.trim() || isExpired"
-          class="mt-6 w-full py-4 bg-brand-600 hover:bg-brand-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-semibold rounded-xl text-lg transition-all shadow-lg hover:shadow-brand-500/30 hover:shadow-xl glow-cta">
-          <span v-if="isProcessing" class="flex items-center justify-center gap-2">
-            <div role="status" :aria-label="t('common.loading')" class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-            {{ t('payment.processing') }}
-          </span>
-          <span v-else>
-            {{ t('payment.pay') }} {{ bookingStore.selectedOffer ? formatPrice(bookingStore.selectedOffer.total_amount, bookingStore.selectedOffer.total_currency) : '' }}
-          </span>
-        </button>
-        <p class="text-xs text-center text-gray-400 mt-3">{{ t('payment.demo') }}</p>
-
         <!-- Trust seals -->
-        <div class="mt-4 pt-4 border-t border-gray-100">
-          <div class="flex items-center justify-center gap-4 text-xs text-gray-400 mb-3">
+        <div class="mt-5 pt-4 border-t border-gray-100">
+          <div class="flex items-center justify-center gap-4 text-xs text-gray-400">
             <span class="flex items-center gap-1.5">
               <svg class="w-4 h-4 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
               {{ t('payment.trustSsl') }}
@@ -206,9 +186,7 @@ function formatExpiry(e: Event) {
               {{ t('payment.trust3d') }}
             </span>
           </div>
-          <p class="text-[10px] text-gray-300 text-center">{{ t('payment.processor') }}</p>
         </div>
-        </form>
       </div>
 
       <!-- Summary -->
@@ -239,13 +217,6 @@ function formatExpiry(e: Event) {
               </div>
             </div>
             <div class="space-y-2 pt-1">
-              <!-- Per-passenger breakdown -->
-              <div v-if="bookingStore.passengers.length > 1" class="space-y-1 pb-2 mb-2 border-b border-gray-100">
-                <div v-for="p in bookingStore.passengers" :key="p.duffelPassengerId" class="flex justify-between text-xs text-gray-400">
-                  <span>{{ p.given_name }} {{ p.family_name }} <span class="text-gray-300">({{ passengerTypeLabel(p.type) }})</span></span>
-                  <span>{{ formatPrice((parseFloat(bookingStore.selectedOffer.total_amount) / bookingStore.passengers.length).toFixed(2), bookingStore.selectedOffer.total_currency) }}</span>
-                </div>
-              </div>
               <div class="flex justify-between text-sm text-gray-500">
                 <span>{{ t('payment.baseFare') }}</span>
                 <span>{{ formatPrice(bookingStore.selectedOffer.base_amount || bookingStore.selectedOffer.total_amount, bookingStore.selectedOffer.total_currency) }}</span>
@@ -254,11 +225,16 @@ function formatExpiry(e: Event) {
                 <span>{{ t('payment.taxes') }}</span>
                 <span>{{ formatPrice(bookingStore.selectedOffer.tax_amount || '0', bookingStore.selectedOffer.total_currency) }}</span>
               </div>
+              <div v-if="chargeAmount" class="flex justify-between text-sm text-gray-500">
+                <span>{{ t('payment.processingFee') }}</span>
+                <span>{{ formatPriceExact(String(Math.max(0, parseFloat(chargeAmount) - parseFloat(bookingStore.selectedOffer.total_amount)).toFixed(2)), chargeCurrency) }}</span>
+              </div>
               <div class="flex justify-between font-bold text-gray-900 pt-2 border-t">
                 <span>{{ t('payment.total') }}</span>
                 <div class="text-right">
-                  <span class="text-brand-600 text-xl">{{ formatWithMdl(bookingStore.selectedOffer.total_amount, bookingStore.selectedOffer.total_currency) }}</span>
-                  <span v-if="showMdl" class="block text-xs text-gray-400 font-normal">≈ {{ formatPrice(bookingStore.selectedOffer.total_amount, bookingStore.selectedOffer.total_currency) }}</span>
+                  <span v-if="!showMdl" class="text-brand-600 text-xl">{{ formatPriceExact(chargeAmount || bookingStore.selectedOffer.total_amount, chargeCurrency || bookingStore.selectedOffer.total_currency) }}</span>
+                  <span v-else class="text-brand-600 text-xl">{{ formatWithMdl(chargeAmount || bookingStore.selectedOffer.total_amount, chargeCurrency || bookingStore.selectedOffer.total_currency) }}</span>
+                  <span v-if="showMdl" class="block text-xs text-gray-400 font-normal">≈ {{ formatPriceExact(chargeAmount || bookingStore.selectedOffer.total_amount, chargeCurrency || bookingStore.selectedOffer.total_currency) }}</span>
                 </div>
               </div>
             </div>

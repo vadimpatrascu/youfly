@@ -32,18 +32,21 @@ export default defineEventHandler(async (event) => {
 
   // Use allSettled so one failing table doesn't crash the dashboard
   const [bookingsRes, leadsRes, subscribersRes, contactRes] = await Promise.allSettled([
-    supabase.from('bookings').select('id, reference, status, total_amount, currency, created_at').order('created_at', { ascending: false }).limit(20),
-    supabase.from('leads').select('id, from_iata, to_iata, depart_date, adults, cabin_class, created_at').order('created_at', { ascending: false }).limit(50),
+    // count: 'exact' returns the true table count alongside the recent rows
+    supabase.from('bookings').select('id, reference, status, total_amount, currency, created_at', { count: 'exact' }).order('created_at', { ascending: false }).limit(20),
+    supabase.from('leads').select('id, from_iata, to_iata, depart_date, adults, cabin_class, created_at', { count: 'exact' }).order('created_at', { ascending: false }).limit(50),
     supabase.from('newsletter_subscribers').select('id', { count: 'exact', head: true }),
     supabase.from('contact_messages').select('id, name, email, subject, created_at').order('created_at', { ascending: false }).limit(10),
   ])
 
   const bookings = (bookingsRes.status === 'fulfilled' ? bookingsRes.value.data : null) || []
+  const bookingsTotal = (bookingsRes.status === 'fulfilled' ? (bookingsRes.value as any).count : null) ?? bookings.length
   const leads = (leadsRes.status === 'fulfilled' ? leadsRes.value.data : null) || []
+  const leadsTotal = (leadsRes.status === 'fulfilled' ? (leadsRes.value as any).count : null) ?? leads.length
   const newsletterCount = (subscribersRes.status === 'fulfilled' ? (subscribersRes.value as any).count : null) || 0
   const contactMessages = (contactRes.status === 'fulfilled' ? contactRes.value.data : null) || []
 
-  // Aggregate stats
+  // Aggregate stats (revenue/confirmed are computed over the 20 most recent bookings)
   const totalRevenue = bookings.reduce((sum, b) => sum + (parseFloat(b.total_amount) || 0), 0)
   const confirmedCount = bookings.filter(b => b.status === 'confirmed').length
 
@@ -57,10 +60,10 @@ export default defineEventHandler(async (event) => {
 
   return {
     summary: {
-      totalBookings: bookings.length,
+      totalBookings: bookingsTotal,
       confirmedBookings: confirmedCount,
       totalRevenue: Math.round(totalRevenue * 100) / 100,
-      totalLeads: leads.length,
+      totalLeads: leadsTotal,
       newsletterSubscribers: newsletterCount,
     },
     topDestinations,

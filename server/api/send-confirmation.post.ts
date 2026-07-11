@@ -21,6 +21,11 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, message: 'Invalid email address' })
   }
 
+  // Per-reference limit: max 3 confirmation emails per booking per hour,
+  // regardless of requester IP — prevents using this endpoint to spam
+  // arbitrary addresses with someone's booking details.
+  enforceRateLimit(event, `email-ref:${String(reference).toUpperCase()}`, 3, 60 * 60_000)
+
   // Look up booking from Supabase
   const supabase = createServerSupabase()
   if (!supabase) {
@@ -29,12 +34,21 @@ export default defineEventHandler(async (event) => {
 
   const { data: booking } = await supabase
     .from('bookings')
-    .select('reference, status, total_amount, currency, raw_offer, created_at')
+    .select('reference, status, total_amount, currency, raw_offer, created_at, passengers(email)')
     .eq('reference', reference)
     .maybeSingle()
 
   if (!booking) {
     throw createError({ statusCode: 404, message: 'Booking not found' })
+  }
+
+  // Only allow sending to an email that belongs to the booking.
+  // (Bookings always store the lead passenger's email.)
+  const bookingEmails = ((booking as any).passengers || [])
+    .map((p: any) => (p?.email || '').trim().toLowerCase())
+    .filter(Boolean)
+  if (bookingEmails.length && !bookingEmails.includes(email.trim().toLowerCase())) {
+    throw createError({ statusCode: 403, message: 'Email does not match this booking' })
   }
 
   // Build flight details from offer

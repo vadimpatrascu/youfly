@@ -21,9 +21,10 @@ export default defineNuxtPlugin(() => {
   script.src = `https://www.googletagmanager.com/gtag/js?id=${gaId}`
   document.head.appendChild(script)
 
-  // Initialize gtag
+  // Initialize gtag — MUST push the `arguments` object, not a real array;
+  // gtag.js silently ignores plain arrays.
   ;(window as any).dataLayer = (window as any).dataLayer || []
-  function gtag(...args: any[]) { (window as any).dataLayer.push(args) }
+  function gtag(..._args: any[]) { (window as any).dataLayer.push(arguments) }
   ;(window as any).gtag = gtag
   gtag('js', new Date())
   gtag('config', gaId, {

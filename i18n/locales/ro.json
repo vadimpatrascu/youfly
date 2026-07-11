@@ -39,7 +39,7 @@
   "hero": {
     "title": "Găsește zborul perfect",
     "subtitle": "Caută sute de companii aeriene. Compară prețurile. Rezervă în câteva minute.",
-    "badge": "Chișinău (KIV) — 25+ companii aeriene",
+    "badge": "Chișinău (RMO) — 25+ companii aeriene",
     "reviews": "recenzii"
   },
   "search": {
@@ -217,6 +217,7 @@
     "loadError": "Eroare la încărcarea detaliilor.",
     "searchAgain": "Caută din nou",
     "requiredFields": "Vă rugăm completați toate câmpurile obligatorii (*).",
+    "ageInvalid": "Verificați datele de naștere: adult 18+, copil 2–17 ani, bebeluș sub 2 ani la data plecării.",
     "insuranceTitle": "Asigurare de călătorie — de la €5",
     "insuranceDesc": "Acoperă urgențe medicale, anulări, bagaje pierdute și întârzieri de zbor în toată Europa."
   },
@@ -243,6 +244,13 @@
     "stops": "escală(e)",
     "trustSsl": "SSL Securizat",
     "trustPci": "PCI DSS",
+    "processingFee": "Comision procesare",
+    "processingFeeNote": "Include comisionul de procesare a plății cu cardul",
+    "unavailable": "Plățile nu sunt disponibile momentan. Încercați din nou sau contactați-ne.",
+    "retry": "Încearcă din nou",
+    "paymentFailed": "Plata nu a fost procesată. Verificați datele cardului și încercați din nou.",
+    "issuingTickets": "Plată reușită — emitem biletele...",
+    "refundNotice": "Rezervarea nu a putut fi finalizată. Plata va fi rambursată automat.",
     "trust3d": "3D Secure",
     "errorCardNumber": "Număr card invalid",
     "errorRequired": "Câmp obligatoriu",

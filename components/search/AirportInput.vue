@@ -135,6 +135,7 @@ onClickOutside(containerRef, () => { isOpen.value = false })
         class="w-full px-4 py-3 text-left flex items-center gap-3 border-b border-gray-100 last:border-0 transition-colors"
         :class="i === highlightedIndex ? 'bg-brand-50' : 'hover:bg-gray-50'"
         @mousedown.prevent="select(airport)"
+        @click.prevent="select(airport)"
       >
         <!-- Flag or city/airport icon -->
         <div class="shrink-0 w-9 text-center">

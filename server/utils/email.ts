@@ -1,7 +1,7 @@
 /**
  * Email utility — sends transactional emails.
  * Supports Resend (RESEND_API_KEY) or falls back to console logging.
- *
+ */
 import { logger } from './logger'
 
 /**

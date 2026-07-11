@@ -22,11 +22,22 @@ export function useFormatters() {
     return new Intl.NumberFormat(locale.value, { style: 'currency', currency, minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(parseFloat(amount))
   }
 
+  /** Exact price with cents — REQUIRED wherever a real charge amount is shown */
+  function formatPriceExact(amount: string, currency: string): string {
+    const n = parseFloat(amount)
+    const hasCents = Math.round(n * 100) % 100 !== 0
+    return new Intl.NumberFormat(locale.value, {
+      style: 'currency', currency,
+      minimumFractionDigits: hasCents ? 2 : 0,
+      maximumFractionDigits: hasCents ? 2 : 0,
+    }).format(n)
+  }
+
   function stopsLabel(stops: number): string {
     if (stops === 0) return t('flightCard.direct')
     if (stops === 1) return `1 ${t('flightCard.stop')}`
     return `${stops} ${t('flightCard.stops')}`
   }
 
-  return { formatDuration, formatTime, formatDate, formatPrice, stopsLabel }
+  return { formatDuration, formatTime, formatDate, formatPrice, formatPriceExact, stopsLabel }
 }

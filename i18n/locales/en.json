@@ -39,7 +39,7 @@
   "hero": {
     "title": "Find Your Perfect Flight",
     "subtitle": "Search hundreds of airlines. Compare prices. Book in minutes.",
-    "badge": "Chișinău (KIV) — 25+ airlines",
+    "badge": "Chișinău (RMO) — 25+ airlines",
     "reviews": "reviews"
   },
   "search": {
@@ -217,6 +217,7 @@
     "loadError": "Failed to load offer details.",
     "searchAgain": "Search Again",
     "requiredFields": "Please fill in all required fields (*).",
+    "ageInvalid": "Check dates of birth: adult 18+, child 2–17, infant under 2 at the departure date.",
     "insuranceTitle": "Travel Insurance — from €5",
     "insuranceDesc": "Covers medical emergencies, trip cancellation, lost baggage, and flight delays across Europe."
   },
@@ -243,6 +244,13 @@
     "stops": "stop(s)",
     "trustSsl": "SSL Secure",
     "trustPci": "PCI DSS",
+    "processingFee": "Processing fee",
+    "processingFeeNote": "Includes the card processing fee",
+    "unavailable": "Payments are currently unavailable. Please try again or contact us.",
+    "retry": "Try again",
+    "paymentFailed": "Payment was not processed. Check your card details and try again.",
+    "issuingTickets": "Payment successful — issuing your tickets...",
+    "refundNotice": "The booking could not be completed. Your payment will be refunded automatically.",
     "trust3d": "3D Secure",
     "errorCardNumber": "Invalid card number",
     "errorRequired": "Required field",

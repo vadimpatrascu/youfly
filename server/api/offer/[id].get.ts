@@ -1,5 +1,6 @@
 import { duffelFetch } from '../../utils/duffel'
 import { enforceRateLimit } from '../../utils/rateLimit'
+import { mapOffer } from '../../utils/mapOffer'
 import { isValidDuffelId } from '../../utils/validators'
 
 export default defineEventHandler(async (event) => {
@@ -12,7 +13,8 @@ export default defineEventHandler(async (event) => {
 
   try {
     const res = await duffelFetch<any>(`/air/offers/${id}`)
-    return res.data
+    // Map to the simplified shape — never expose raw Duffel API internals
+    return mapOffer(res.data)
   } catch (e: any) {
     throw createError({ statusCode: e?.statusCode || 500, message: e?.message || 'Offer not found' })
   }

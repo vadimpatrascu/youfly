@@ -12,22 +12,33 @@ async function sleep(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms))
 }
 
+/**
+ * @param retryOverride Set to 0 for NON-IDEMPOTENT calls (order creation,
+ * payment confirmation): a retry after an ambiguous 5xx/timeout could
+ * double-book or double-confirm.
+ */
 export async function duffelFetch<T>(
   path: string,
-  options: Parameters<typeof $fetch>[1] = {}
+  options: Parameters<typeof $fetch>[1] = {},
+  retryOverride?: number
 ): Promise<T> {
   const config = useRuntimeConfig()
   const token = config.duffelApiToken
+  // Overridable for staging/integration tests (NUXT_DUFFEL_API_BASE)
+  const apiBase = (config as any).duffelApiBase || 'https://api.duffel.com'
 
   if (!token) {
     throw createError({ statusCode: 503, message: 'Duffel API not configured' })
   }
 
   let lastError: any = null
+  const startedAt = Date.now()
+  const TOTAL_BUDGET_MS = 45_000 // don't start a retry if we'd likely exceed the function budget
+  const maxRetries = retryOverride ?? MAX_RETRIES
 
-  for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
     try {
-      return await $fetch<T>(`https://api.duffel.com${path}`, {
+      return await $fetch<T>(`${apiBase}${path}`, {
         ...options,
         signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
         headers: {
@@ -47,10 +58,10 @@ export async function duffelFetch<T>(
         break
       }
 
-      // Retry on 429 or 5xx
-      if (attempt < MAX_RETRIES && (status === 429 || status >= 500)) {
+      // Retry on 429, 5xx, or transport failures (timeout/abort/network — no HTTP status)
+      if (attempt < maxRetries && (status === 429 || status >= 500 || status === 0) && Date.now() - startedAt < TOTAL_BUDGET_MS) {
         const delay = RETRY_DELAY_MS * Math.pow(2, attempt) // Exponential backoff: 1s, 2s
-        logger.warn('Duffel retry', { attempt: attempt + 1, maxRetries: MAX_RETRIES, path, status, delayMs: delay })
+        logger.warn('Duffel retry', { attempt: attempt + 1, maxRetries, path, status, delayMs: delay })
         await sleep(delay)
         continue
       }

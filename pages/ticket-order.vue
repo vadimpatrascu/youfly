@@ -62,15 +62,45 @@ onMounted(async () => {
 })
 
 const emailRe = /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/
+const hasAgeError = ref(false)
+
+/** Age in full years at the departure date */
+function ageAtDeparture(bornOn: string): number | null {
+  const depIso = bookingStore.selectedOffer?.slices?.[0]?.departing_at
+  if (!bornOn || !depIso) return null
+  const dob = new Date(bornOn)
+  const dep = new Date(depIso)
+  if (isNaN(dob.getTime()) || isNaN(dep.getTime())) return null
+  let age = dep.getFullYear() - dob.getFullYear()
+  const beforeBirthday = dep.getMonth() < dob.getMonth() ||
+    (dep.getMonth() === dob.getMonth() && dep.getDate() < dob.getDate())
+  if (beforeBirthday) age--
+  return age
+}
+
+/** Duffel passenger types: infant_without_seat < 2, child 2–17, adult 18+ */
+function ageMatchesType(type: string, age: number): boolean {
+  if (type === 'infant_without_seat') return age >= 0 && age < 2
+  if (type === 'child') return age >= 2 && age < 18
+  return age >= 18
+}
 
 function validate(): boolean {
   errors.value = {}
+  hasAgeError.value = false
   passengerForms.value.forEach((p, i) => {
     if (!p.given_name?.trim()) errors.value[`${i}_given_name`] = '!'
     else if (p.given_name.trim().length > 100) errors.value[`${i}_given_name`] = '!'
     if (!p.family_name?.trim()) errors.value[`${i}_family_name`] = '!'
     else if (p.family_name.trim().length > 100) errors.value[`${i}_family_name`] = '!'
     if (!p.born_on) errors.value[`${i}_born_on`] = '!'
+    else {
+      const age = ageAtDeparture(p.born_on)
+      if (age !== null && !ageMatchesType(p.type, age)) {
+        errors.value[`${i}_born_on`] = '!'
+        hasAgeError.value = true
+      }
+    }
     if (i === 0) {
       if (!p.email?.trim()) errors.value[`${i}_email`] = '!'
       else if (!emailRe.test(p.email.trim())) errors.value[`${i}_email`] = '!'
@@ -263,6 +293,7 @@ function typeLabel(type: string) {
 
         <div v-if="Object.keys(errors).length" role="alert" class="bg-red-50 border border-red-200 rounded-xl p-3 text-sm text-red-600">
           {{ t('passengers.requiredFields') }}
+          <span v-if="hasAgeError" class="block mt-1">{{ t('passengers.ageInvalid') }}</span>
         </div>
 
         <!-- Travel insurance promo -->

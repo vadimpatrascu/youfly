@@ -1,5 +1,5 @@
 /// YouFly Service Worker — Offline-first PWA support
-const CACHE_VERSION = 'youfly-v131';
+const CACHE_VERSION = 'youfly-v132';
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 
@@ -45,6 +45,11 @@ self.addEventListener('fetch', (event) => {
 
   // Skip external requests
   if (url.origin !== self.location.origin) return;
+
+  // Personal / sensitive API responses: never cache (privacy on shared devices)
+  if (url.pathname.startsWith('/api/booking/') || url.pathname.startsWith('/api/admin/')) {
+    return;
+  }
 
   // API requests: network-first with timeout fallback
   if (url.pathname.startsWith('/api/')) {

@@ -29,12 +29,22 @@ export default defineNuxtConfig({
     },
   },
 
+  vue: {
+    compilerOptions: {
+      // Duffel Payments card form is a web component
+      isCustomElement: (tag) => tag === 'duffel-payments',
+    },
+  },
+
   runtimeConfig: {
     duffelApiToken: '',
+    duffelApiBase: '', // override for staging/integration tests; defaults to https://api.duffel.com
     supabaseUrl: '',
     supabaseServiceRoleKey: '',
     resendApiKey: '',
     adminSecret: process.env.NUXT_ADMIN_SECRET || '',
+    // Duffel Payments processing fee rate used to gross up the charge (0.029 = 2.9%)
+    paymentsFeeRate: process.env.NUXT_PAYMENTS_FEE_RATE || '0.029',
     public: {
       siteUrl: 'https://youfly-xi.vercel.app',
       gaId: '', // Set NUXT_PUBLIC_GA_ID env var to enable Google Analytics
@@ -108,11 +118,13 @@ export default defineNuxtConfig({
           // CSP: allow Google Fonts, block all other external origins
           'Content-Security-Policy': [
             "default-src 'self'",
-            "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com",
+            // assets.duffel.com + js.stripe.com: Duffel Payments card component (Stripe under the hood)
+            "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://assets.duffel.com https://js.stripe.com",
             "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
             "font-src 'self' https://fonts.gstatic.com",
-            "img-src 'self' data: blob: https://images.unsplash.com https://www.gstatic.com",
-            "connect-src 'self' https://www.google-analytics.com https://analytics.google.com https://www.googletagmanager.com https://region1.google-analytics.com",
+            "img-src 'self' data: blob: https://images.unsplash.com https://www.gstatic.com https://*.stripe.com",
+            "connect-src 'self' https://www.google-analytics.com https://analytics.google.com https://www.googletagmanager.com https://region1.google-analytics.com https://api.stripe.com https://m.stripe.network https://r.stripe.com",
+            "frame-src 'self' https://js.stripe.com https://hooks.stripe.com",
             "frame-ancestors 'self'",
             "object-src 'none'",
             "base-uri 'self'",

@@ -1,8 +1,13 @@
 import { duffelFetch } from '../utils/duffel'
 import { createServerSupabase } from '../utils/supabase'
 import { enforceRateLimit } from '../utils/rateLimit'
+import { getPaymentIntent, confirmPaymentIntent, tryRefundPaymentIntent, grossChargeAmount } from '../utils/payments'
 import { isValidDuffelId, isValidDate, isValidEmail, isValidPhone, safeString } from '../utils/validators'
 import { logger } from '../utils/logger'
+
+// Per-instance guard against double-spending a PaymentIntent
+// (authoritative check is the unique index on payments.payment_intent_id)
+const usedPaymentIntents = new Set<string>()
 
 function normalizePhone(phone: string): string {
   if (!phone || !phone.trim()) {
@@ -24,10 +29,13 @@ export default defineEventHandler(async (event) => {
   enforceRateLimit(event, `book:${ip}`, 5, 60_000)
 
   const body = await readBody(event)
-  const { offerId, passengers } = body
+  const { offerId, passengers, paymentIntentId } = body
 
   if (!isValidDuffelId(offerId)) {
     throw createError({ statusCode: 400, message: 'Valid offerId is required' })
+  }
+  if (!isValidDuffelId(paymentIntentId)) {
+    throw createError({ statusCode: 402, message: 'payment_required' })
   }
   if (!passengers?.length || !Array.isArray(passengers) || passengers.length > 9) {
     throw createError({ statusCode: 400, message: 'Passengers array is required (max 9)' })
@@ -69,6 +77,70 @@ export default defineEventHandler(async (event) => {
       throw createError({ statusCode: 422, message: 'offer_expired' })
     }
 
+    // ── Verify the customer's payment before touching Duffel orders ──
+    const supabase = createServerSupabase()
+
+    // Idempotency: a PaymentIntent can pay for exactly one order
+    if (usedPaymentIntents.has(paymentIntentId)) {
+      throw createError({ statusCode: 409, message: 'payment_already_used' })
+    }
+    if (supabase) {
+      const { data: existing } = await supabase
+        .from('payments').select('id, status').eq('payment_intent_id', paymentIntentId).maybeSingle()
+      if (existing && existing.status === 'order_created') {
+        throw createError({ statusCode: 409, message: 'payment_already_used' })
+      }
+    }
+
+    const pi = await getPaymentIntent(paymentIntentId)
+    if (!pi) throw createError({ statusCode: 402, message: 'payment_required' })
+
+    // Amount must match the current gross price for this exact offer
+    const expectedAmount = grossChargeAmount(offer.total_amount)
+    if (pi.currency !== offer.total_currency || parseFloat(pi.amount) + 0.005 < parseFloat(expectedAmount)) {
+      logger.error('Payment amount mismatch', { paymentIntentId, piAmount: pi.amount, expectedAmount, piCurrency: pi.currency, offerCurrency: offer.total_currency })
+      throw createError({ statusCode: 409, message: 'payment_mismatch' })
+    }
+
+    if (pi.status === 'requires_payment_method') {
+      throw createError({ statusCode: 402, message: 'payment_required' })
+    }
+
+    // Confirm collects the funds into our Duffel Balance.
+    // 'succeeded' means it was already confirmed (e.g. retry after a failed order).
+    if (pi.status !== 'succeeded') {
+      try {
+        await confirmPaymentIntent(paymentIntentId)
+      } catch (confirmErr: any) {
+        logger.error('PaymentIntent confirm failed', { paymentIntentId, errorMessage: confirmErr?.message })
+        throw createError({ statusCode: 402, message: 'payment_failed' })
+      }
+    }
+    usedPaymentIntents.add(paymentIntentId)
+
+    // Record the confirmed payment (best-effort audit trail)
+    if (supabase) {
+      try {
+        await supabase.from('payments').upsert({
+          payment_intent_id: paymentIntentId,
+          offer_id: offerId,
+          amount: parseFloat(pi.amount),
+          currency: pi.currency,
+          status: 'confirmed',
+        }, { onConflict: 'payment_intent_id' })
+      } catch (e: any) {
+        logger.warn('Payment record save failed (non-fatal)', { error: e?.message })
+      }
+    }
+
+    // Lead passenger's contact details are used as fallback for the rest —
+    // only the lead is asked for email/phone in the booking form.
+    const leadEmail = passengers[0]?.email?.trim() || ''
+    const leadPhone = passengers[0]?.phone || ''
+    if (!leadPhone.trim()) {
+      throw createError({ statusCode: 400, message: 'Phone number is required for the lead passenger' })
+    }
+
     // Build Duffel passengers array - IDs must match the offer's passenger IDs
     const duffelPassengers = passengers.map((p: any) => {
       const pass: any = {
@@ -78,8 +150,8 @@ export default defineEventHandler(async (event) => {
         given_name: p.given_name?.trim(),
         family_name: p.family_name?.trim(),
         born_on: p.born_on,
-        email: p.email?.trim() || 'booking@youfly.md',
-        phone_number: normalizePhone(p.phone || ''),
+        email: p.email?.trim() || leadEmail || 'booking@youfly.md',
+        phone_number: normalizePhone(p.phone?.trim() ? p.phone : leadPhone),
       }
       // Add passport if provided
       if (p.passport_number?.trim()) {
@@ -93,22 +165,50 @@ export default defineEventHandler(async (event) => {
       return pass
     })
 
-    // Create order
-    const orderRes = await duffelFetch<any>('/air/orders', {
-      method: 'POST',
-      body: {
-        data: {
-          type: 'instant',
-          selected_offers: [offerId],
-          passengers: duffelPassengers,
-          payments: [{
-            type: 'balance',
-            currency: offer.total_currency,
-            amount: offer.total_amount, // Must be exact string from offer
-          }],
+    // Create order — paid from the Balance we just topped up.
+    // If this fails after the customer was charged, refund automatically.
+    let orderRes: any
+    try {
+      // retries=0: order creation is NOT idempotent — retrying an ambiguous
+      // failure could issue duplicate tickets. Fail fast and refund instead.
+      orderRes = await duffelFetch<any>('/air/orders', {
+        method: 'POST',
+        body: {
+          data: {
+            type: 'instant',
+            selected_offers: [offerId],
+            passengers: duffelPassengers,
+            payments: [{
+              type: 'balance',
+              currency: offer.total_currency,
+              amount: offer.total_amount, // Must be exact string from offer
+            }],
+            metadata: { payment_intent_id: paymentIntentId },
+          }
         }
+      }, 0)
+    } catch (orderErr: any) {
+      usedPaymentIntents.delete(paymentIntentId)
+      const refunded = await tryRefundPaymentIntent(paymentIntentId)
+      if (!refunded) {
+        // Manual action needed — make this impossible to miss in logs
+        logger.error('REFUND REQUIRED: order failed after payment was confirmed', {
+          paymentIntentId, offerId, amount: pi.amount, currency: pi.currency,
+          action: 'Refund this payment manually in the Duffel dashboard (Balance page)',
+        })
       }
-    })
+      if (supabase) {
+        try {
+          await supabase.from('payments')
+            .update({ status: refunded ? 'refunded' : 'refund_required' })
+            .eq('payment_intent_id', paymentIntentId)
+        } catch {}
+      }
+      logger.error('Order creation failed after payment', {
+        paymentIntentId, refunded, errorMessage: orderErr?.data?.errors?.[0]?.message || orderErr?.message,
+      })
+      throw createError({ statusCode: 502, message: 'booking_failed_refund' })
+    }
 
     const order = orderRes.data
     if (!order) throw createError({ statusCode: 500, message: 'No order returned from Duffel' })
@@ -117,7 +217,6 @@ export default defineEventHandler(async (event) => {
     const duffelOrderId = order.id
 
     // Save to Supabase (best-effort)
-    const supabase = createServerSupabase()
     let bookingId: string | null = null
     if (supabase) {
       try {
@@ -149,7 +248,15 @@ export default defineEventHandler(async (event) => {
       } catch (dbErr: any) {
         logger.warn('Supabase booking save failed (non-fatal)', { error: dbErr.message })
       }
+      // Mark the payment as spent on this order (idempotency source of truth)
+      try {
+        await supabase.from('payments')
+          .update({ status: 'order_created', booking_id: bookingId, duffel_order_id: duffelOrderId })
+          .eq('payment_intent_id', paymentIntentId)
+      } catch {}
     }
+
+    logger.info('Order created', { reference, duffelOrderId, paymentIntentId })
 
     return {
       reference,

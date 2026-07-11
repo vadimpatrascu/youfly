@@ -2,6 +2,10 @@
 const { t } = useI18n()
 useHead({ title: `404 — YouFly`, meta: [{ name: 'robots', content: 'noindex' }] })
 
+// Serve a real 404 status, not a soft-404 (matters for SEO)
+const event = useRequestEvent()
+if (event) setResponseStatus(event, 404)
+
 const route = useRoute()
 const suggestedPages = [
   { path: '/', label: 'nav.search' },

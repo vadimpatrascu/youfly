@@ -35,7 +35,7 @@ export const useBookingStore = defineStore('booking', {
     setPassengers(passengers: PassengerFormData[]) {
       this.passengers = passengers
     },
-    async submitBooking() {
+    async submitBooking(paymentIntentId: string) {
       if (!this.selectedOffer || !this.passengers.length) return false
       // Prevent double-submission
       if (this.isBooking) return false
@@ -47,8 +47,7 @@ export const useBookingStore = defineStore('booking', {
           body: {
             offerId: this.selectedOffer.id,
             passengers: this.passengers,
-            totalAmount: this.selectedOffer.total_amount,
-            currency: this.selectedOffer.total_currency,
+            paymentIntentId,
           }
         })
         this.confirmedBooking = result
@@ -67,6 +66,10 @@ export const useBookingStore = defineStore('booking', {
         const t = ($i18n as any).t
         if (msg === 'offer_expired') {
           this.bookingError = t('payment.offerExpired')
+        } else if (msg === 'booking_failed_refund') {
+          this.bookingError = t('payment.refundNotice')
+        } else if (msg === 'payment_required' || msg === 'payment_failed' || msg === 'payment_mismatch' || msg === 'payment_already_used') {
+          this.bookingError = t('payment.paymentFailed')
         } else {
           this.bookingError = msg || t('payment.bookingFailed')
         }
