@@ -159,6 +159,56 @@ async function main() {
   await sleep(1500)
   await page.screenshot({ path: SHOTS + '\\6-payment.png' })
 
+  // ── REAL PAYMENT MODE: against the real Duffel TEST API, complete the
+  // purchase with the documented test card and verify ticket issuance. ──
+  if (process.env.REAL_PAYMENT === '1') {
+    console.log('== 6b. REAL test-mode payment (4242 card) ==')
+    await sleep(3000) // let Stripe iframes finish mounting
+    const frames = page.frames()
+    let typed = false
+    for (const f of frames) {
+      try {
+        const num = await f.$('input[name="cardnumber"], input[autocomplete="cc-number"]')
+        if (!num) continue
+        await num.type('4242424242424242', { delay: 40 })
+        const exp = await f.$('input[name="exp-date"], input[autocomplete="cc-exp"]')
+        if (exp) await exp.type('1230', { delay: 40 })
+        const cvc = await f.$('input[name="cvc"], input[autocomplete="cc-csc"]')
+        if (cvc) await cvc.type('123', { delay: 40 })
+        const zip = await f.$('input[name="postal"], input[autocomplete="postal-code"]')
+        if (zip) await zip.type('12345', { delay: 40 })
+        typed = true
+        break
+      } catch {}
+    }
+    // Split-field variant: number/expiry/cvc live in separate iframes
+    if (!typed) {
+      for (const f of frames) {
+        try {
+          const num = await f.$('input[name="number"]')
+          if (num) { await num.type('4242424242424242', { delay: 40 }); typed = true }
+          const exp = await f.$('input[name="expiry"]')
+          if (exp) await exp.type('1230', { delay: 40 })
+          const cvc2 = await f.$('input[name="cvc"]')
+          if (cvc2) await cvc2.type('123', { delay: 40 })
+        } catch {}
+      }
+    }
+    check('card details typed into Stripe iframe', typed)
+    await page.screenshot({ path: SHOTS + '\\7-card-filled.png' })
+    const payClicked = await clickByText(page, 'duffel-payments button, button', 'Pay')
+    check('Pay clicked', payClicked)
+    // Successful charge -> site books -> redirects to /booking-confirm
+    const confirmed = await page.waitForFunction(() => location.pathname === '/booking-confirm', { timeout: 60000 }).then(() => true).catch(() => false)
+    check('REAL BOOKING CONFIRMED (redirected to confirmation)', confirmed, await page.evaluate(() => location.pathname + ' :: ' + document.body.innerText.slice(0, 200)))
+    if (confirmed) {
+      await sleep(2500)
+      const ref = await page.evaluate(() => (document.body.innerText.match(/\b[A-Z0-9]{5,8}\b/) || [''])[0])
+      console.log('     booking reference on page: ' + ref)
+      await page.screenshot({ path: SHOTS + '\\8-confirmed.png' })
+    }
+  }
+
   console.log('== 7. JS error scan across funnel ==')
   const realErrors = jsErrors.filter(e =>
     !e.includes('stripe') && !e.includes('Stripe') && !e.includes('pk_test_mock') &&
