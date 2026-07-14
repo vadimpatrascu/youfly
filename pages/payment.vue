@@ -16,6 +16,7 @@ const paymentIntentId = ref('')
 const clientToken = ref('')
 const chargeAmount = ref('')
 const chargeCurrency = ref('')
+const seatTotal = ref('0')
 
 const { formatPrice, formatPriceExact, formatTime, stopsLabel } = useFormatters()
 const { formatWithMdl, showMdl } = useCurrency()
@@ -73,12 +74,13 @@ async function setupPayment() {
   try {
     const intent = await $fetch<any>('/api/payment/intent', {
       method: 'POST',
-      body: { offerId: offer.id },
+      body: { offerId: offer.id, serviceIds: bookingStore.seatServiceIds },
     })
     paymentIntentId.value = intent.paymentIntentId
     clientToken.value = intent.clientToken
     chargeAmount.value = intent.amount
     chargeCurrency.value = intent.currency
+    seatTotal.value = intent.seatTotal || '0'
 
     await loadDuffelComponent()
     initState.value = 'ready'
@@ -225,9 +227,13 @@ onMounted(() => {
                 <span>{{ t('payment.taxes') }}</span>
                 <span>{{ formatPrice(bookingStore.selectedOffer.tax_amount || '0', bookingStore.selectedOffer.total_currency) }}</span>
               </div>
+              <div v-if="parseFloat(seatTotal) > 0" class="flex justify-between text-sm text-gray-500">
+                <span>{{ t('payment.seats') }}</span>
+                <span>{{ formatPriceExact(seatTotal, chargeCurrency) }}</span>
+              </div>
               <div v-if="chargeAmount" class="flex justify-between text-sm text-gray-500">
                 <span>{{ t('payment.processingFee') }}</span>
-                <span>{{ formatPriceExact(String(Math.max(0, parseFloat(chargeAmount) - parseFloat(bookingStore.selectedOffer.total_amount)).toFixed(2)), chargeCurrency) }}</span>
+                <span>{{ formatPriceExact(String(Math.max(0, parseFloat(chargeAmount) - parseFloat(bookingStore.selectedOffer.total_amount) - parseFloat(seatTotal)).toFixed(2)), chargeCurrency) }}</span>
               </div>
               <div class="flex justify-between font-bold text-gray-900 pt-2 border-t">
                 <span>{{ t('payment.total') }}</span>

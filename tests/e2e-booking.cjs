@@ -150,6 +150,35 @@ async function main() {
   const retryBook = await req('POST', '/api/book', { offerId: offer2.id, passengers: paxForOffer(offer2), paymentIntentId: intent4.json.paymentIntentId })
   check('retry booking succeeds', retryBook.status === 200 && /^YF/.test(retryBook.json?.reference || ''), `got ${retryBook.status}`)
 
+  console.log('== N. Real seat map: fetch, price into intent, book with seat ==')
+  setClientIp('203.0.113.60')
+  const s2 = await req('POST', '/api/search', { origin: 'RMO', destination: 'OTP', departureDate: '2026-12-05', adults: 1 })
+  const so = s2.json.offers[0]
+  const sm = await req('GET', `/api/seat-map?offer_id=${so.id}`)
+  check('seat map available', sm.status === 200 && sm.json.available === true, JSON.stringify(sm.json).slice(0, 160))
+  // Pull one available seat service id for the first passenger
+  let svcId = null, seatDesig = null
+  for (const seg of sm.json.segments || []) {
+    for (const row of seg.rows) for (const sec of row.sections) for (const el of sec) {
+      if (el.services) { const k = Object.keys(el.services)[0]; if (k) { svcId = el.services[k].serviceId; seatDesig = el.designator; break } }
+    }
+    if (svcId) break
+  }
+  check('found a bookable seat service id', !!svcId, `seat=${seatDesig}`)
+  const seatIntent = await req('POST', '/api/payment/intent', { offerId: so.id, serviceIds: [svcId] })
+  check('intent priced with seat (offer 100+seat 15 grossed)', seatIntent.json?.seatTotal === '15.00' && parseFloat(seatIntent.json.amount) > parseFloat(gross(so.total_amount)), JSON.stringify(seatIntent.json))
+  await req('POST', `/_mock/pay/${seatIntent.json.paymentIntentId}`, null, MOCK)
+  const seatBook = await req('POST', '/api/book', { offerId: so.id, passengers: paxForOffer(so, 1), paymentIntentId: seatIntent.json.paymentIntentId, serviceIds: [svcId] })
+  check('booking with seat succeeds', seatBook.status === 200 && /^YF/.test(seatBook.json?.reference || ''), `${seatBook.status} ${seatBook.text.slice(0,140)}`)
+  check('order total includes seat cost', parseFloat(seatBook.json?.totalAmount) === parseFloat(so.total_amount) + 15, `got ${seatBook.json?.totalAmount}`)
+
+  console.log('== O. Tampered seat service id is rejected ==')
+  setClientIp('203.0.113.61')
+  const s3 = await req('POST', '/api/search', { origin: 'RMO', destination: 'OTP', departureDate: '2026-12-06', adults: 1 })
+  const to = s3.json.offers[0]
+  const badIntent = await req('POST', '/api/payment/intent', { offerId: to.id, serviceIds: ['ase_fake_tampered_id'] })
+  check('unknown seat service -> 409 invalid_seat_selection', badIntent.status === 409 && badIntent.text.includes('invalid_seat_selection'), `${badIntent.status} ${badIntent.text.slice(0,120)}`)
+
   console.log('== M. Rate limiter blocks the 6th rapid booking attempt ==')
   setClientIp('203.0.113.99')
   let lastStatus = 0

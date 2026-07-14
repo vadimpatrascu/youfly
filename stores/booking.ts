@@ -16,24 +16,42 @@ export interface PassengerFormData {
   passport_expires?: string
 }
 
+export interface SelectedSeat {
+  serviceId: string
+  passengerId: string
+  segmentId: string
+  designator: string
+  amount: string
+  currency: string
+}
+
 export const useBookingStore = defineStore('booking', {
   state: () => ({
     selectedOffer: null as SimplifiedOffer | null,
     passengers: [] as PassengerFormData[],
+    selectedSeats: [] as SelectedSeat[],
     isBooking: false,
     bookingError: null as string | null,
     confirmedBooking: null as any,
     paymentComplete: false,
   }),
+  getters: {
+    seatServiceIds: (state): string[] => state.selectedSeats.map((s) => s.serviceId),
+    seatTotal: (state): number => state.selectedSeats.reduce((sum, s) => sum + (parseFloat(s.amount) || 0), 0),
+  },
   actions: {
     selectOffer(offer: SimplifiedOffer) {
       this.selectedOffer = offer
       this.passengers = []
+      this.selectedSeats = []
       this.bookingError = null
       this.confirmedBooking = null
     },
     setPassengers(passengers: PassengerFormData[]) {
       this.passengers = passengers
+    },
+    setSelectedSeats(seats: SelectedSeat[]) {
+      this.selectedSeats = seats
     },
     async submitBooking(paymentIntentId: string) {
       if (!this.selectedOffer || !this.passengers.length) return false
@@ -48,6 +66,7 @@ export const useBookingStore = defineStore('booking', {
             offerId: this.selectedOffer.id,
             passengers: this.passengers,
             paymentIntentId,
+            serviceIds: this.seatServiceIds,
           }
         })
         this.confirmedBooking = result
@@ -81,6 +100,7 @@ export const useBookingStore = defineStore('booking', {
     reset() {
       this.selectedOffer = null
       this.passengers = []
+      this.selectedSeats = []
       this.isBooking = false
       this.bookingError = null
       this.confirmedBooking = null

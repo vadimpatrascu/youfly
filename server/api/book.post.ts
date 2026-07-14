@@ -2,6 +2,7 @@ import { duffelFetch } from '../utils/duffel'
 import { createServerSupabase } from '../utils/supabase'
 import { enforceRateLimit } from '../utils/rateLimit'
 import { getPaymentIntent, confirmPaymentIntent, tryRefundPaymentIntent, grossChargeAmount } from '../utils/payments'
+import { sumSelectedServices } from '../utils/seatMap'
 import { isValidDuffelId, isValidDate, isValidEmail, isValidPhone, safeString } from '../utils/validators'
 import { logger } from '../utils/logger'
 
@@ -30,6 +31,10 @@ export default defineEventHandler(async (event) => {
 
   const body = await readBody(event)
   const { offerId, passengers, paymentIntentId } = body
+  // Optional selected seat service IDs — validated + priced server-side
+  const serviceIds: string[] = Array.isArray(body?.serviceIds)
+    ? body.serviceIds.filter((s: any) => isValidDuffelId(s)).slice(0, 18)
+    : []
 
   if (!isValidDuffelId(offerId)) {
     throw createError({ statusCode: 400, message: 'Valid offerId is required' })
@@ -95,8 +100,22 @@ export default defineEventHandler(async (event) => {
     const pi = await getPaymentIntent(paymentIntentId)
     if (!pi) throw createError({ statusCode: 402, message: 'payment_required' })
 
-    // Amount must match the current gross price for this exact offer
-    const expectedAmount = grossChargeAmount(offer.total_amount)
+    // Re-price any selected seats server-side (never trust client amounts)
+    let seatTotal = 0
+    if (serviceIds.length) {
+      try {
+        const smRes = await duffelFetch<any>(`/air/seat_maps?offer_id=${offerId}`)
+        seatTotal = sumSelectedServices(smRes.data || [], serviceIds).amount
+      } catch (e: any) {
+        if (e?.code === 'unknown_service') throw createError({ statusCode: 409, message: 'invalid_seat_selection' })
+        throw e
+      }
+    }
+    // Order total including seats — this is what the balance payment must equal
+    const netTotal = (parseFloat(offer.total_amount) + seatTotal).toFixed(2)
+
+    // Amount must match the current gross price for offer + seats
+    const expectedAmount = grossChargeAmount(netTotal)
     if (pi.currency !== offer.total_currency || parseFloat(pi.amount) + 0.005 < parseFloat(expectedAmount)) {
       logger.error('Payment amount mismatch', { paymentIntentId, piAmount: pi.amount, expectedAmount, piCurrency: pi.currency, offerCurrency: offer.total_currency })
       throw createError({ statusCode: 409, message: 'payment_mismatch' })
@@ -171,21 +190,24 @@ export default defineEventHandler(async (event) => {
     try {
       // retries=0: order creation is NOT idempotent — retrying an ambiguous
       // failure could issue duplicate tickets. Fail fast and refund instead.
+      const orderData: any = {
+        type: 'instant',
+        selected_offers: [offerId],
+        passengers: duffelPassengers,
+        payments: [{
+          type: 'balance',
+          currency: offer.total_currency,
+          amount: netTotal, // offer total + selected seat services
+        }],
+        metadata: { payment_intent_id: paymentIntentId },
+      }
+      // Add chosen seats as ancillary services (only when present)
+      if (serviceIds.length) {
+        orderData.services = serviceIds.map((id) => ({ id, quantity: 1 }))
+      }
       orderRes = await duffelFetch<any>('/air/orders', {
         method: 'POST',
-        body: {
-          data: {
-            type: 'instant',
-            selected_offers: [offerId],
-            passengers: duffelPassengers,
-            payments: [{
-              type: 'balance',
-              currency: offer.total_currency,
-              amount: offer.total_amount, // Must be exact string from offer
-            }],
-            metadata: { payment_intent_id: paymentIntentId },
-          }
-        }
+        body: { data: orderData },
       }, 0)
     } catch (orderErr: any) {
       usedPaymentIntents.delete(paymentIntentId)

@@ -7,8 +7,45 @@ const state = {
   intents: new Map(),
   orders: [],
   refunds: [],
+  services: new Map(), // serviceId -> { amount, currency }
+  seatMaps: new Map(), // offerId -> seat map (built on demand)
   failNextOrder: false,
   seq: 0,
+}
+
+// Build a small seat map for an offer and register its seat services.
+function seatMapFor(offer) {
+  if (state.seatMaps.has(offer.id)) return state.seatMaps.get(offer.id)
+  const seg = offer.slices[0].segments[0]
+  const cols = ['A', 'B', 'C', 'D']
+  const rows = []
+  for (let r = 10; r <= 12; r++) {
+    const elements = []
+    for (const c of cols) {
+      const designator = `${r}${c}`
+      // Row 11 is fully taken; otherwise A/C available, B/D taken
+      const avail = r !== 11 && (c === 'A' || c === 'C')
+      const el = { type: 'seat', designator, name: null, disclosures: [] }
+      el.available_services = avail
+        ? offer.passengers.map((pax, pi) => {
+            const id = `ase_${offer.id}_${designator}_${pi}`
+            state.services.set(id, { amount: '15.00', currency: offer.total_currency })
+            return { id, passenger_id: pax.id, total_amount: '15.00', total_currency: offer.total_currency }
+          })
+        : []
+      elements.push(el)
+      if (c === 'B') elements.push({ type: 'empty' }) // aisle gap
+    }
+    rows.push({ sections: [{ elements }] })
+  }
+  const map = {
+    id: `sea_${offer.id}`,
+    slice_id: offer.slices[0].id,
+    segment_id: seg.id,
+    cabins: [{ cabin_class: 'economy', deck: 0, aisles: 1, wings: { first_row_index: 0, last_row_index: 2 }, rows }],
+  }
+  state.seatMaps.set(offer.id, map)
+  return map
 }
 
 function offerFixture(id, passengers, expiresInMs = 20 * 60 * 1000) {
@@ -145,6 +182,13 @@ const server = http.createServer(async (req, res) => {
     return json(res, 200, { data: { id: refundMatch[1], status: 'refunded' } })
   }
 
+  if (p === '/air/seat_maps' && req.method === 'GET') {
+    const offerId = url.searchParams.get('offer_id')
+    const offer = state.offers.get(offerId)
+    if (!offer) return json(res, 200, { data: [] })
+    return json(res, 200, { data: [seatMapFor(offer)] })
+  }
+
   if (p === '/air/orders' && req.method === 'POST') {
     if (state.failNextOrder) {
       state.failNextOrder = false
@@ -165,15 +209,24 @@ const server = http.createServer(async (req, res) => {
     if ((d.passengers || []).length !== offer.passengers.length) {
       return json(res, 422, { errors: [{ title: 'Validation error', message: 'Passenger count mismatch' }] })
     }
+    // Validate any seat services and compute the expected order total
+    let servicesTotal = 0
+    for (const s of d.services || []) {
+      const svc = state.services.get(s.id)
+      if (!svc) return json(res, 422, { errors: [{ title: 'Validation error', message: `Unknown service ${s.id}` }] })
+      servicesTotal += parseFloat(svc.amount)
+    }
+    const expectedTotal = (parseFloat(offer.total_amount) + servicesTotal).toFixed(2)
     const pay = d.payments?.[0]
-    if (!pay || pay.type !== 'balance' || pay.amount !== offer.total_amount || pay.currency !== offer.total_currency) {
-      return json(res, 422, { errors: [{ title: 'Validation error', message: 'Payment must be balance with exact offer amount' }] })
+    if (!pay || pay.type !== 'balance' || pay.amount !== expectedTotal || pay.currency !== offer.total_currency) {
+      return json(res, 422, { errors: [{ title: 'Validation error', message: `Payment must be balance with amount ${expectedTotal}` }] })
     }
     const order = {
       id: `ord_${++state.seq}`,
       booking_reference: `YF${String(state.seq).padStart(4, '0')}`,
-      total_amount: offer.total_amount,
+      total_amount: expectedTotal,
       total_currency: offer.total_currency,
+      services: d.services || [],
       metadata: d.metadata || {},
     }
     state.orders.push(order)
